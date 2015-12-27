@@ -26,6 +26,10 @@ Element.prototype.on = function(event, next){
   var self = this;
   this.addEventListener(event, function(ev){next.call(self,ev)});
 }
+Document.prototype.on = function(event, next){
+  var self = this;
+  this.addEventListener(event, function(ev){next.call(self,ev)});
+}
 
 // -- Changing css
 Element.prototype.css = function(css){
