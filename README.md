@@ -96,3 +96,18 @@ To get or set html or text of element use `Element.prototype.html(html)` and `El
   q('.red').text(html);
   console.log(q('.red').text());
 ```
+
+###Manipulating CSS
+You can also change or get CSS of the element with  `Element.prototype.css(css, ignoreDefaults)`
+```js
+  var body = q('body');
+  body.css({
+    color: 'red',
+    background: 'rgba(0,0,0,'+Math.random()+')'
+  })
+  var wholeCSS = body.css();
+  var onlyModifiedCSS = body.css(true);
+  
+  var onlyColor = body.css('color');
+  
+```
