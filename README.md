@@ -89,3 +89,10 @@ To append one element to another just use `Element.prototype.append(element)`
   div.append(logoText);
   q('header').append(div);
 ```
+To get or set html or text of element use `Element.prototype.html(html)` and `Element.prototype.html(text)`.
+```js
+  var html = q('html').html();
+  q('body').html('<div class="red">hello.</div>');
+  q('.red').text('<div class="red">hello.</div>');
+  console.log(q('.red').text());
+```
