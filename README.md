@@ -3,14 +3,15 @@ A simple tool for faster querySelector usage.
 
 ## Querying elements
 
-To query an element just use `q(selector)`.
+To query an element just use `q(selector)`. You can call it either on the `window` or any instance of `Element`.
 
 ```js
-  var body = q('head');
+  var header = q('header');
+  var nav = header.q('nav');
 ```
 
 For multiple query just use `qq(selector)` which is a replacement for `document.querySelectorAll(selector)`.
-You can call it either on the `window` or any instance of `Element`.
+
 ```js
   var containers = qq('.container');
   var rows = [];
