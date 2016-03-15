@@ -148,32 +148,50 @@
   Text.prototype.on = _ev;
   Window.prototype.on = _ev;
   Document.prototype.on = _ev;
+  FormData.prototype.on = _ev;
   FileReader.prototype.on = _ev;
   XMLHttpRequest.prototype.on = _ev;
 
   // -- Changing css
   Element.prototype.css = function(css, ignoreDefaults){
+    if(typeof css === 'boolean') return this.css(null, css);
+    if(typeof css === 'string') return this.css(null, ignoreDefaults)[css];
     if(!css){
       css = getComputedStyle(this);
       var ret = {};
-      if(ignoreDefaults){
-        var defaults = getComputedStyle(e(this.tagName));
+      if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+        if(ignoreDefaults){
+          var defaults = getComputedStyle(e(this.tagName));
+          for (var k in css) {
+            if (!css.hasOwnProperty(k) && isNaN(+k) && css[k] != '' && css[k] != defaults[k]) {
+               ret[k] = css[k];
+            }
+          }
+          return ret;
+        }
         for (var k in css) {
-          if (!css.hasOwnProperty(k) && css[k] != '' && css[k] != defaults[k]) {
+          if (!css.hasOwnProperty(k) && isNaN(+k) && css[k] != '') {
              ret[k] = css[k];
           }
         }
-        return ret;
-      }
-      for (var k in css) {
-        if (!css.hasOwnProperty(k) && css[k] != '') {
-           ret[k] = css[k];
+      } else {
+        if(ignoreDefaults){
+          var defaults = getComputedStyle(e(this.tagName));
+          for (var k in css) {
+            if (css.hasOwnProperty(k) && isNaN(+k) && css[k] != '' && css[k] != defaults[k]) {
+               ret[k] = css[k];
+            }
+          }
+          return ret;
+        }
+        for (var k in css) {
+          if (css.hasOwnProperty(k) && isNaN(+k) && css[k] != '') {
+             ret[k] = css[k];
+          }
         }
       }
       return ret;
     };
-    if(typeof css === 'boolean') return this.css(null, css);
-    if(typeof css === 'string') return this.css(null, ignoreDefaults)[css];
     var self = this;
     for (var _k in css) {
       if (css.hasOwnProperty(_k)) {
