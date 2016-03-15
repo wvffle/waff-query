@@ -84,7 +84,7 @@
   }
   var t = function(text){
     var e = document.createTextNode(text);
-    return ee;
+    return e;
   }
   Text.prototype.set = function (text) {
     this.nodeValue = text;
