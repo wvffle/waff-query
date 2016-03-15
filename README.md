@@ -55,8 +55,9 @@ You can also query elements inside an array.
 Well, there is a nice replacement for `Element.prototype.addEventListener(onEvent, function)` which is actually `Element.prototype.on(event, function)`
 ```js
   var logo = q('.logo');
-  logo.on('click', function(e){
-     window.location.href = '/'
+  logo.on('click', function(ev){
+    this.classList.add('clicked');
+    ev.preventDefault();
   })
 ```
 Below you can find a list of supported classes. If you want to add more just create pull request or new issue.
@@ -67,3 +68,24 @@ Below you can find a list of supported classes. If you want to add more just cre
  * `FormData`
  * `FileReader`
  * `XMLHttpRequest`
+
+### Manipulating content
+
+To create a text node you can use `t(text)`
+Then you can set or get elements text by `Text.prototype.set(text)` and `Text.prototype.get()`
+```js
+  var logoText = t('my app');
+  logoText.set(logoText.get().replace(' ', ' awesome '));
+```
+You can also easily create elements with selectors.
+```js
+  var logo = e('img.logo'); // Creates <img class='logo'>
+  e.src = '/img/logo.png';
+```
+To append one element to another just use `Element.prototype.append(element)`
+```js
+  var div = e('#logo'); // Creates <div id='logo'>
+  div.append(logo);
+  div.append(logoText);
+  q('header').append(div);
+```
