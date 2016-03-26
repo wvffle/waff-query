@@ -1,0 +1,19 @@
+{
+  name: 'query',
+  description: 'Simple DOM manipulation library',
+  main: 'query.js',
+  moduleType: [],
+  keywords: [
+    'query',
+    'DOM'
+  ],
+  authors: [
+    'wvffle'
+  ],
+  license: 'MIT',
+  homepage: 'wvffle.net',
+  ignore: [
+    'node_modules',
+    'bower_components'
+  ]
+}
