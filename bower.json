@@ -1,7 +1,8 @@
 {
-  "name": "query",
+  "name": "waff-query",
+  "version": "0.3.7",
   "description": "Simple DOM manipulation library",
-  "main": "query.js",
+  "main": "./waff-query.js",
   "moduleType": [],
   "keywords": [
     "query",
