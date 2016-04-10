@@ -171,7 +171,7 @@
   // -- Event
   var _ev = function(event, next){
     var self = this;
-    this.addEventListener(event, function(ev){next.call(self,ev)}, sth);
+    this.addEventListener(event, function(ev){next.call(self,ev)});
   }
   Text.prototype.on = _ev;
   Window.prototype.on = _ev;
