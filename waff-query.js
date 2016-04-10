@@ -171,7 +171,6 @@
   // -- Event
   var _ev = function(event, next){
     var self = this;
-    sth = sth === false?true:false;
     this.addEventListener(event, function(ev){next.call(self,ev)}, sth);
   }
   Text.prototype.on = _ev;
