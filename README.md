@@ -97,7 +97,21 @@ To get or set html or text of element use `Element.prototype.html(html)` and `El
   console.log(q('.red').text());
 ```
 
+###Observing element changes
+
+To observe an element changes you must initiate the observer by `Element.prototype.observe()`
+You can also disable element observation by `Element.prototype.stopObserving()`
+Mutations can be accessed by `mutation` event triggered on `Element` instance
+```js
+  var html = q('html');
+  html.observe()
+  html.on('mutation', function(mutation){
+    console.log(mutation)
+  })
+```
+
 ###Manipulating CSS
+
 You can also change or get CSS of the element with  `Element.prototype.css(css, ignoreDefaults)`
 ```js
   var body = q('body');
