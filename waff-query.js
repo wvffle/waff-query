@@ -137,20 +137,62 @@
     return this.innerHTML;
   }
 
+  // -- Observe elements
+  Element.prototype.observe = function () {
+    var self = this;
+    if(!this._observer){
+      this._observerHandlers = []
+      this._observer = new MutationObserver(function(mutations) {
+        for (var i = 0; i < self._observerHandlers.length; i++) {
+          for (var j = 0; j < mutations.length; j++) {
+            var mutation = mutations[j];
+            self._observerHandlers[i].call(self, mutation);
+          }
+        }
+      });
+      var config = {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        subtree: true,
+        attributeOldValue: true,
+        characterDataOldValue: true
+      }
+      this._observer.observe(this, config);
+    }
+  }
+  Element.prototype.stopObserving = function () {
+    if(this._observer){
+      this._observer.disconnect();
+      delete this._observer;
+    }
+  }
 
   // -- Event
-  var _ev = function(event, next, sth){
+  var _ev = function(event, next){
     var self = this;
     sth = sth === false?true:false;
     this.addEventListener(event, function(ev){next.call(self,ev)}, sth);
   }
-  Element.prototype.on = _ev;
   Text.prototype.on = _ev;
   Window.prototype.on = _ev;
   Document.prototype.on = _ev;
   FormData.prototype.on = _ev;
   FileReader.prototype.on = _ev;
   XMLHttpRequest.prototype.on = _ev;
+  AudioNode.prototype.on = _ev;
+  AudioContext.prototype.on = _ev;
+
+  // -- Element events
+  Element.prototype.on = function(event, next){
+      switch (event) {
+        case 'mutation':
+          this._observerHandlers.push(next);
+          break;
+        default:
+          _ev.apply(this, arguments);
+      }
+  }
 
   // -- Changing css
   Element.prototype.css = function(css, ignoreDefaults){
