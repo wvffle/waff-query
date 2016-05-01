@@ -167,7 +167,26 @@
       delete this._observer;
     }
   }
-
+  
+  // -- Path
+  Element.prototype.path = function () {
+    var path = [], root = this;
+    while (root.parentNode){
+      if (root.id){
+        path.unshift('#'+root.id);
+        break;
+      } 
+      if (root == root.ownerDocument.documentElement) {
+        path.unshift(root.tagName.toLowerCase());
+      } else {
+        for (var i = 1; root.previousElementSibling; root = root.previousElementSibling , i++);
+        path.unshift(root.tagName.toLowerCase()+':nth-child('+i+')');
+      }
+      root = root.parentNode
+    }
+    return path.join(" > ")
+  }
+  
   // -- Event
   var _ev = function(event, next){
     var self = this;
