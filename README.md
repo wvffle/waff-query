@@ -30,7 +30,7 @@ You can also query elements inside an array.
 You can get unique path of `Element` instance by calling `Element.prototype.path()`
 
 ```js
-  var path = q('.logo').path();
+  var path = q('.logo').path(); // html > body:nth-child(2) > main:nth-child(2) > div:nth-child(2)
 ```
 
 ### Parsing selector string
