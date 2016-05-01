@@ -25,6 +25,14 @@ You can also query elements inside an array.
   var thumbnails = qq('.thumbnails', images);
 ```
 
+### Getting element path
+
+You can get unique path of `Element` instance by calling `Element.prototype.path()`
+
+```js
+  var path = q('.logo').path();
+```
+
 ### Parsing selector string
 
 `gs` is an easy function to parse selector string.
