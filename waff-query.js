@@ -169,22 +169,22 @@
   }
   
   // -- Path
-  Element.prototype.path = function () {
-    var path = [], root = this;
+  Element.prototype.path = function (){
+    var root = this;
+    var path = [];
     while (root.parentNode){
-      if (root.id){
-        path.unshift('#'+root.id);
+      if (root.id != ''){
+        path.unshift('#' + root.id);
         break;
-      } 
-      if (root == root.ownerDocument.documentElement) {
-        path.unshift(root.tagName.toLowerCase());
-      } else {
-        for (var i = 1; root.previousElementSibling; root = root.previousElementSibling , i++);
-        path.unshift(root.tagName.toLowerCase()+':nth-child('+i+')');
       }
-      root = root.parentNode
+      if (root==root.ownerDocument.documentElement) path.unshift(root.tagName.toLowerCase());
+      else{
+        for (var i = 1, e = root; e.previousElementSibling; e = e.previousElementSibling, i++);
+        path.unshift(root.tagName.toLowerCase() + ':nth-child(' + i + ')');
+      }
+      root=root.parentNode;
     }
-    return path.join(" > ")
+    return path.join(' > ');
   }
   
   // -- Event
