@@ -293,10 +293,9 @@
   q.all = qq;
   q.doc = document;
   q.body = q.doc.body;
-  if(q.body == null){
-    q.doc.on('load', function(){
-      q.body = q.doc.body;
-    })
+  var body = function(){
+    q.body = q.doc.body;
+    if(q.body == null) setTimeout(body, 1);
   }
   
   exports.q = exports.query = q;
