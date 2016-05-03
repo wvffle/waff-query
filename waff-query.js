@@ -67,9 +67,6 @@
   var q = function(qs, root){
     return qq(qs, root)[0]||null;
   }
-  q.all = qq;
-  q.doc = document;
-  q.body = q.doc.body;
   Element.prototype.q = Element.prototype.query = function(qs){
     return q(qs, this);
   }
@@ -293,6 +290,15 @@
     }
   }
 
+  q.all = qq;
+  q.doc = document;
+  q.body = q.doc.body;
+  if(q.body == null){
+    q.doc.on('load', function(){
+      q.body = q.doc.body;
+    })
+  }
+  
   exports.q = exports.query = q;
   exports.qq = qq;
   exports.ps = exports.parseSelectors = ps;
