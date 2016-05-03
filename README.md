@@ -60,22 +60,25 @@ You can get unique path of `Element` instance by calling `Element.prototype.path
 ```
 
 ### Binding events
-Well, there is a nice replacement for `Element.prototype.addEventListener(onEvent, function)` which is actually `Element.prototype.on(event, function)`
+Well, there is a nice replacement for `EventTarget.prototype.addEventListener(event, function, capture)` which is actually `EventTarget.prototype.on(event, function, capture)`
+You can also remove events by `EventTarget.prototype.off(event, function)`, call them once using `EventTarget.prototype.once(event, function, capture)`
 ```js
   var logo = q('.logo');
   logo.on('click', function(ev){
     this.classList.add('clicked');
     ev.preventDefault();
   })
+  logo.once('wheel', function(){
+    this.off('click');
+  })
 ```
-Below you can find a list of supported classes. If you want to add more just create pull request or new issue.
- * `Element`
- * `Text`
- * `Window`
- * `Document`
- * `FormData`
- * `FileReader`
- * `XMLHttpRequest`
+To trigger event just use `Element.prototype.event(event)` where `event` can be string with custom event's name or prepared `Event` instance
+```js
+logo.once('my-event', function(e){
+  console.log('[my-event]', e)
+})
+logo.event('my-event')
+```
 
 ### Manipulating content
 
