@@ -1,13 +1,13 @@
 ### Querying elements
 
-To query an element just use `q(selector)`. You can call it either on the `window` or any instance of `Element`.
+To query an element just use `q(selector)` or `query(selector)`. You can call it either on the `window` or any instance of `Element`.
 
 ```js
   var header = q('header');
   var nav = header.q('nav');
 ```
 
-For multiple query just use `qq(selector)` which is a replacement for `document.querySelectorAll(selector)` but it's returned as an   `Array` instead of `NodeList` so you can easily call functions like `forEach` or other like that.
+For multiple query just use `qq(selector)` or `query.all(selector)` which is a replacement for `document.querySelectorAll(selector)` but it's returned as an   `Array` instead of `NodeList` so you can easily call functions like `forEach` or other like that.
 
 ```js
   var containers = qq('.container');
@@ -35,7 +35,7 @@ You can get unique path of `Element` instance by calling `Element.prototype.path
 
 ### Parsing selector string
 
-`ps` is an easy function to parse selector string.
+`ps(selector)` or `parseSelector(selector)` is an easy function to parse selector string.
 
 ```js
   var selector = ps('div#header.white-text');
@@ -82,7 +82,7 @@ logo.event('my-event')
 
 ### Manipulating content
 
-To create a text node you can use `t(text)`
+To create a text node you can use `t(text)` or `text(text)`
 Then you can set or get elements text by `Text.prototype.set(text)` and `Text.prototype.get()`
 ```js
   var logoText = t('my app');
