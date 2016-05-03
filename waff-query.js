@@ -67,11 +67,14 @@
   var q = function(qs, root){
     return qq(qs, root)[0]||null;
   }
+  q.all = qq;
+  q.doc = document;
+  q.body = q.doc.body;
+  Element.prototype.q = Element.prototype.query = function(qs){
+    return q(qs, this);
+  }
   Element.prototype.qq = function(qs){
     return qq(qs, this);
-  }
-  Element.prototype.q = function(qs){
-    return q(qs, this);
   }
 
   //-- Create elements
@@ -291,7 +294,7 @@
   }
 
   exports.q = exports.query = q;
-  exports.qq = exports.queryAll = qq;
+  exports.qq = qq;
   exports.ps = exports.parseSelectors = ps;
   exports.e = exports.element = e;
   exports.t = exports.text = t;
