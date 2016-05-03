@@ -189,27 +189,56 @@
   }
   
   // -- Event
-  var _ev = function(event, next){
-    var self = this;
-    this.addEventListener(event, function(ev){next.call(self,ev)});
-  }
-  Text.prototype.on = _ev;
-  Window.prototype.on = _ev;
-  Document.prototype.on = _ev;
-  FormData.prototype.on = _ev;
-  FileReader.prototype.on = _ev;
-  XMLHttpRequest.prototype.on = _ev;
-  AudioNode.prototype.on = _ev;
-  AudioContext.prototype.on = _ev;
+  EventTarget.prototype.on = function(event, next, capture){
+    if(this._events == null) this._events = {};
+    if(this._eventsInited == null) this._eventsInited = {};
+    if(this._events[event] == null) this._events[event] = []
+    this._events[event].push(next);
+    if(this._eventsInited[event] !== true) 
+      this.addEventListener(event, function(ev){
+        for(var i = 0; i < this._events[event].length; i++)
+          this._events[event][i].call(this, ev);
+      }, capture);
+    this._eventsInited[event] = true
+  };
+  EventTarget.prototype.off = function(event, next, capture){
+    if(this._events == null) this._events = {};;
+    if(this._events[event] == null || next == null) this._events[event] = [];
+    var index = this._events[event].indexOf(next);
+    if(index != -1) this._events[event].splice(index, 1);
+  };
+  EventTarget.prototype.emit = function(event){
+    if(typeof event == 'string') return this.dispatchEvent(new Event(event));
+    return this.dispatchEvent(event);
+  };
+  EventTarget.prototype.once = function(event, next, capture){
+    var n = function(ev){
+      next.call(self, ev);
+      this.off(event, n, capture);
+    }
+    this.on(event, n, capture);
+  };
 
   // -- Element events
-  Element.prototype.on = function(event, next){
-      switch (event) {
-        case 'mutation':
-          this._observerHandlers.push(next);
-          break;
-        default:
-          _ev.apply(this, arguments);
+  Element.prototype.on = function(event, next, capture){
+    var _on = EventTarget.prototype.on;
+    switch (event) {
+      case 'mutation':
+        this._observerHandlers.push(next);
+        break;
+      default:
+        _on.apply(this, arguments);
+      }
+  }
+  Element.prototype.off = function(event, next, capture){
+    var _on = EventTarget.prototype.off;
+    switch (event) {
+      case 'mutation':
+        var index = this._observerHandlers.indexOf(next);
+        if(index != -1) this._observerHandlers.splice(index, 1);
+        break;
+      default:
+        _off.apply(this, arguments);
       }
   }
 
