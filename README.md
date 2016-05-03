@@ -35,22 +35,22 @@ You can get unique path of `Element` instance by calling `Element.prototype.path
 
 ### Parsing selector string
 
-`gs` is an easy function to parse selector string.
+`ps` is an easy function to parse selector string.
 
 ```js
-  var selector = gs('div#header.white-text');
+  var selector = ps('div#header.white-text');
   //  {
   //    tag: 'div',
   //    id: 'header',
   //    classList: [ 'white-text' ]
   //  }
-  var selector2 = gs('.right.red-text');
+  var selector2 = ps('.right.red-text');
   //  {
   //    tag: false,
   //    id: false,
   //    classList: [ 'right', 'red-text' ]
   //  }
-  var selector3 = gs('div');
+  var selector3 = ps('div');
   //  {
   //    tag: 'div',
   //    id: false,
