@@ -1,7 +1,7 @@
 (function (exports) {
 
   // -- Group selectors
-  var gs = function(selector){
+  var ps = function(selector){
     selector = selector || ''
     var cn = selector.split('.');
     var tag = false;
@@ -23,6 +23,7 @@
           break;
         }
       }
+    if(tag == '#'+id) tag = '';
     return {
       tag: tag,
       id: id,
@@ -33,7 +34,7 @@
   // -- Query functions
   var qq = function(qs, root){
     if(root instanceof Array || root instanceof NodeList){
-      var s = gs(qs);
+      var s = ps(qs);
       var arr = [].slice.call(root);
       var ret = [];
       for (var i = 0; i < arr.length; i++){
@@ -75,7 +76,7 @@
 
   //-- Create elements
   var e = function(selector){
-    var s = gs(selector);
+    var s = ps(selector);
     var el = document.createElement(s.tag||'div');
     if(el.id) el.id = s.id;
     for (var i = 0; i < s.classList.length; i++)
@@ -262,7 +263,7 @@
 
   exports.q = q;
   exports.qq = qq;
-  exports.gs = gs;
+  exports.ps = ps;
   exports.e = e;
   exports.t = t;
 
