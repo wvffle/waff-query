@@ -291,12 +291,8 @@
   }
 
   q.all = qq;
-  q.doc = document;
-  q.body = q.doc.body;
-  var body = function(){
-    q.body = q.doc.body;
-    if(q.body == null) setTimeout(body, 1);
-  }
+  q.doc = function(){ return document }
+  q.body = function(){  return q.doc().body()}
   
   exports.q = exports.query = q;
   exports.qq = qq;
