@@ -207,7 +207,7 @@
     var index = this._events[event].indexOf(next);
     if(index != -1) this._events[event].splice(index, 1);
   };
-  EventTarget.prototype.emit = function(event){
+  EventTarget.prototype.event = function(event){
     if(typeof event == 'string') return this.dispatchEvent(new Event(event));
     return this.dispatchEvent(event);
   };
