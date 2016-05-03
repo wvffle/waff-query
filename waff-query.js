@@ -292,7 +292,7 @@
 
   q.all = qq;
   q.doc = function(){ return document }
-  q.body = function(){  return q.doc().body()}
+  q.body = function(){ return q.doc().body }
   
   exports.q = exports.query = q;
   exports.qq = qq;
