@@ -78,7 +78,7 @@
   var e = function(selector){
     var s = ps(selector);
     var el = document.createElement(s.tag||'div');
-    if(el.id) el.id = s.id;
+    if(s.id) el.id = s.id;
     for (var i = 0; i < s.classList.length; i++)
       el.classList.add(s.classList[i]);
     return el;
