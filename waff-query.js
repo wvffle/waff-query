@@ -1,6 +1,6 @@
 (function (exports) {
 
-  // -- Group selectors
+  // -- Parse selectors
   var ps = function(selector){
     selector = selector || ''
     var cn = selector.split('.');
@@ -261,10 +261,10 @@
     }
   }
 
-  exports.q = q;
-  exports.qq = qq;
-  exports.ps = ps;
-  exports.e = e;
-  exports.t = t;
+  exports.q = exports.query = q;
+  exports.qq = exports.queryAll = qq;
+  exports.ps = exports.parseSelectors = ps;
+  exports.e = exports.element = e;
+  exports.t = exports.text = t;
 
 })(window);
