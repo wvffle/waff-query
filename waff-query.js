@@ -119,7 +119,7 @@
     return e;
   }
   Element.prototype.html = function (html) {
-    if(!html) return this.innerHTML;
+    if(html == null) return this.innerHTML;
     var nodes = this.childNodes;
     for (var i = 0; i < nodes.length; i++)
       nodes[i].remove();
