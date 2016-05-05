@@ -219,6 +219,14 @@
     this.on(event, n, capture);
   };
 
+  Object.prototype.bindEvents = function(){
+    var emitter = e();
+    this.__proto__.on = emitter.on.bind(emitter);
+    this.__proto__.once = emitter.once.bind(emitter);
+    this.__proto__.off = emitter.off.bind(emitter);
+    this.__proto__.event = emitter.event.bind(emitter);
+  }
+
   // -- Element events
   Element.prototype.on = function(event, next, capture){
     var _on = EventTarget.prototype.on;
