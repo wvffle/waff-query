@@ -251,49 +251,29 @@
   }
 
   // -- Changing css
-  Element.prototype.css = function(css, ignoreDefaults){
+  Element.prototype.css = function(css, defaults){
     if(typeof css === 'boolean') return this.css(null, css);
-    if(typeof css === 'string') return this.css(null, ignoreDefaults)[css];
+    if(typeof css === 'string') return this.css(null, defaults)[css];
     if(!css){
       css = getComputedStyle(this);
-      var ret = {};
-      if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
-        if(ignoreDefaults){
-          var defaults = getComputedStyle(e(this.tagName));
-          for (var k in css) {
-            if (!css.hasOwnProperty(k) && isNaN(+k) && css[k] != '' && css[k] != defaults[k]) {
-               ret[k] = css[k];
-            }
-          }
-          return ret;
-        }
-        for (var k in css) {
-          if (!css.hasOwnProperty(k) && isNaN(+k) && css[k] != '') {
-             ret[k] = css[k];
-          }
-        }
+      var res = {};
+      if(defaults){
+        res = css;
       } else {
-        if(ignoreDefaults){
-          var defaults = getComputedStyle(e(this.tagName));
-          for (var k in css) {
-            if (css.hasOwnProperty(k) && isNaN(+k) && css[k] != '' && css[k] != defaults[k]) {
-               ret[k] = css[k];
+        var defaults = getDefaultComputedStyle(this);
+        for (var _k in css) {
+          for (var _d in defaults) {
+            if (_k == _d && css[_k] != defaults[_d]) {
+              res[_k] = css[_k];
             }
-          }
-          return ret;
-        }
-        for (var k in css) {
-          if (css.hasOwnProperty(k) && isNaN(+k) && css[k] != '') {
-             ret[k] = css[k];
           }
         }
       }
-      return ret;
+      return res;
     };
-    var self = this;
     for (var _k in css) {
       if (css.hasOwnProperty(_k)) {
-        self.style[_k] = css[_k]
+        this.style[_k] = css[_k];
       }
     }
   }
