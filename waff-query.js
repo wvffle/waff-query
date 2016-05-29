@@ -213,8 +213,8 @@
   };
   EventTarget.prototype.once = function(event, next, capture){
     var n = function(ev){
-      next.call(self, ev);
       this.off(event, n, capture);
+      next.call(self, ev);
     }
     this.on(event, n, capture);
   };
