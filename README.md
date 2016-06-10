@@ -1,3 +1,6 @@
+[![Bower](https://img.shields.io/bower/v/waff-query.svg?maxAge=3600&style=flat-square)]()
+[![license](https://img.shields.io/github/license/wvffle/waff-query.js.svg?maxAge=3600&style=flat-square)]()
+[![GitHub issues](https://img.shields.io/github/issues/wvffle/waff-query.js.svg?maxAge=3600&style=flat-square)]()
 ### Querying elements
 
 To query an element just use `q(selector)` or `query(selector)`. You can call it either on the `window` or any instance of `Element`.
@@ -56,7 +59,7 @@ You can get unique path of `Element` instance by calling `Element.prototype.path
   //    id: false,
   //    classList: []
   //  }
-  
+
 ```
 
 ### Binding events
@@ -132,7 +135,7 @@ You can also change or get CSS of the element with  `Element.prototype.css(css, 
   })
   var wholeCSS = body.css();
   var onlyModifiedCSS = body.css(true);
-  
+
   var onlyColor = body.css('color');
-  
+
 ```

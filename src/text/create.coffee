@@ -1,0 +1,2 @@
+(text) ->
+   document.createTextNode text

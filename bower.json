@@ -1,20 +1,25 @@
 {
   "name": "waff-query",
-  "version": "0.4.0",
-  "description": "Simple DOM manipulation library",
-  "main": "./waff-query.js",
-  "moduleType": [],
+  "version": "0.5.0",
+  "description": "Simple and fast DOM manipulation library",
+  "main": "dist/waff-query.js",
+  "moduleType": [
+    "globals",
+    "amd",
+    "node"
+  ],
   "keywords": [
-    "query",
-    "DOM"
+    "waff",
+    "waff-query",
+    "DOM",
+    "query"
   ],
   "authors": [
     "wvffle"
   ],
   "license": "MIT",
-  "homepage": "wvffle.net",
+  "homepage": "https://github.com/wvffle/waff-query.js#readme",
   "ignore": [
-    "node_modules",
     "bower_components"
   ]
 }

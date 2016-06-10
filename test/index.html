@@ -1,0 +1,96 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+  <style>
+    .workspace {
+      display: none;
+    }
+    .green{
+      color: rgb(0, 255, 0);
+    }
+    .red{
+      color: rgb(255, 0, 0);
+    }
+  </style>
+</head>
+<body>
+  <div class="workspace"></div>
+  <div id="mocha"></div>
+
+  <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+  <script src="http://chaijs.com/chai.js"></script>
+  <script src="../dist/waff-query.js"></script>
+  <script>
+    var workspace = {
+      reset: function(){
+        var ce = document.createElement.bind(document);
+        this.clear()
+        var workspace = this.element;
+        for (var i = 0; i < 3; i++) {
+          var div = ce('div')
+          div.classList.add('red');
+          div.innerHTML = 'r'+(1+i);
+          workspace.appendChild(div);
+        }
+        var text = ce('div');
+        text.id = 'text'
+        text.innerHTML = 'wow'
+        workspace.appendChild(text);
+        for (var i = 0; i < 3; i++) {
+          var div = ce('div');
+          div.classList.add('green');
+          div.innerHTML = 'g'+(1+i);
+          workspace.appendChild(div);
+        }
+        var span = ce('span');
+        span.classList.add('red');
+        span.innerHTML = 'r4';
+        workspace.appendChild(span);
+        var span = ce('span');
+        span.classList.add('green');
+        workspace.appendChild(span);
+        var h1 = ce('h1');
+        h1.innerHTML = 'Yaaaaaaaaaaaaay';
+        span.appendChild(h1);
+      },
+      clear: function () {
+        this.element.innerHTML = '';
+      },
+      element: document.querySelector('.workspace')
+    }
+  </script>
+  <script>mocha.setup('bdd')</script>
+  <script> var expect = chai.expect; </script>
+<!-- {{ -->
+<script src="../test/element/after.js"></script>
+<script src="../test/element/append.js"></script>
+<script src="../test/element/before.js"></script>
+<script src="../test/element/create.js"></script>
+<script src="../test/element/css.js"></script>
+<script src="../test/element/html.js"></script>
+<script src="../test/element/path.js"></script>
+<script src="../test/element/prepend.js"></script>
+<script src="../test/element/query.js"></script>
+<script src="../test/element/text.js"></script>
+<script src="../test/event/emit.js"></script>
+<script src="../test/event/extend.js"></script>
+<script src="../test/event/observe.js"></script>
+<script src="../test/event/off.js"></script>
+<script src="../test/event/on.js"></script>
+<script src="../test/event/once.js"></script>
+<script src="../test/query/all.js"></script>
+<script src="../test/query/first.js"></script>
+<script src="../test/selector/parse.js"></script>
+<script src="../test/text/create.js"></script>
+<script src="../test/text/get.js"></script>
+<script src="../test/text/set.js"></script>
+<!-- }} -->
+  <script>
+    mocha.checkLeaks();
+    mocha.globals([]);
+    mocha.run();
+  </script>
+</body>
+</html>
