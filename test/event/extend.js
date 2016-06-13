@@ -1,4 +1,4 @@
-describe('Object.extendEvents()', function() {
+describe('Event.extend()', function() {
 
   it('should attach event', function () {
     workspace.reset()

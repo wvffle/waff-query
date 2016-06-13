@@ -1,3 +1,13 @@
+###
+# waff-query v0.5.1
+# https://github.com/wvffle/waff-query.js#readme
+#
+# Copyright wvffle.net
+# Released under the MIT license
+#
+# Date: 2016-06-13
+###
+
 ((coffeFix, waff) ->
   if typeof module != 'undefined'
     module.exports = waff()
@@ -199,6 +209,17 @@
         if isNaN +prop
           res[prop] = style
   		res
+  Element::attr = (attr, value) ->
+    if typeof attr == 'object'
+      for key, val of attr
+        @setAttribute key, val
+      return @
+    else
+      if value?
+        @setAttribute attr, value
+      else
+        return @getAttribute attr
+    @
 
   Element::observe = ->
     unless @_observer?

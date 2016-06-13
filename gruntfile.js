@@ -50,13 +50,22 @@ module.exports = function(grunt) {
       }
     },
     usebanner: {
-      waff: {
+      js: {
         options: {
           banner: '/*\n * <%= pkg.name %> v<%= pkg.version %>\n * <%= pkg.homepage %>\n *\n * Copyright wvffle.net\n * Released under the MIT license\n *\n * Date: <%= grunt.template.today("yyyy-mm-dd") %>\n */\n',
           linebreak: true
         },
         files: {
           src: [ 'dist/waff-query.js' ]
+        }
+      },
+      coffee: {
+        options: {
+          banner: '###\n# <%= pkg.name %> v<%= pkg.version %>\n# <%= pkg.homepage %>\n#\n# Copyright wvffle.net\n# Released under the MIT license\n#\n# Date: <%= grunt.template.today("yyyy-mm-dd") %>\n###\n',
+          linebreak: true
+        },
+        files: {
+          src: [ 'dist/waff-query.coffee' ]
         }
       }
     },
