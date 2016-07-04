@@ -1,11 +1,11 @@
 /*
- * waff-query v0.5.1
+ * waff-query v0.5.2
  * https://github.com/wvffle/waff-query.js#readme
  *
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-06-13
+ * Date: 2016-07-04
  */
 
 (function(coffeFix, waff) {

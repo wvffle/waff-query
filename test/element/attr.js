@@ -1,4 +1,4 @@
-describe('Element.before()', function() {
+describe('Element.attr()', function() {
 
   it('should set [name="passed"] of span.green', function () {
     workspace.reset()
