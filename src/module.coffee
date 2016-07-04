@@ -2,7 +2,7 @@
   if typeof module != 'undefined'
     module.exports = waff()
   else if typeof define == 'function' and typeof define.amd == 'object'
-    define waff
+    define 'waff-query', [ ], waff
   else
     for key, value of waff()
       @[key] = value
