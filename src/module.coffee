@@ -1,14 +1,17 @@
 ((coffeFix, waff) ->
   if typeof module != 'undefined'
     module.exports = waff()
+    console.log '[waff-query]', 'nodejs found'
   else if typeof define == 'function' and typeof define.amd == 'object'
     define 'waff-query', [ ], waff
+    console.log '[waff-query]', 'amd found'
   else
     for key, value of waff()
       @[key] = value
   return
 ) null, ->
   waff =
+    waff: '<%= version %>'
     ps: <%= include('selector/parse', '    ') %>
 
     qq: <%= include('query/all', '    ') %>

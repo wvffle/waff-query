@@ -1,6 +1,6 @@
 {
   "name": "waff-query",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Simple and fast DOM manipulation library",
   "main": "dist/waff-query.js",
   "moduleType": [
@@ -15,11 +15,14 @@
     "query"
   ],
   "authors": [
-    "wvffle"
+    "wvffle <casper@wvffle.net>"
   ],
   "license": "MIT",
   "homepage": "https://github.com/wvffle/waff-query.js#readme",
   "ignore": [
     "bower_components"
-  ]
+  ],
+  "devDependencies": {
+    "requirejs": "^2.2.0"
+  }
 }

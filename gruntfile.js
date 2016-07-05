@@ -20,7 +20,8 @@ module.exports = function(grunt) {
                 res = res.join('\n'+indent);
               }
               return res;
-            }
+            },
+            version: package.version
           }
         }
       },
@@ -103,9 +104,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
 
   grunt.registerTask('tests', function () {
-    index = grunt.file.read('test/index.html')
-    files = grunt.file.expand('test/**/*.js')
+    index = grunt.file.read('test/index.html');
+    modules = grunt.file.expand(['test/module/**/*.js']);
+    files = grunt.file.expand(['test/**/*.js', '!test/module/**/*.js']);
     res = '<!-- {{ -->\n'
+    for (var i = 0; i < modules.length; i++) {
+      res += '<script src="../'+modules[i]+'"></script>\n'
+    }
     for (var i = 0; i < files.length; i++) {
       file = files[i]
       res += '<script src="../'+file+'"></script>\n'

@@ -1,24 +1,27 @@
 ###
-# waff-query v0.5.2
+# waff-query v0.5.3
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-07-04
+# Date: 2016-07-05
 ###
 
 ((coffeFix, waff) ->
   if typeof module != 'undefined'
     module.exports = waff()
+    console.log '[waff-query]', 'nodejs found'
   else if typeof define == 'function' and typeof define.amd == 'object'
-    define waff
+    define 'waff-query', [ ], waff
+    console.log '[waff-query]', 'amd found'
   else
     for key, value of waff()
       @[key] = value
   return
 ) null, ->
   waff =
+    waff: '0.5.3'
     ps: (selector) ->
       tag = false
       id = false

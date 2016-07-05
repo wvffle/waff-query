@@ -22,6 +22,7 @@
   <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
   <script src="http://chaijs.com/chai.js"></script>
   <script src="../dist/waff-query.js"></script>
+  <script src="../bower_components/requirejs/require.js"></script>
   <script>
     var workspace = {
       reset: function(){
@@ -64,6 +65,7 @@
   <script>mocha.setup('bdd')</script>
   <script> var expect = chai.expect; </script>
 <!-- {{ -->
+<script src="../test/module/module.js"></script>
 <script src="../test/element/after.js"></script>
 <script src="../test/element/append.js"></script>
 <script src="../test/element/attr.js"></script>
