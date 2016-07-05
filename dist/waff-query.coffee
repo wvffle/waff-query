@@ -17,11 +17,12 @@
     console.log '[waff-query]', 'amd found'
   else
     for key, value of waff()
-      @[key] = value
+      if key != 'version'
+        @[key] = value
   return
 ) null, ->
   waff =
-    waff: '0.5.3'
+    version: '0.5.3'
     ps: (selector) ->
       tag = false
       id = false
@@ -101,6 +102,8 @@
 
   waff.element = waff.e
   waff.text = waff.t
+
+  waff.waff = waff
 
   # Register prototypes
   Element::qq = (qs) ->

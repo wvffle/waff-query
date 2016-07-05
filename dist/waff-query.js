@@ -20,13 +20,15 @@
     ref = waff();
     for (key in ref) {
       value = ref[key];
-      this[key] = value;
+      if (key !== 'version') {
+        this[key] = value;
+      }
     }
   }
 })(null, function() {
   var waff;
   waff = {
-    waff: '0.5.3',
+    version: '0.5.3',
     ps: function(selector) {
       var _id, _tag, c, cn, i, id, j, len, tag;
       tag = false;
@@ -139,6 +141,7 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
+  waff.waff = waff;
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
   };
