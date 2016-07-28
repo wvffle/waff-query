@@ -3,6 +3,10 @@
   "version": "0.5.3",
   "description": "Simple and fast DOM manipulation library",
   "main": "dist/waff-query.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wvffle/waff-query.js.git"
+  },
   "moduleType": [
     "globals",
     "amd",

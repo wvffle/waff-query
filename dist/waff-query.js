@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-07-05
+ * Date: 2016-07-28
  */
 
 (function(coffeFix, waff) {
@@ -28,7 +28,6 @@
 })(null, function() {
   var waff;
   waff = {
-    version: '0.5.3',
     ps: function(selector) {
       var _id, _tag, c, cn, i, id, j, len, tag;
       tag = false;
@@ -142,6 +141,7 @@
   waff.element = waff.e;
   waff.text = waff.t;
   waff.waff = waff;
+  waff.waff.version = '0.5.3';
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
   };
@@ -272,12 +272,22 @@
     return path.join(' > ');
   };
   Element.prototype.css = function(css, values) {
-    var prop, res, style;
+    var camel, dash, prop, res, style;
+    camel = function(str) {
+      return str.replace(/(\-[a-z])/g, function(m) {
+        return m.toUpperCase().slice(1);
+      });
+    };
+    dash = function(str) {
+      return str.replace(/([A-Z])/g, function() {
+        return "-" + m.toLowerCase();
+      });
+    };
     if (typeof css === 'string') {
       if (values == null) {
-        return this.css()[css];
+        return this.css()[camel(css)];
       }
-      this.style[css] = values;
+      this.style[camel(css)] = values;
     }
     if (typeof css === 'object') {
       for (prop in css) {

@@ -12,7 +12,6 @@
   return
 ) null, ->
   waff =
-    version: '<%= version %>'
     ps: <%= include('selector/parse', '    ') %>
 
     qq: <%= include('query/all', '    ') %>
@@ -32,6 +31,7 @@
   waff.text = waff.t
 
   waff.waff = waff
+  waff.waff.version = '<%= version %>'
 
   # Register prototypes
   <%= include('element/query', '  ') %>

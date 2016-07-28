@@ -8,6 +8,7 @@ requirejs.config({
 describe('module', function() {
 
   it('should be in global scope', function () {
+    expect( global.waff ).to.not.be.null;
     expect( global.waff.version ).to.not.be.null;
   });
 
