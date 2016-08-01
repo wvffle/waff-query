@@ -113,9 +113,19 @@
       }
       return ret;
     },
-    q: function(qs, root) {
-      return this.qq(qs, root)[0] || null;
-    },
+    q: (function() {
+
+      /**
+       * Query single elemnt
+       * @param {String} qs - Query Selector
+       * @param {Element} [root] - Element to perform query on
+       */
+      var query;
+      query = function(qs, root) {
+        return this.qq(qs, root)[0] || null;
+      };
+      return query;
+    })(),
     e: function(selector) {
       var c, el, j, len, ref, s;
       s = this.ps(selector);

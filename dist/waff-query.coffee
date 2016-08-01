@@ -79,8 +79,17 @@
         if element instanceof Element
           ret.push element
       ret
-    q: (qs, root) ->
-      @qq(qs, root)[0] or null
+    q: (->
+      ###*
+      # Query single elemnt
+      # @param {String} qs - Query Selector
+      # @param {Element} [root] - Element to perform query on
+      ###
+      query = (qs, root) ->
+        @qq(qs, root)[0] or null
+    
+      query
+    )()
 
     e: (selector) ->
       s = @ps selector
