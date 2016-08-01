@@ -119,13 +119,13 @@
        * @func waff#query
        * @alias waff#q
        * @desc Query single elemnt
-       * @version 0.1.0
        * @param {String} qs - Query Selector
        * @param {Element} [root] - Element to perform query on
        * @example
        * // returns body element
        * waff.query('body')
        * @returns {Element|null} - Returns found element or null
+       * @playground
        */
       var query;
       query = function(qs, root) {
