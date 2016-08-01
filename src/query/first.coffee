@@ -1,7 +1,6 @@
 (->
   ###*
-  # @function waff.query
-  # Query single elemnt
+  # @function waff.query.Query single elemnt
   # @param {String} qs - Query Selector
   # @param {Element} [root] - Element to perform query on
   ###
