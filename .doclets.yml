@@ -1,4 +1,4 @@
-dir: src
+dir: dist
 packageJson: package.json 
 branches: 
   - master
