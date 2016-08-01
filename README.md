@@ -133,8 +133,7 @@ You can also change or get CSS of the element with  `Element.prototype.css(css, 
     color: 'red',
     background: 'rgba(0,0,0,'+Math.random()+')'
   })
-  var wholeCSS = body.css();
-  var onlyModifiedCSS = body.css(true);
+  var bodyCSS = body.css();
 
   var onlyColor = body.css('color');
 
