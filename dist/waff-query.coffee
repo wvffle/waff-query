@@ -1,11 +1,11 @@
 ###
-# waff-query v0.5.4
+# waff-query v0.5.3
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-08-02
+# Date: 2016-07-28
 ###
 
 ((coffeFix, waff) ->
@@ -103,7 +103,7 @@
   waff.text = waff.t
 
   waff.waff = waff
-  waff.waff.version = '0.5.4'
+  waff.waff.version = '0.5.3'
 
   # Register prototypes
   Element::qq = (qs) ->
@@ -210,11 +210,11 @@
   
     if typeof css == 'string'
       unless values?
-        return @css()[camel css] || @css()[dash css]
+        return @css()[camel css]
       @style[camel css] = values
     if typeof css == 'object'
       for prop, style of css
-     		@style[camel prop] = style
+     		@style[prop] = style
       return @
     unless css?
       css = getComputedStyle @

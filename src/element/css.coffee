@@ -9,11 +9,11 @@ Element::css = (css, values) ->
 
   if typeof css == 'string'
     unless values?
-      return @css()[camel css] || @css()[dash css]
+      return @css()[camel css]
     @style[camel css] = values
   if typeof css == 'object'
     for prop, style of css
-   		@style[camel prop] = style
+   		@style[prop] = style
     return @
   unless css?
     css = getComputedStyle @
