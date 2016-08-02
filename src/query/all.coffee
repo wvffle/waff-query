@@ -1,6 +1,6 @@
 (->
   ###*
-  # @func waff#query#all
+  # @func waff#query.all
   # @alias waff#q#all
   # @alias waff#qq
   # @desc Query all elemnt
