@@ -3,10 +3,10 @@
   # @func waff#post
   # @desc Performs XHR POST
   # @param {String} url - URL to get
-  # @param {Dictionary} data - POST data
-  # @param {Dictionary} options
-  # * {Boolean} json - determines if response is json
-  # * {Boolean} form - determines if data should be converted to FormData or just pure JSON
+  # @param {Object} data - POST data
+  # @param {Object} options
+  # * `json` (boolean) - determines if response is json. Default - `false`
+  # * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true`
   # @example
   # waff.post('http://httpbin.org/post', { waffle_id: 666 })
   #   .then(function(){
