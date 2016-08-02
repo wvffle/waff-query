@@ -63,56 +63,75 @@
         classList: cn
       };
     },
-    qq: function(qs, root) {
-      var arr, c, element, j, k, l, len, len1, len2, pass, ref, ret, s;
-      if (root instanceof Array || root instanceof NodeList) {
-        s = this.ps(qs);
-        arr = [].slice.call(root);
-        ret = [];
-        for (j = 0, len = arr.length; j < len; j++) {
-          element = arr[j];
-          pass = true;
-          if (element instanceof Element) {
-            if (pass === true && s.tag !== false && element.tagName.toLowerCase() !== s.tag.toLowerCase()) {
-              pass = false;
-            }
-            if (pass === true && s.id !== false && element.id !== s.id) {
-              pass = false;
-            }
-            if (pass === true) {
-              ref = s.classList;
-              for (k = 0, len1 = ref.length; k < len1; k++) {
-                c = ref[k];
-                if (!element.classList.contains(c)) {
-                  pass = false;
+    qq: (function() {
+
+      /**
+       * @func waff#query#all
+       * @alias waff#q#all
+       * @alias waff#qq
+       * @desc Query all elemnt
+       * @param {String} qs - Query Selector
+       * @param {Element|Array|NodeList} [root] - Element to perform query on
+       * @example
+       * // AMD users
+       * waff.query.all('body')
+       * // Non AMD users
+       * query.all('body')
+       * @returns {Element[]} - Returns found elements
+       */
+      var queryAll;
+      queryAll = function(qs, root) {
+        var arr, c, element, j, k, l, len, len1, len2, pass, ref, ret, s;
+        if (root instanceof Array || root instanceof NodeList) {
+          s = this.ps(qs);
+          arr = [].slice.call(root);
+          ret = [];
+          for (j = 0, len = arr.length; j < len; j++) {
+            element = arr[j];
+            pass = true;
+            if (element instanceof Element) {
+              if (pass === true && s.tag !== false && element.tagName.toLowerCase() !== s.tag.toLowerCase()) {
+                pass = false;
+              }
+              if (pass === true && s.id !== false && element.id !== s.id) {
+                pass = false;
+              }
+              if (pass === true) {
+                ref = s.classList;
+                for (k = 0, len1 = ref.length; k < len1; k++) {
+                  c = ref[k];
+                  if (!element.classList.contains(c)) {
+                    pass = false;
+                  }
                 }
               }
+              if (pass === true) {
+                ret.push(element);
+              }
             }
-            if (pass === true) {
-              ret.push(element);
-            }
+          }
+          return ret;
+        }
+        if (qs instanceof Element) {
+          return [qs];
+        }
+        root = root instanceof Element ? root : document;
+        if (qs instanceof NodeList || qs instanceof Array) {
+          arr = [].slice.call(qs);
+        } else {
+          arr = [].slice.call(root.querySelectorAll(qs));
+        }
+        ret = [];
+        for (l = 0, len2 = arr.length; l < len2; l++) {
+          element = arr[l];
+          if (element instanceof Element) {
+            ret.push(element);
           }
         }
         return ret;
-      }
-      if (qs instanceof Element) {
-        return [qs];
-      }
-      root = root instanceof Element ? root : document;
-      if (qs instanceof NodeList || qs instanceof Array) {
-        arr = [].slice.call(qs);
-      } else {
-        arr = [].slice.call(root.querySelectorAll(qs));
-      }
-      ret = [];
-      for (l = 0, len2 = arr.length; l < len2; l++) {
-        element = arr[l];
-        if (element instanceof Element) {
-          ret.push(element);
-        }
-      }
-      return ret;
-    },
+      };
+      return queryAll;
+    })(),
     q: (function() {
 
       /**
@@ -120,12 +139,13 @@
        * @alias waff#q
        * @desc Query single elemnt
        * @param {String} qs - Query Selector
-       * @param {Element} [root] - Element to perform query on
+       * @param {Element|Array|NodeList} [root] - Element to perform query on
        * @example
-       * // returns body element
+       * // AMD users
        * waff.query('body')
+       * // Non AMD users
+       * query('body')
        * @returns {Element|null} - Returns found element or null
-       * @playground
        */
       var query;
       query = function(qs, root) {
