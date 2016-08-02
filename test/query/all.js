@@ -16,6 +16,14 @@ describe('qq()', function() {
     expect( [].slice.call(document.querySelectorAll('span.green')) ).to.deep.equal( qq('.green', document.querySelectorAll('span')) );
   });
 
+  it('should find all span.green and dir.red', function () {
+    workspace.reset()
+    var arr = [].slice.call(document.querySelectorAll('span.green'))
+    var arr2 = [].slice.call(document.querySelectorAll('div.red'))
+    arr.push.apply(arr, arr2)
+    expect( arr ).to.deep.equal( qq(['span.green', 'div.red']) );
+  });
+
 });
 
 describe('query.all()', function() {

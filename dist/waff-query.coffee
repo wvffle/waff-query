@@ -1,5 +1,5 @@
 ###
-# waff-query v0.5.4
+# waff-query v0.5.5
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
@@ -16,15 +16,18 @@
     define 'waff-query', [ ], waff
     console.log '[waff-query]', 'amd found'
   else
-    for key, value of waff()
+    waff = waff()
+    for key, value of waff
       if key != 'version'
         @[key] = value
-  return
+      else
+        @waff = waff
+        @waff[key] = value
 ) null, ->
   waff =
     ps: (->
       ###*
-      # @func waff#parseSelector
+      # @func waff#selector.parse
       # @alias waff#ps
       # @desc Parse CSS selectors
       # @param {String} cs - CSS Selector
@@ -73,7 +76,7 @@
       # @alias waff#q#all
       # @alias waff#qq
       # @desc Query all elemnt
-      # @param {String} qs - Query Selector
+      # @param {String|String[]} qs - Query Selector
       # @param {Element|Array|NodeList} [root] - Element to perform query on
       # @example
       # // AMD users
@@ -107,6 +110,13 @@
     
         if qs instanceof NodeList or qs instanceof Array
           arr = [].slice.call qs
+          _arr = []
+          for qs in arr
+            if qs instanceof Element
+              _arr.push qs
+            else
+              _arr.push.apply(_arr, root.querySelectorAll qs)
+          arr = _arr
         else
           arr = [].slice.call root.querySelectorAll qs
         ret = []
@@ -145,9 +155,9 @@
       # @param {String} cs - CSS Selector
       # @example
       # // AMD users
-      # waff.element.create('.white-text')
+      # waff.element('.white-text')
       # // Non AMD users
-      # element.create('.white-text')
+      # element('.white-text')
       # @returns {Element} - Returns new element
       ###
       create = (cs) ->
@@ -188,8 +198,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff.waff = waff
-  waff.waff.version = '0.5.4'
+  waff.version = '0.5.5'
 
   # Register prototypes
   Element::qq = (qs) ->

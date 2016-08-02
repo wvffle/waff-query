@@ -64,7 +64,7 @@ You can get unique path of `Element` instance by calling `Element.prototype.path
 
 ### Binding events
 Well, there is a nice replacement for `EventTarget.prototype.addEventListener(event, function, capture)` which is actually `EventTarget.prototype.on(event, function, capture)`
-You can also remove events by `EventTarget.prototype.off(event, function)`, call them once using `EventTarget.prototype.once(event, function, capture)`
+You can also remove events by `EventTarget.prototype.off(event, function)`, catch them once using `EventTarget.prototype.once(event, function, capture)`
 ```js
   var logo = q('.logo');
   logo.on('click', function(ev){

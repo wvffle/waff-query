@@ -18,7 +18,7 @@ describe('module', function() {
   it('should be requireable by amd', function (done) {
     requirejs(['waff-query'], function(waffq){
       expect( waffq ).to.not.be.null;
-      expect( waffq.waff.version ).to.not.be.null;
+      expect( waffq.version ).to.not.be.null;
       done()
     });
     this.timeout(666);

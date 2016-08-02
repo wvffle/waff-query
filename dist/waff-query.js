@@ -1,5 +1,5 @@
 /*
- * waff-query v0.5.4
+ * waff-query v0.5.5
  * https://github.com/wvffle/waff-query.js#readme
  *
  * Copyright wvffle.net
@@ -9,21 +9,26 @@
  */
 
 (function(coffeFix, waff) {
-  var key, ref, value;
+  var key, results, value;
   if (typeof module !== 'undefined') {
     module.exports = waff();
-    console.log('[waff-query]', 'nodejs found');
+    return console.log('[waff-query]', 'nodejs found');
   } else if (typeof define === 'function' && typeof define.amd === 'object') {
     define('waff-query', [], waff);
-    console.log('[waff-query]', 'amd found');
+    return console.log('[waff-query]', 'amd found');
   } else {
-    ref = waff();
-    for (key in ref) {
-      value = ref[key];
+    waff = waff();
+    results = [];
+    for (key in waff) {
+      value = waff[key];
       if (key !== 'version') {
-        this[key] = value;
+        results.push(this[key] = value);
+      } else {
+        this.waff = waff;
+        results.push(this.waff[key] = value);
       }
     }
+    return results;
   }
 })(null, function() {
   var waff;
@@ -31,7 +36,7 @@
     ps: (function() {
 
       /**
-       * @func waff#parseSelector
+       * @func waff#selector.parse
        * @alias waff#ps
        * @desc Parse CSS selectors
        * @param {String} cs - CSS Selector
@@ -92,7 +97,7 @@
        * @alias waff#q#all
        * @alias waff#qq
        * @desc Query all elemnt
-       * @param {String} qs - Query Selector
+       * @param {String|String[]} qs - Query Selector
        * @param {Element|Array|NodeList} [root] - Element to perform query on
        * @example
        * // AMD users
@@ -103,7 +108,7 @@
        */
       var queryAll;
       queryAll = function(qs, root) {
-        var arr, c, element, j, k, l, len, len1, len2, pass, ref, ret, s;
+        var _arr, arr, c, element, j, k, l, len, len1, len2, len3, o, pass, ref, ret, s;
         if (root instanceof Array || root instanceof NodeList) {
           s = this.ps(qs);
           arr = [].slice.call(root);
@@ -140,12 +145,22 @@
         root = root instanceof Element ? root : document;
         if (qs instanceof NodeList || qs instanceof Array) {
           arr = [].slice.call(qs);
+          _arr = [];
+          for (l = 0, len2 = arr.length; l < len2; l++) {
+            qs = arr[l];
+            if (qs instanceof Element) {
+              _arr.push(qs);
+            } else {
+              _arr.push.apply(_arr, root.querySelectorAll(qs));
+            }
+          }
+          arr = _arr;
         } else {
           arr = [].slice.call(root.querySelectorAll(qs));
         }
         ret = [];
-        for (l = 0, len2 = arr.length; l < len2; l++) {
-          element = arr[l];
+        for (o = 0, len3 = arr.length; o < len3; o++) {
+          element = arr[o];
           if (element instanceof Element) {
             ret.push(element);
           }
@@ -184,9 +199,9 @@
        * @param {String} cs - CSS Selector
        * @example
        * // AMD users
-       * waff.element.create('.white-text')
+       * waff.element('.white-text')
        * // Non AMD users
-       * element.create('.white-text')
+       * element('.white-text')
        * @returns {Element} - Returns new element
        */
       var create;
@@ -235,8 +250,7 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff.waff = waff;
-  waff.waff.version = '0.5.4';
+  waff.version = '0.5.5';
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
   };

@@ -1,6 +1,6 @@
 (->
   ###*
-  # @func waff#parseSelector
+  # @func waff#selector.parse
   # @alias waff#ps
   # @desc Parse CSS selectors
   # @param {String} cs - CSS Selector

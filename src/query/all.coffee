@@ -4,7 +4,7 @@
   # @alias waff#q#all
   # @alias waff#qq
   # @desc Query all elemnt
-  # @param {String} qs - Query Selector
+  # @param {String|String[]} qs - Query Selector
   # @param {Element|Array|NodeList} [root] - Element to perform query on
   # @example
   # // AMD users
@@ -38,6 +38,13 @@
 
     if qs instanceof NodeList or qs instanceof Array
       arr = [].slice.call qs
+      _arr = []
+      for qs in arr
+        if qs instanceof Element
+          _arr.push qs
+        else
+          _arr.push.apply(_arr, root.querySelectorAll qs)
+      arr = _arr
     else
       arr = [].slice.call root.querySelectorAll qs
     ret = []

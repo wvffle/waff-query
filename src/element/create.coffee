@@ -6,9 +6,9 @@
   # @param {String} cs - CSS Selector
   # @example
   # // AMD users
-  # waff.element.create('.white-text')
+  # waff.element('.white-text')
   # // Non AMD users
-  # element.create('.white-text')
+  # element('.white-text')
   # @returns {Element} - Returns new element
   ###
   create = (cs) ->

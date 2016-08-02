@@ -6,10 +6,13 @@
     define 'waff-query', [ ], waff
     console.log '[waff-query]', 'amd found'
   else
-    for key, value of waff()
+    waff = waff()
+    for key, value of waff
       if key != 'version'
         @[key] = value
-  return
+      else
+        @waff = waff
+        @waff[key] = value
 ) null, ->
   waff =
     ps: <%= include('selector/parse', '    ') %>
@@ -31,8 +34,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff.waff = waff
-  waff.waff.version = '<%= version %>'
+  waff.version = '<%= version %>'
 
   # Register prototypes
   <%= include('element/query', '  ') %>
