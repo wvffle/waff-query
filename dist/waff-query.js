@@ -28,41 +28,63 @@
 })(null, function() {
   var waff;
   waff = {
-    ps: function(selector) {
-      var _id, _tag, c, cn, i, id, j, len, tag;
-      tag = false;
-      id = false;
-      selector = selector || '';
-      cn = selector.split('.');
-      if (selector[0] !== '.') {
-        tag = cn[0];
-      }
-      cn.splice(0, 1);
-      if (tag === '') {
+    ps: (function() {
+
+      /**
+       * @func waff#parseSelector
+       * @alias waff#ps
+       * @desc Parse CSS selectors
+       * @param {String} cs - CSS Selector
+       * @example
+       * // AMD users
+       * waff.selector.parse('div#header.white-text')
+       * // Non AMD users
+       * selector.parse('div#header.white-text')
+       * //  {
+       * //    tag: 'div',
+       * //    id: 'header',
+       * //    classList: [ 'white-text' ]
+       * //  }
+       * @returns {Object} - Returns parsed selector
+       */
+      var parseSelector;
+      parseSelector = function(cs) {
+        var _id, _tag, c, cn, i, id, j, len, selector, tag;
         tag = false;
-      }
-      if (tag !== false && -1 !== tag.indexOf('#')) {
-        _tag = tag.split('#');
-        tag = _tag[0];
-        id = _tag[1];
-      }
-      if (id === false) {
-        for (i = j = 0, len = cn.length; j < len; i = ++j) {
-          c = cn[i];
-          _id = c.split('#');
-          if (_id[1]) {
-            id = _id[1];
-            cn[i] = _id[0];
-            break;
+        id = false;
+        selector = cs || '';
+        cn = selector.split('.');
+        if (selector[0] !== '.') {
+          tag = cn[0];
+        }
+        cn.splice(0, 1);
+        if (tag === '') {
+          tag = false;
+        }
+        if (tag !== false && -1 !== tag.indexOf('#')) {
+          _tag = tag.split('#');
+          tag = _tag[0];
+          id = _tag[1];
+        }
+        if (id === false) {
+          for (i = j = 0, len = cn.length; j < len; i = ++j) {
+            c = cn[i];
+            _id = c.split('#');
+            if (_id[1]) {
+              id = _id[1];
+              cn[i] = _id[0];
+              break;
+            }
           }
         }
-      }
-      return {
-        tag: tag,
-        id: id,
-        classList: cn
+        return {
+          tag: tag,
+          id: id,
+          classList: cn
+        };
       };
-    },
+      return parseSelector;
+    })(),
     qq: (function() {
 
       /**
@@ -153,25 +175,61 @@
       };
       return query;
     })(),
-    e: function(selector) {
-      var c, el, j, len, ref, s;
-      s = this.ps(selector);
-      el = document.createElement(s.tag || 'div');
-      if (s.id) {
-        el.id = s.id;
-      }
-      ref = s.classList;
-      for (j = 0, len = ref.length; j < len; j++) {
-        c = ref[j];
-        el.classList.add(c);
-      }
-      return el;
-    },
-    t: function(text) {
-      return document.createTextNode(text);
-    }
+    e: (function() {
+
+      /**
+       * @func waff#element
+       * @alias waff#e
+       * @desc Creates element by CSS selector
+       * @param {String} cs - CSS Selector
+       * @example
+       * // AMD users
+       * waff.element.create('.white-text')
+       * // Non AMD users
+       * element.create('.white-text')
+       * @returns {Element} - Returns new element
+       */
+      var create;
+      create = function(cs) {
+        var c, el, j, len, ref, s;
+        s = this.ps(cs);
+        el = document.createElement(s.tag || 'div');
+        if (s.id) {
+          el.id = s.id;
+        }
+        ref = s.classList;
+        for (j = 0, len = ref.length; j < len; j++) {
+          c = ref[j];
+          el.classList.add(c);
+        }
+        return el;
+      };
+      return create;
+    })(),
+    t: (function() {
+
+      /**
+       * @func waff#text
+       * @alias waff#t
+       * @desc Creates TextNode
+       * @param {String} t - Text
+       * @example
+       * // AMD users
+       * waff.text('.white-text')
+       * // Non AMD users
+       * text('.white-text')
+       * @returns {TextNode} - Returns new TextNode
+       */
+      var text;
+      text = function(t) {
+        return document.createTextNode(t);
+      };
+      return text;
+    })()
   };
-  waff.parseSelector = waff.ps;
+  waff.selector = {
+    parse: waff.ps
+  };
   waff.query = waff.q;
   waff.q.all = waff.qq;
   waff.query.all = waff.qq;

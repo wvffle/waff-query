@@ -69,7 +69,7 @@ describe('ps()', function() {
 describe('parseSelector()', function() {
 
   it('should be same as ps()', function () {
-    expect( parseSelector ).to.be.equal( ps );
+    expect( selector.parse ).to.be.equal( ps );
   });
 
 });

@@ -22,29 +22,50 @@
   return
 ) null, ->
   waff =
-    ps: (selector) ->
-      tag = false
-      id = false
-      selector = selector or ''
-      cn = selector.split '.'
-      tag = cn[0] if selector[0] != '.'
-      cn.splice 0, 1
-      tag = false if tag == ''
-      if tag != false and -1 != tag.indexOf '#'
-        _tag = tag.split '#'
-        tag = _tag[0]
-        id = _tag[1]
-      if id == false
-        for c, i in cn
-          _id = c.split '#'
-          if _id[1]
-            id = _id[1]
-            cn[i] = _id[0]
-            break
+    ps: (->
+      ###*
+      # @func waff#parseSelector
+      # @alias waff#ps
+      # @desc Parse CSS selectors
+      # @param {String} cs - CSS Selector
+      # @example
+      # // AMD users
+      # waff.selector.parse('div#header.white-text')
+      # // Non AMD users
+      # selector.parse('div#header.white-text')
+      # //  {
+      # //    tag: 'div',
+      # //    id: 'header',
+      # //    classList: [ 'white-text' ]
+      # //  }
+      # @returns {Object} - Returns parsed selector
+      ###
     
-      tag: tag
-      id: id
-      classList: cn
+      parseSelector = (cs) ->
+        tag = false
+        id = false
+        selector = cs or ''
+        cn = selector.split '.'
+        tag = cn[0] if selector[0] != '.'
+        cn.splice 0, 1
+        tag = false if tag == ''
+        if tag != false and -1 != tag.indexOf '#'
+          _tag = tag.split '#'
+          tag = _tag[0]
+          id = _tag[1]
+        if id == false
+          for c, i in cn
+            _id = c.split '#'
+            if _id[1]
+              id = _id[1]
+              cn[i] = _id[0]
+              break
+    
+        tag: tag
+        id: id
+        classList: cn
+      parseSelector
+    )()
 
     qq: (->
       ###*
@@ -116,18 +137,49 @@
       query
     )()
 
-    e: (selector) ->
-      s = @ps selector
-      el = document.createElement s.tag or 'div'
-      el.id = s.id if s.id
-      for c in s.classList
-        el.classList.add c
-      el
-    t: (text) ->
-       document.createTextNode text
+    e: (->
+      ###*
+      # @func waff#element
+      # @alias waff#e
+      # @desc Creates element by CSS selector
+      # @param {String} cs - CSS Selector
+      # @example
+      # // AMD users
+      # waff.element.create('.white-text')
+      # // Non AMD users
+      # element.create('.white-text')
+      # @returns {Element} - Returns new element
+      ###
+      create = (cs) ->
+        s = @ps cs
+        el = document.createElement s.tag or 'div'
+        el.id = s.id if s.id
+        for c in s.classList
+          el.classList.add c
+        el
+      create
+    )()
+    t: (->
+      ###*
+      # @func waff#text
+      # @alias waff#t
+      # @desc Creates TextNode
+      # @param {String} t - Text
+      # @example
+      # // AMD users
+      # waff.text('.white-text')
+      # // Non AMD users
+      # text('.white-text')
+      # @returns {TextNode} - Returns new TextNode
+      ###
+      text = (t) ->
+         document.createTextNode t
+      text
+    )()
 
   # Apply full names
-  waff.parseSelector = waff.ps
+  waff.selector =
+    parse: waff.ps
 
   waff.query = waff.q
   waff.q.all = waff.qq

@@ -21,7 +21,8 @@
     t: <%= include('text/create', '    ') %>
 
   # Apply full names
-  waff.parseSelector = waff.ps
+  waff.selector =
+    parse: waff.ps
 
   waff.query = waff.q
   waff.q.all = waff.qq
