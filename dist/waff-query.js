@@ -18,14 +18,14 @@
     return console.log('[waff-query]', 'amd found');
   } else {
     waff = waff();
+    this.waff = waff;
     results = [];
     for (key in waff) {
       value = waff[key];
-      if (key !== 'version') {
+      if (key[0] !== '_') {
         results.push(this[key] = value);
       } else {
-        this.waff = waff;
-        results.push(this.waff[key] = value);
+        results.push(this.waff[key.slice(1)] = value);
       }
     }
     return results;
@@ -250,7 +250,103 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff.version = '0.5.5';
+  waff._version = '0.5.5';
+  waff._get = (function() {
+
+    /**
+     * @func waff#get
+     * @desc Performs XHR GET
+     * @param {String} url - URL to get
+     * @param {Boolean} json - determines if response is json
+     * @example
+     * waff.get('https://wvffle.net')
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {Promise} - Returns promise of request
+     */
+    var get;
+    get = function(url, json) {
+      return new Promise(function(f, r) {
+        var req;
+        req = new XMLHttpRequest;
+        req.open('get', url, true);
+        req.on('readystatechange', function(e) {
+          if (req.readyState === 4) {
+            if (req.status >= 200 && req.status < 400) {
+              return f((json === true ? JSON.parse(req.responseText) : req.responseText), req);
+            }
+          }
+        });
+        req.on('error', function(e) {
+          return r({
+            status: req.status,
+            error: req.statusText
+          }, req);
+        });
+        req.overrideMimeType('text/plain');
+        return req.send();
+      });
+    };
+    return get;
+  })();
+  waff._post = (function() {
+
+    /**
+     * @func waff#post
+     * @desc Performs XHR POST
+     * @param {String} url - URL to get
+     * @param {Dictionary} data - POST data
+     * @param {Dictionary} options
+     * * {Boolean} json - determines if response is json
+     * * {Boolean} form - determines if data should be converted to FormData or just pure JSON
+     * @example
+     * waff.post('http://httpbin.org/post', { waffle_id: 666 })
+     *   .then(function(){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {Promise} - Returns promise of request
+     */
+    var get;
+    get = function(url, data, options) {
+      return new Promise(function(f, r) {
+        var form, key, req, value;
+        options || (options = {});
+        req = new XMLHttpRequest;
+        req.open('post', url, true);
+        req.on('readystatechange', function(e) {
+          if (req.readyState === 4) {
+            if (req.status >= 200 && req.status < 400) {
+              return f((options.json === true ? JSON.parse(req.responseText) : req.responseText), req);
+            }
+          }
+        });
+        req.on('error', function(e) {
+          return r({
+            status: req.status,
+            error: req.statusText
+          }, req);
+        });
+        req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+        if ((options.form == null) || options.form === true) {
+          form = new FormData;
+          for (key in data) {
+            value = data[key];
+            form.append(key, value);
+          }
+          data = form;
+        }
+        return req.send(data);
+      });
+    };
+    return get;
+  })();
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
   };
