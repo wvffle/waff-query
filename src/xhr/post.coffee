@@ -2,7 +2,7 @@
   ###*
   # @func waff#post
   # @desc Performs XHR POST
-  # @param {String} url - URL to get
+  # @param {String} url - URL to post
   # @param {Object} data - POST data
   # @param {Object} options
   # * `json` (boolean) - determines if response is json. Default - `false`
@@ -16,10 +16,10 @@
   #   .catch(function(err){
   #
   #   })
-  # @returns {Promise} - Returns promise of request
+  # @returns {waff.Promise} - Returns promise of request
   ###
   post = (url, data = {}, options = {}) ->
-    new Promise (f, r) ->
+    new waff._Promise (f, r) ->
       req = new XMLHttpRequest
       req.open 'post', url, true
       req.timeout = options.timeout or 2000
@@ -30,20 +30,20 @@
             if options.json == true
               res = JSON.parse res
             req.res = res
-            f req
+            f.call req, res
       req.on 'error', (e) ->
         req.res =
           status: req.status
           error: req.statusText
-        r req
+        r.call req, res
       req.on 'timeout', (e) ->
         req.res =
           status: req.status
           error: req.statusText
-        r req
+        r.call req, res
 
-      req.setRequestHeader 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'
       if !options.form? or options.form == true
+        req.setRequestHeader 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'
         form = new FormData
         for key, value of data
           if data.hasOwnProperty key

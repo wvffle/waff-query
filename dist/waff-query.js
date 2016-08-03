@@ -1,5 +1,5 @@
 /*
- * waff-query v0.5.5
+ * waff-query v0.5.6
  * https://github.com/wvffle/waff-query.js#readme
  *
  * Copyright wvffle.net
@@ -275,7 +275,7 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '0.5.5';
+  waff._version = '0.5.6';
   waff._get = (function() {
 
     /**
@@ -293,14 +293,14 @@
      *   .catch(function(err){
      *
      *   })
-     * @returns {Promise} - Returns promise of request
+     * @returns {waff.Promise} - Returns promise of request
      */
     var get;
     get = function(url, options) {
       if (options == null) {
         options = {};
       }
-      return new Promise(function(f, r) {
+      return new waff._Promise(function(f, r) {
         var req;
         req = new XMLHttpRequest;
         req.open('get', url, true);
@@ -314,7 +314,7 @@
                 res = JSON.parse(res);
               }
               req.res = res;
-              return f(req);
+              return f.call(req, res);
             }
           }
         });
@@ -323,14 +323,14 @@
             status: req.status,
             error: req.statusText
           };
-          return r(req);
+          return r.call(req, res);
         });
         req.on('timeout', function(e) {
           req.res = {
             status: req.status,
             error: req.statusText
           };
-          return r(req);
+          return r.call(req, res);
         });
         req.overrideMimeType('text/plain');
         return req.send();
@@ -343,7 +343,7 @@
     /**
      * @func waff#post
      * @desc Performs XHR POST
-     * @param {String} url - URL to get
+     * @param {String} url - URL to post
      * @param {Object} data - POST data
      * @param {Object} options
      * * `json` (boolean) - determines if response is json. Default - `false`
@@ -357,7 +357,7 @@
      *   .catch(function(err){
      *
      *   })
-     * @returns {Promise} - Returns promise of request
+     * @returns {waff.Promise} - Returns promise of request
      */
     var post;
     post = function(url, data, options) {
@@ -367,7 +367,7 @@
       if (options == null) {
         options = {};
       }
-      return new Promise(function(f, r) {
+      return new waff._Promise(function(f, r) {
         var form, key, req, value;
         req = new XMLHttpRequest;
         req.open('post', url, true);
@@ -381,7 +381,7 @@
                 res = JSON.parse(res);
               }
               req.res = res;
-              return f(req);
+              return f.call(req, res);
             }
           }
         });
@@ -390,17 +390,17 @@
             status: req.status,
             error: req.statusText
           };
-          return r(req);
+          return r.call(req, res);
         });
         req.on('timeout', function(e) {
           req.res = {
             status: req.status,
             error: req.statusText
           };
-          return r(req);
+          return r.call(req, res);
         });
-        req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         if ((options.form == null) || options.form === true) {
+          req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
           form = new FormData;
           for (key in data) {
             value = data[key];
@@ -414,6 +414,64 @@
       });
     };
     return post;
+  })();
+  waff._Promise = (function() {
+
+    /**
+     * @class waff.Promise waff.Promise
+     * @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
+     */
+    var Promise;
+    Promise = (function() {
+      function Promise(executor) {
+        this._then = [];
+        this._catch = [];
+        executor(this.resolve(this), this.reject(this));
+      }
+
+      Promise.prototype.then = function(handler, errHandler) {
+        this._then.push(handler);
+        if (errHandler != null) {
+          this._catch.push(errHandler);
+        }
+        return this;
+      };
+
+      Promise.prototype["catch"] = function(handler) {
+        this._catch.push(handler);
+        return this;
+      };
+
+      Promise.prototype.resolve = function(self) {
+        return function() {
+          var handler, j, len, ref, results;
+          ref = self._then;
+          results = [];
+          for (j = 0, len = ref.length; j < len; j++) {
+            handler = ref[j];
+            results.push(handler.apply(this, arguments));
+          }
+          return results;
+        };
+      };
+
+      Promise.prototype.reject = function(self) {
+        return function() {
+          var handler, j, len, ref, results;
+          ref = self._then;
+          results = [];
+          for (j = 0, len = ref.length; j < len; j++) {
+            handler = ref[j];
+            results.push(handler.apply(this, arguments));
+          }
+          return results;
+        };
+      };
+
+      return Promise;
+
+    })();
+    return Promise;
   })();
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
@@ -635,8 +693,11 @@
     }
     return this;
   };
-  EventTarget.prototype.on = function(event, next, capture) {
-    var _this, self;
+  EventTarget.prototype.on = function(name, next, capture) {
+    var _this, event, j, len, self;
+    if (!(name instanceof Array)) {
+      name = [name];
+    }
     self = this.emitter != null ? this.emitter : this;
     _this = this.emitter != null ? this.obj : this;
     if (self._events == null) {
@@ -645,89 +706,120 @@
     if (self._eventsInited == null) {
       self._eventsInited = {};
     }
-    if (self._events[event] == null) {
-      self._events[event] = [];
+    for (j = 0, len = name.length; j < len; j++) {
+      event = name[j];
+      if (self._events[event] == null) {
+        self._events[event] = [];
+      }
+      self._events[event].push(next);
+      if (self._eventsInited[event] !== true) {
+        self.addEventListener(event, (function(ev) {
+          var handler, k, len1, ref, results;
+          if (ev.waffData != null) {
+            ev = ev.waffData;
+          }
+          ref = self._events[event];
+          results = [];
+          for (k = 0, len1 = ref.length; k < len1; k++) {
+            handler = ref[k];
+            results.push(handler.call(_this, ev));
+          }
+          return results;
+        }), capture);
+      }
+      self._eventsInited[event] = true;
     }
-    self._events[event].push(next);
-    if (self._eventsInited[event] !== true) {
-      self.addEventListener(event, (function(ev) {
-        var handler, j, len, ref, results;
-        if (ev.waffData != null) {
-          ev = ev.waffData;
-        }
-        ref = self._events[event];
-        results = [];
-        for (j = 0, len = ref.length; j < len; j++) {
-          handler = ref[j];
-          results.push(handler.call(_this, ev));
-        }
-        return results;
-      }), capture);
-    }
-    self._eventsInited[event] = true;
     return self;
   };
-  Element.prototype.on = function(event, next, capture) {
-    var _on;
+  Element.prototype.on = function(name, next, capture) {
+    var _on, event, j, len;
+    if (!(name instanceof Array)) {
+      name = [name];
+    }
     _on = EventTarget.prototype.on;
-    switch (event) {
-      case 'mutation':
-        this._observerHandlers.push(next);
-        break;
-      default:
-        _on.apply(this, arguments);
+    for (j = 0, len = name.length; j < len; j++) {
+      event = name[j];
+      switch (event) {
+        case 'mutation':
+          this._observerHandlers.push(next);
+          break;
+        default:
+          _on.apply(this, arguments);
+      }
     }
     return this;
   };
-  EventTarget.prototype.off = function(event, next, capture) {
-    var detach, self;
+  EventTarget.prototype.off = function(name, next, capture) {
+    var detach, event, j, len, self;
+    if (!(name instanceof Array)) {
+      name = [name];
+    }
     self = this.emitter != null ? this.emitter : this;
     if (self._events == null) {
       self._events = {};
     }
-    if (self._events[event] == null) {
-      self._events[event] = [];
+    for (j = 0, len = name.length; j < len; j++) {
+      event = name[j];
+      if (self._events[event] == null) {
+        self._events[event] = [];
+      }
+      if (next == null) {
+        self._events[event] = [];
+      }
+      detach = (function(_this) {
+        return function(next) {
+          var index;
+          index = self._events[event].indexOf(next);
+          if (index !== -1) {
+            self._events[event].splice(index, 1);
+            return detach(next);
+          }
+        };
+      })(this);
+      detach(next);
     }
-    if (next == null) {
-      self._events[event] = [];
-    }
-    detach = (function(_this) {
-      return function(next) {
-        var index;
-        index = self._events[event].indexOf(next);
-        if (index !== -1) {
-          self._events[event].splice(index, 1);
-          return detach(next);
-        }
-      };
-    })(this);
-    detach(next);
     return self;
   };
-  Element.prototype.off = function(event, next, capture) {
-    var _off, index;
+  Element.prototype.off = function(name, next, capture) {
+    var _off, event, index, j, len;
+    if (!(name instanceof Array)) {
+      name = [name];
+    }
     _off = EventTarget.prototype.off;
-    switch (event) {
-      case 'mutation':
-        index = this._observerHandlers.indexOf(next);
-        if (index !== -1) {
-          this._observerHandlers.splice(index, 1);
-        }
-        break;
-      default:
-        _off.apply(this, arguments);
+    for (j = 0, len = name.length; j < len; j++) {
+      event = name[j];
+      switch (event) {
+        case 'mutation':
+          index = this._observerHandlers.indexOf(next);
+          if (index !== -1) {
+            this._observerHandlers.splice(index, 1);
+          }
+          break;
+        default:
+          _off.apply(this, [event, next, capture]);
+      }
     }
     return this;
   };
-  EventTarget.prototype.once = function(event, next, capture) {
-    var _this, n, self;
+  EventTarget.prototype.once = function(name, next, capture) {
+    var _this, event, fn, j, len, self;
+    if (!(name instanceof Array)) {
+      name = [name];
+    }
     self = this.emitter != null ? this.emitter : this;
     _this = this.emitter != null ? this.obj : this;
-    n = function(ev) {
-      next.call(_this, ev);
-      return this.off(event, n, capture);
+    fn = function(event) {
+      var n;
+      n = function(ev) {
+        next.call(_this, ev);
+        return self.off(event, n, capture);
+      };
+      return self.on(event, n, capture);
     };
-    self.on(event, n, capture);
+    for (j = 0, len = name.length; j < len; j++) {
+      event = name[j];
+      fn(event);
+    }
     return self;
   };
   EventTarget.prototype.emit = function(event, data) {

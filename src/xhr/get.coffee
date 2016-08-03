@@ -14,10 +14,10 @@
   #   .catch(function(err){
   #
   #   })
-  # @returns {Promise} - Returns promise of request
+  # @returns {waff.Promise} - Returns promise of request
   ###
   get = (url, options = {}) ->
-    new Promise (f, r) ->
+    new waff._Promise (f, r) ->
       req = new XMLHttpRequest
       req.open 'get', url, true
       req.timeout = options.timeout or 2000
@@ -28,17 +28,17 @@
             if options.json == true
               res = JSON.parse res
             req.res = res
-            f req
+            f.call req, res
       req.on 'error', (e) ->
         req.res =
           status: req.status
           error: req.statusText
-        r req
+        r.call req, res
       req.on 'timeout', (e) ->
         req.res =
           status: req.status
           error: req.statusText
-        r req
+        r.call req, res
       req.overrideMimeType 'text/plain'
       req.send()
   get

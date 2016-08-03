@@ -48,8 +48,11 @@
   waff.text = waff.t
 
   waff._version = '<%= version %>'
+
   waff._get = <%= include('xhr/get', '  ') %>
   waff._post = <%= include('xhr/post', '  ') %>
+
+  waff._Promise = <%= include('classes/promise', '  ') %>
 
   # Register prototypes
   <%= include('element/query', '  ') %>

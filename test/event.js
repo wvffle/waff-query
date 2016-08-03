@@ -134,6 +134,24 @@ describe('event', function() {
       span.dispatchEvent(new Event('ev'));
     });
 
+    it('should attach many events', function (done) {
+      var span = document.createElement('span');
+      var e = 0
+      this.timeout(100)
+      span.on(['ev', 'ev2'], function(){
+        expect( this ).to.be.equal( span )
+        e++
+        if(e === 2){
+          done()
+          span.remove()
+        }
+      })
+
+      expect( span._events.ev ).to.have.lengthOf( 2 )
+      span.dispatchEvent(new Event('ev'));
+      span.dispatchEvent(new Event('ev2'));
+    });
+
   });
 
   context('EventTarget.once()', function() {
@@ -141,9 +159,28 @@ describe('event', function() {
     it('should attach handler for one call', function () {
       var span = document.createElement('span');
       var missed_calls = 0;
-      var handler = function(){ expect( this ).to.be.equal( span ); missed_calls++ };
+      var handler = function(){
+        expect( this ).to.be.equal( span );
+        missed_calls++
+      };
 
       span.once('ev', handler);
+      span.dispatchEvent(new Event('ev'));
+      expect( missed_calls ).to.be.equal( 1 )
+      span.dispatchEvent(new Event('ev'));
+      expect( missed_calls ).to.be.equal( 1 )
+      span.remove()
+    });
+
+    it('should attach many handlers for one call', function () {
+      var span = document.createElement('span');
+      var missed_calls = 0;
+      var handler = function(){
+        expect( this ).to.be.equal( span );
+        missed_calls++
+      };
+
+      span.once(['ev', 'ev2'], handler);
       span.dispatchEvent(new Event('ev'));
       expect( missed_calls ).to.be.equal( 1 )
       span.dispatchEvent(new Event('ev'));

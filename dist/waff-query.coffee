@@ -1,5 +1,5 @@
 ###
-# waff-query v0.5.5
+# waff-query v0.5.6
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
@@ -211,7 +211,8 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff._version = '0.5.5'
+  waff._version = '0.5.6'
+
   waff._get = (->
     ###*
     # @func waff#get
@@ -228,10 +229,10 @@
     #   .catch(function(err){
     #
     #   })
-    # @returns {Promise} - Returns promise of request
+    # @returns {waff.Promise} - Returns promise of request
     ###
     get = (url, options = {}) ->
-      new Promise (f, r) ->
+      new waff._Promise (f, r) ->
         req = new XMLHttpRequest
         req.open 'get', url, true
         req.timeout = options.timeout or 2000
@@ -242,17 +243,17 @@
               if options.json == true
                 res = JSON.parse res
               req.res = res
-              f req
+              f.call req, res
         req.on 'error', (e) ->
           req.res =
             status: req.status
             error: req.statusText
-          r req
+          r.call req, res
         req.on 'timeout', (e) ->
           req.res =
             status: req.status
             error: req.statusText
-          r req
+          r.call req, res
         req.overrideMimeType 'text/plain'
         req.send()
     get
@@ -261,7 +262,7 @@
     ###*
     # @func waff#post
     # @desc Performs XHR POST
-    # @param {String} url - URL to get
+    # @param {String} url - URL to post
     # @param {Object} data - POST data
     # @param {Object} options
     # * `json` (boolean) - determines if response is json. Default - `false`
@@ -275,10 +276,10 @@
     #   .catch(function(err){
     #
     #   })
-    # @returns {Promise} - Returns promise of request
+    # @returns {waff.Promise} - Returns promise of request
     ###
     post = (url, data = {}, options = {}) ->
-      new Promise (f, r) ->
+      new waff._Promise (f, r) ->
         req = new XMLHttpRequest
         req.open 'post', url, true
         req.timeout = options.timeout or 2000
@@ -289,20 +290,20 @@
               if options.json == true
                 res = JSON.parse res
               req.res = res
-              f req
+              f.call req, res
         req.on 'error', (e) ->
           req.res =
             status: req.status
             error: req.statusText
-          r req
+          r.call req, res
         req.on 'timeout', (e) ->
           req.res =
             status: req.status
             error: req.statusText
-          r req
+          r.call req, res
   
-        req.setRequestHeader 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'
         if !options.form? or options.form == true
+          req.setRequestHeader 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'
           form = new FormData
           for key, value of data
             if data.hasOwnProperty key
@@ -310,6 +311,41 @@
           data = form
         req.send data
     post
+  )()
+
+  waff._Promise = (->
+    ###*
+    # @class waff.Promise waff.Promise
+    # @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
+    ###
+    class Promise
+      constructor: (executor) ->
+        @_then = []
+        @_catch = []
+  
+        executor @resolve(@), @reject(@)
+  
+      then: (handler, errHandler) ->
+        @_then.push handler
+        if errHandler?
+          @_catch.push errHandler
+        @
+  
+      catch: (handler) ->
+        @_catch.push handler
+        @
+  
+      resolve: (self) ->
+        ->
+          for handler in self._then
+            handler.apply @, arguments
+  
+      reject: (self) ->
+        ->
+          for handler in self._then
+            handler.apply @, arguments
+  
+    Promise
   )()
 
   # Register prototypes
@@ -465,64 +501,92 @@
       @_observer.disconnect()
       delete @_observer
     @
-  EventTarget::on = (event, next, capture) ->
+  EventTarget::on = (name, next, capture) ->
+    unless name instanceof Array
+      name = [ name ]
+  
     self = if @emitter? then @emitter else @
     _this = if @emitter? then @obj else @
+  
     self._events = {} unless self._events?
     self._eventsInited = {} unless self._eventsInited?
-    self._events[event] = [] unless self._events[event]?
   
-    self._events[event].push next
-    if self._eventsInited[event] != true
-      self.addEventListener event, ((ev) ->
-        ev = ev.waffData if ev.waffData?
-        for handler in self._events[event]
-          handler.call _this, ev
-      ), capture
-    self._eventsInited[event] = true
+    for event in name
+      self._events[event] = [] unless self._events[event]?
+  
+      self._events[event].push next
+      if self._eventsInited[event] != true
+        self.addEventListener event, ((ev) ->
+          ev = ev.waffData if ev.waffData?
+          for handler in self._events[event]
+            handler.call _this, ev
+        ), capture
+      self._eventsInited[event] = true
     self
   
-  Element::on = (event, next, capture) ->
+  Element::on = (name, next, capture) ->
+    unless name instanceof Array
+      name = [ name ]
+  
     _on = EventTarget::on
-    switch event
-      when 'mutation'
-        @_observerHandlers.push next
-      else
-        _on.apply this, arguments
+  
+    for event in name
+      switch event
+        when 'mutation'
+          @_observerHandlers.push next
+        else
+          _on.apply this, arguments
     @
-  EventTarget::off = (event, next, capture) ->
+  EventTarget::off = (name, next, capture) ->
+    unless name instanceof Array
+      name = [ name ]
+  
     self = if @emitter? then @emitter else @
     self._events = {} unless self._events?
-    self._events[event] = [] unless self._events[event]?
-    self._events[event] = [] unless next?
   
-    detach = (next) =>
-      index = self._events[event].indexOf next
-      if index != -1
-        self._events[event].splice index, 1
-        detach next
-    detach next
+    for event in name
+      self._events[event] = [] unless self._events[event]?
+      self._events[event] = [] unless next?
+  
+      detach = (next) =>
+        index = self._events[event].indexOf next
+        if index != -1
+          self._events[event].splice index, 1
+          detach next
+      detach next
     self
   
-  Element::off = (event, next, capture) ->
+  Element::off = (name, next, capture) ->
+    unless name instanceof Array
+      name = [ name ]
+  
     _off = EventTarget::off
-    switch event
-      when 'mutation'
-        index = @_observerHandlers.indexOf(next)
-        if index != -1
-          @_observerHandlers.splice index, 1
-      else
-        _off.apply this, arguments
+  
+    for event in name
+      switch event
+        when 'mutation'
+          index = @_observerHandlers.indexOf next
+          if index != -1
+            @_observerHandlers.splice index, 1
+        else
+          _off.apply this, [event, next, capture]
     @
-  EventTarget::once = (event, next, capture) ->
+  EventTarget::once = (name, next, capture) ->
+    unless name instanceof Array
+      name = [ name ]
+  
     self = if @emitter? then @emitter else @
     _this = if @emitter? then @obj else @
   
-    n = (ev) ->
-      next.call _this, ev
-      @off event, n, capture
+    for event in name
+      ((event)->
+        n = (ev) ->
+          next.call _this, ev
+          self.off event, n, capture
   
-    self.on event, n, capture
+        self.on event, n, capture
+      )(event)
+  
     self
   EventTarget::emit = (event, data) ->
     self = if @emitter? then @emitter else @
