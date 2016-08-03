@@ -1,6 +1,6 @@
 (->
   ###*
-  # @class waff.Promise waff.Promise
+  # @class waff.Promise Promise
   # @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
   ###
   class Promise
