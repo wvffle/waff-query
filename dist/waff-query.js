@@ -418,7 +418,7 @@
   waff._Promise = (function() {
 
     /**
-     * @class waff.Promise Promise
+     * @class waff.Promise
      * @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
      */
     var Promise;
