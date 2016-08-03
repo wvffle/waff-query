@@ -1,3 +1,0 @@
-describe('waff.get', function() {
-
-});

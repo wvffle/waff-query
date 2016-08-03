@@ -1,19 +1,32 @@
-((coffeFix, waff) ->
+((coffeFix, _waff) ->
   if typeof module != 'undefined'
-    module.exports = waff()
-    console.log '[waff-query]', 'nodejs found'
+    waff = {}
+    for key, value of _waff
+      if _waff.hasOwnProperty key
+        unless key[0] == '_'
+          waff[key] = value
+        else
+          waff[key.slice 1] = value
+    module.exports = waff
   else if typeof define == 'function' and typeof define.amd == 'object'
-    define 'waff-query', [ ], waff
-    console.log '[waff-query]', 'amd found'
+    define 'waff-query', [], ->
+      waff = {}
+      for key, value of _waff
+        if _waff.hasOwnProperty key
+          unless key[0] == '_'
+            waff[key] = value
+          else
+            waff[key.slice 1] = value
+      waff
   else
-    waff = waff()
-    @waff = waff
-    for key, value of waff
-      unless key[0] == '_'
-        @[key] = value
-      else
-        @waff[key.slice 1] = value
-) null, ->
+    @waff = _waff
+    for key, value of _waff
+      if _waff.hasOwnProperty key
+        unless key[0] == '_'
+          @[key] = value
+        else
+          @waff[key.slice 1] = value
+) null, (->
   waff =
     ps: <%= include('selector/parse', '    ') %>
 
@@ -61,3 +74,4 @@
   <%= include('text/get', '  ') %>
 
   waff
+)()

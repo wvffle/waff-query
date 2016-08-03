@@ -5,25 +5,38 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-08-02
+# Date: 2016-08-03
 ###
 
-((coffeFix, waff) ->
+((coffeFix, _waff) ->
   if typeof module != 'undefined'
-    module.exports = waff()
-    console.log '[waff-query]', 'nodejs found'
+    waff = {}
+    for key, value of _waff
+      if _waff.hasOwnProperty key
+        unless key[0] == '_'
+          waff[key] = value
+        else
+          waff[key.slice 1] = value
+    module.exports = waff
   else if typeof define == 'function' and typeof define.amd == 'object'
-    define 'waff-query', [ ], waff
-    console.log '[waff-query]', 'amd found'
+    define 'waff-query', [], ->
+      waff = {}
+      for key, value of _waff
+        if _waff.hasOwnProperty key
+          unless key[0] == '_'
+            waff[key] = value
+          else
+            waff[key.slice 1] = value
+      waff
   else
-    waff = waff()
-    @waff = waff
-    for key, value of waff
-      unless key[0] == '_'
-        @[key] = value
-      else
-        @waff[key.slice 1] = value
-) null, ->
+    @waff = _waff
+    for key, value of _waff
+      if _waff.hasOwnProperty key
+        unless key[0] == '_'
+          @[key] = value
+        else
+          @waff[key.slice 1] = value
+) null, (->
   waff =
     ps: (->
       ###*
@@ -204,7 +217,9 @@
     # @func waff#get
     # @desc Performs XHR GET
     # @param {String} url - URL to get
-    # @param {Boolean} json - determines if response is json
+    # @param {Object} options
+    # * `json` (boolean) - determines if response is json. Default - `false`
+    # * `timeout` (number) - determines timeout in ms. Default - `2000`
     # @example
     # waff.get('https://wvffle.net')
     #   .then(function(res){
@@ -215,16 +230,29 @@
     #   })
     # @returns {Promise} - Returns promise of request
     ###
-    get = (url, json) ->
+    get = (url, options = {}) ->
       new Promise (f, r) ->
         req = new XMLHttpRequest
         req.open 'get', url, true
+        req.timeout = options.timeout or 2000
         req.on 'readystatechange', (e) ->
           if req.readyState == 4
             if req.status >= 200 && req.status < 400
-              f (if json == true then JSON.parse req.responseText else req.responseText), req
+              res = req.responseText
+              if options.json == true
+                res = JSON.parse res
+              req.res = res
+              f req
         req.on 'error', (e) ->
-          r { status: req.status, error: req.statusText }, req
+          req.res =
+            status: req.status
+            error: req.statusText
+          r req
+        req.on 'timeout', (e) ->
+          req.res =
+            status: req.status
+            error: req.statusText
+          r req
         req.overrideMimeType 'text/plain'
         req.send()
     get
@@ -238,9 +266,10 @@
     # @param {Object} options
     # * `json` (boolean) - determines if response is json. Default - `false`
     # * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true`
+    # * `timeout` (number) - determines timeout in ms. Default - `2000`
     # @example
     # waff.post('http://httpbin.org/post', { waffle_id: 666 })
-    #   .then(function(){
+    #   .then(function(res){
     #
     #   })
     #   .catch(function(err){
@@ -248,26 +277,39 @@
     #   })
     # @returns {Promise} - Returns promise of request
     ###
-    get = (url, data, options) ->
+    post = (url, data = {}, options = {}) ->
       new Promise (f, r) ->
-        options or= {}
         req = new XMLHttpRequest
         req.open 'post', url, true
+        req.timeout = options.timeout or 2000
         req.on 'readystatechange', (e) ->
           if req.readyState == 4
             if req.status >= 200 && req.status < 400
-              f (if options.json == true then JSON.parse req.responseText else req.responseText), req
+              res = req.responseText
+              if options.json == true
+                res = JSON.parse res
+              req.res = res
+              f req
         req.on 'error', (e) ->
-          r { status: req.status, error: req.statusText }, req
+          req.res =
+            status: req.status
+            error: req.statusText
+          r req
+        req.on 'timeout', (e) ->
+          req.res =
+            status: req.status
+            error: req.statusText
+          r req
   
         req.setRequestHeader 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'
         if !options.form? or options.form == true
           form = new FormData
           for key, value of data
-            form.append key, value
+            if data.hasOwnProperty key
+              form.append key, value
           data = form
         req.send data
-    get
+    post
   )()
 
   # Register prototypes
@@ -370,7 +412,7 @@
       str.replace /(\-[a-z])/g, (m) ->
         m.toUpperCase().slice 1
     dash = (str) ->
-      str.replace /([A-Z])/g, ->
+      str.replace /([A-Z])/g, (m) ->
         "-" + m.toLowerCase()
   
     if typeof css == 'string'
@@ -492,7 +534,7 @@
     event.waffThis = _this
     self.dispatchEvent  event
   Event.extend = (object)->
-    emitter = object._emitter = e()
+    emitter = object._emitter = waff.e()
     object.on = emitter.on.bind {emitter: emitter, obj: object} unless object.on?
     object.once = emitter.once.bind {emitter: emitter, obj: object} unless object.once?
     object.off = emitter.off.bind {emitter: emitter, obj: object} unless object.off?
@@ -506,3 +548,4 @@
     @nodeValue
 
   waff
+)()

@@ -4,7 +4,7 @@ Element::css = (css, values) ->
     str.replace /(\-[a-z])/g, (m) ->
       m.toUpperCase().slice 1
   dash = (str) ->
-    str.replace /([A-Z])/g, ->
+    str.replace /([A-Z])/g, (m) ->
       "-" + m.toLowerCase()
 
   if typeof css == 'string'

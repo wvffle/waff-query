@@ -1,4 +1,5 @@
-var global = this;
+var global = global || this;
+
 requirejs.config({
   paths: {
     'waff-query': '../dist/waff-query'
