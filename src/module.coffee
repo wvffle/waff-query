@@ -29,7 +29,7 @@
 ) null, (->
   ###*
   # @namespace waff
-  # @desc ok
+  # @desc
   ###
   waff =
     ps: <%= include('selector/parse', '    ') %>
