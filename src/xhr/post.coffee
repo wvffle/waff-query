@@ -5,9 +5,9 @@
   # @param {String} url - URL to post
   # @param {Object} data - POST data
   # @param {Object} options
-  # * `json` (boolean) - determines if response is json. Default - `false`
-  # * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true`
-  # * `timeout` (number) - determines timeout in ms. Default - `2000`
+  # `json` (boolean) - determines if response is json. Default - `false` <br>
+  # `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true` <br>
+  # `timeout` (number) - determines timeout in ms. Default - `2000`
   # @example
   # waff.post('http://httpbin.org/post', { waffle_id: 666 })
   #   .then(function(res){

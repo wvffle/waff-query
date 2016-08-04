@@ -5,10 +5,7 @@
   # @desc Creates element by CSS selector
   # @param {String} cs - CSS Selector
   # @example
-  # // AMD users
   # waff.element('.white-text')
-  # // Non AMD users
-  # element('.white-text')
   # @returns {Element} - Returns new element
   ###
   create = (cs) ->

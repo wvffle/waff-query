@@ -1,16 +1,15 @@
 (->
   ###*
   # @func waff#query.all
-  # @alias waff#q#all
+  # @alias waff#q.all
   # @alias waff#qq
-  # @desc Query all elemnt
+  # @desc Query all elements
   # @param {String|String[]} qs - Query Selector
   # @param {Element|Array|NodeList} [root] - Element to perform query on
   # @example
-  # // AMD users
-  # waff.query.all('body')
-  # // Non AMD users
-  # query.all('body')
+  # var divs = waff.query.all('div')
+  # var divs = waff.qq('div')
+  # var divs = waff.q.all('div')
   # @returns {Element[]} - Returns found elements
   ###
   queryAll = (qs, root) ->

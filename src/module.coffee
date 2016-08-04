@@ -27,6 +27,10 @@
         else
           @waff[key.slice 1] = value
 ) null, (->
+  ###*
+  # @namespace waff
+  # @desc ok
+  ###
   waff =
     ps: <%= include('selector/parse', '    ') %>
 
@@ -53,6 +57,7 @@
   waff._post = <%= include('xhr/post', '  ') %>
 
   waff._Promise = <%= include('classes/promise', '  ') %>
+  waff._EventEmitter = <%= include('classes/eventemitter', '  ') %>
 
   # Register prototypes
   <%= include('element/query', '  ') %>

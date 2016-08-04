@@ -1,5 +1,16 @@
+###*
+# @function
+# @typicalname Element.prototype.css
+# @desc Get or set  elements CSS
+# @param {String|Object} attr - attribute name or object with values
+# @param {String} [value] - attribute value
+# @example
+# waff.element('body').css() // Object containing all properties
+# waff.element('body').css('background-color') // Only `background-color`
+# waff.element('body').css('background-color', '#f00') // sets `background-color` to #f00
+# waff.element('body').css({'background-color': '#f00', 'color', '#ffa500'}) // sets `background-color` to #f00 and `color` to #ffa500
+###
 Element::css = (css, values) ->
-
   camel = (str) ->
     str.replace /(\-[a-z])/g, (m) ->
       m.toUpperCase().slice 1

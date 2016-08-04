@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-08-03
+ * Date: 2016-08-04
  */
 
 (function(coffeFix, _waff) {
@@ -56,6 +56,11 @@
     return results;
   }
 })(null, (function() {
+
+  /**
+   * @namespace waff
+   * @desc ok
+   */
   var waff;
   waff = {
     ps: (function() {
@@ -119,16 +124,15 @@
 
       /**
        * @func waff#query.all
-       * @alias waff#q#all
+       * @alias waff#q.all
        * @alias waff#qq
-       * @desc Query all elemnt
+       * @desc Query all elements
        * @param {String|String[]} qs - Query Selector
        * @param {Element|Array|NodeList} [root] - Element to perform query on
        * @example
-       * // AMD users
-       * waff.query.all('body')
-       * // Non AMD users
-       * query.all('body')
+       * var divs = waff.query.all('div')
+       * var divs = waff.qq('div')
+       * var divs = waff.q.all('div')
        * @returns {Element[]} - Returns found elements
        */
       var queryAll;
@@ -199,14 +203,12 @@
       /**
        * @func waff#query
        * @alias waff#q
-       * @desc Query single elemnt
+       * @desc Query single element
        * @param {String} qs - Query Selector
        * @param {Element|Array|NodeList} [root] - Element to perform query on
        * @example
-       * // AMD users
-       * waff.query('body')
-       * // Non AMD users
-       * query('body')
+       * var body = waff.query('body')
+       * var body = waff.q('body')
        * @returns {Element|null} - Returns found element or null
        */
       var query;
@@ -223,10 +225,7 @@
        * @desc Creates element by CSS selector
        * @param {String} cs - CSS Selector
        * @example
-       * // AMD users
        * waff.element('.white-text')
-       * // Non AMD users
-       * element('.white-text')
        * @returns {Element} - Returns new element
        */
       var create;
@@ -254,10 +253,9 @@
        * @desc Creates TextNode
        * @param {String} t - Text
        * @example
-       * // AMD users
-       * waff.text('.white-text')
-       * // Non AMD users
-       * text('.white-text')
+       * var text = waff.text('The number of a waffle')
+       * text.set('<div></div>')
+       * text.get() // &lt;div&gt;&lt;/div&gt;
        * @returns {TextNode} - Returns new TextNode
        */
       var text;
@@ -283,8 +281,8 @@
      * @desc Performs XHR GET
      * @param {String} url - URL to get
      * @param {Object} options
-     * * `json` (boolean) - determines if response is json. Default - `false`
-     * * `timeout` (number) - determines timeout in ms. Default - `2000`
+     * `json` (boolean) - determines if response is json. Default - `false` <br>
+     * `timeout` (number) - determines timeout in ms. Default - `2000`
      * @example
      * waff.get('https://wvffle.net')
      *   .then(function(res){
@@ -346,9 +344,9 @@
      * @param {String} url - URL to post
      * @param {Object} data - POST data
      * @param {Object} options
-     * * `json` (boolean) - determines if response is json. Default - `false`
-     * * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true`
-     * * `timeout` (number) - determines timeout in ms. Default - `2000`
+     * `json` (boolean) - determines if response is json. Default - `false` <br>
+     * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true` <br>
+     * `timeout` (number) - determines timeout in ms. Default - `2000`
      * @example
      * waff.post('http://httpbin.org/post', { waffle_id: 666 })
      *   .then(function(res){
@@ -416,18 +414,36 @@
     return post;
   })();
   waff._Promise = (function() {
-
-    /**
-     * @class waff.Promise
-     * @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
-     */
     var Promise;
     Promise = (function() {
+
+      /**
+       * @class waff.Promise
+       * @extends waff.EventEmitter
+       * @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
+       * @param {Function} executor - Executor function
+       * @fires fulfill
+       * @fires reject
+       */
       function Promise(executor) {
+        Event.extend(this);
         this._then = [];
         this._catch = [];
         executor(this.resolve(this), this.reject(this));
       }
+
+
+      /**
+       * @function waff.Promise.then
+       * @desc Adds handler when fulfilled or rejected
+       * @param {Function} onFulfill - Fulfiull function
+       * @param {Function} [onReject] - Reject function
+       * @example
+       * var promise = new waff.Promise(function(){})
+       * promise.then(function(){
+       *
+       * })
+       */
 
       Promise.prototype.then = function(handler, errHandler) {
         this._then.push(handler);
@@ -437,6 +453,18 @@
         return this;
       };
 
+
+      /**
+       * @function waff.Promise.catch
+       * @desc Adds handler when rejected
+       * @param {Function} onReject - Reject function
+       * @example
+       * var promise = new waff.Promise(function(){})
+       * promise.catch(function(){
+       *
+       * })
+       */
+
       Promise.prototype["catch"] = function(handler) {
         this._catch.push(handler);
         return this;
@@ -444,7 +472,18 @@
 
       Promise.prototype.resolve = function(self) {
         return function() {
+
+          /**
+           * @event waff.Promise.fulfill
+           * @desc Event emitted on fulfill
+           * @example
+           * var promise = new waff.Promise(function(){})
+           * promise.on('fulfill', function(){
+           *  // same as promise.then
+           * })
+           */
           var handler, j, len, ref, results;
+          self.emit('fulfill');
           ref = self._then;
           results = [];
           for (j = 0, len = ref.length; j < len; j++) {
@@ -457,7 +496,18 @@
 
       Promise.prototype.reject = function(self) {
         return function() {
+
+          /**
+           * @event waff.Promise.reject
+           * @desc Event emitted on reject
+           * @example
+           * var promise = new waff.Promise(function(){})
+           * promise.on('reject', function(){
+           *  // same as promise.catch
+           * })
+           */
           var handler, j, len, ref, results;
+          self.emit('reject');
           ref = self._then;
           results = [];
           for (j = 0, len = ref.length; j < len; j++) {
@@ -473,6 +523,118 @@
     })();
     return Promise;
   })();
+  waff._EventEmitter = (function() {
+    var EventEmitter;
+    EventEmitter = (function() {
+
+      /**
+       * @class waff.EventEmitter
+       * @classdesc Own implementation of EventEmitter. (untested)
+       * @example
+       * var ee = new waff.EventEmitter();
+       */
+      function EventEmitter() {
+        this._emitter = waff.e();
+      }
+
+
+      /**
+       * @function waff.EventEmitter.on
+       * @desc Adds handler for event
+       * @param {String|Array<String>} event - name of event
+       * @param {Function} handler - Handler function
+       * @param {Boolean} [capture] - Use capture
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Single event binding
+       * ee.on('event-name', function(data){})
+       * // Multi event binding
+       * ee.on(['event-name', 'event-name2'], function(data){})
+       */
+
+      EventEmitter.prototype.on = function(event, handler, capture) {
+        return this._emitter.on.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, handler, capture);
+      };
+
+
+      /**
+       * @function waff.EventEmitter.once
+       * @desc Adds handler only for one event emit
+       * @param {String|Array<String>} event - name of event
+       * @param {Function} handler - Handler function
+       * @param {Boolean} [capture] - Use capture
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Single event binding
+       * ee.once('event-name', function(data){})
+       * // Multi event binding
+       * ee.once(['event-name', 'event-name2'], function(data){})
+       */
+
+      EventEmitter.prototype.once = function(event, handler, capture) {
+        return this._emitter.once.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, handler, capture);
+      };
+
+
+      /**
+       * @function waff.EventEmitter.off
+       * @desc Removes specific event handler
+       * @param {String|Array<String>} event - name of event
+       * @param {Function} [handler] - Handler function
+       * @param {Boolean} [capture] - Use capture
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Single event unbinding for a specific handler
+       * ee.off('event-name', function(){})
+       * // Multi event unbinding for a specific handler
+       * ee.off(['event-name', 'event-name2'], function(){})
+       * // Unbinding all handlers for event
+       * ee.off('event-name')
+       */
+
+      EventEmitter.prototype.off = function(event, handler, capture) {
+        return this._emitter.off.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, handler, capture);
+      };
+
+
+      /**
+       * @function waff.EventEmitter.emit
+       * @desc Emits event
+       * @param {String} event - name of event
+       * @param {Object} [data] - Data to pass
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Emitting event
+       * ee.emit('event-name')
+       * // Emitting event with data
+       * ee.emit('event-name', {my: 'data'})
+       */
+
+      EventEmitter.prototype.emit = function(event, data) {
+        return this._emitter.emit.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, data);
+      };
+
+      EventEmitter.prototype.dispatchEvent = function(event, handler, capture) {
+        return this._emitter.dispatchEvent.call(this._emitter);
+      };
+
+      return EventEmitter;
+
+    })();
+    return EventEmitter;
+  })();
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
   };
@@ -482,10 +644,38 @@
   Element.prototype.query = Element.prototype.q;
   Element.prototype.query.all = Element.prototype.qq;
   Element.prototype.q.all = Element.prototype.qq;
+
+  /**
+   * @function
+   * @typicalname Element.prototype.append
+   * @desc Adds element at the end
+   * @param {Element} element - element to append
+   * @example
+   * var span = waff.element('span.red')
+   * var body = waff.element('body')
+   * body.append(span
+   * // body
+   * //   <content>
+   * //   span.red
+   */
   Element.prototype.append = function(element) {
     this.appendChild(element);
     return this;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.prepend
+   * @desc Adds element at the beginning
+   * @param {Element} element - element to prepend
+   * @example
+   * var span = waff.element('span.red')
+   * var body = waff.element('body')
+   * body.prepend(span)
+   * // body
+   * //   span.red
+   * //   <content>
+   */
   Element.prototype.prepend = function(element) {
     if (this.firstChild != null) {
       this.insertBefore(element, this.firstChild);
@@ -494,6 +684,21 @@
     }
     return this;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.before
+   * @desc Adds element before
+   * @param {Element} element - element to add
+   * @example
+   * var span = waff.element('span.red')
+   * var div = waff.element('div')
+   * waff.query('body').append(span)
+   * div.before(span)
+   * // body
+   * //   div
+   * //   span.red
+   */
   Element.prototype.before = function(element) {
     if (!this.parentElement) {
       return;
@@ -501,6 +706,21 @@
     this.parentElement.insertBefore(element, this);
     return this;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.after
+   * @desc Adds element after
+   * @param {Element} element - element to add
+   * @example
+   * var span = waff.element('span.red')
+   * var div = waff.element('div')
+   * waff.query('body').append(span)
+   * div.after(span)
+   * // body
+   * //   span.red
+   * //   div
+   */
   Element.prototype.after = function(element) {
     if (!this.parentElement) {
       return;
@@ -512,6 +732,17 @@
     }
     return this;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.text
+   * @desc Sets text of Element to the given string
+   * @param {String} [text] - text to set
+   * @example
+   * var span = waff.element('span')
+   * span.text('<div></div>')
+   * span.text() // <div></div> as a string
+   */
   Element.prototype.text = function(text) {
     var _text, e, j, k, len, len1, node, ref, ref1, t;
     if (text == null) {
@@ -548,6 +779,17 @@
     this.append(e);
     return e;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.html
+   * @desc Sets text of Element to the given string
+   * @param {String} [html] - html string to set
+   * @example
+   * var span = waff.element('span')
+   * span.html('<div></div>')
+   * span.html() // <div></div> as a string
+   */
   Element.prototype.html = function(html) {
     var arr, h, j, k, len, len1, node, ref;
     if (html == null) {
@@ -578,6 +820,14 @@
     this.innerHTML = html;
     return this;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.path
+   * @desc Get unique path of an element
+   * @example
+   * waff.element('body').path() // html > body:nth-child(2)
+   */
   Element.prototype.path = function() {
     var e, i, path, root;
     root = this;
@@ -602,6 +852,19 @@
     }
     return path.join(' > ');
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.css
+   * @desc Get or set  elements CSS
+   * @param {String|Object} attr - attribute name or object with values
+   * @param {String} [value] - attribute value
+   * @example
+   * waff.element('body').css() // Object containing all properties
+   * waff.element('body').css('background-color') // Only `background-color`
+   * waff.element('body').css('background-color', '#f00') // sets `background-color` to #f00
+   * waff.element('body').css({'background-color': '#f00', 'color', '#ffa500'}) // sets `background-color` to #f00 and `color` to #ffa500
+   */
   Element.prototype.css = function(css, values) {
     var camel, dash, prop, res, style;
     camel = function(str) {
@@ -639,6 +902,18 @@
     }
     return res;
   };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.attr
+   * @desc Sets attributes of element
+   * @param {String|Object} attr - attribute name or object with values
+   * @param {String} [value] - attribute value
+   * @example
+   * var span = waff.element('span.red')
+   * span.attr('name', 'waffles!')
+   * span.attr({'name': 'waffles!', 'sth': true})
+   */
   Element.prototype.attr = function(attr, value) {
     var key, val;
     if (typeof attr === 'object') {
@@ -869,11 +1144,32 @@
     }
     return object;
   };
+
+  /**
+   * @function
+   * @typicalname Text.prototype.set
+   * @desc set nodeValue easier
+   * @example
+   * var text = waff.text('The number of a waffle')
+   * text.set('666')
+   * text.get() // 666 as a string
+   */
   Text.prototype.set = function(text) {
-    return this.nodeValue = text;
+    this.nodeValue = text;
+    return this;
   };
+
+  /**
+   * @function
+   * @typicalname Text.prototype.get
+   * @desc get nodeValue easier
+   * @example
+   * var text = waff.text('The number of a waffle')
+   * text.get() // The number of a waffle
+   */
   Text.prototype.get = function() {
-    return this.nodeValue;
+    this.nodeValue;
+    return this;
   };
   return waff;
 })());

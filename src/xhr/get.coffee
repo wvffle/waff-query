@@ -4,8 +4,8 @@
   # @desc Performs XHR GET
   # @param {String} url - URL to get
   # @param {Object} options
-  # * `json` (boolean) - determines if response is json. Default - `false`
-  # * `timeout` (number) - determines timeout in ms. Default - `2000`
+  # `json` (boolean) - determines if response is json. Default - `false` <br>
+  # `timeout` (number) - determines timeout in ms. Default - `2000`
   # @example
   # waff.get('https://wvffle.net')
   #   .then(function(res){

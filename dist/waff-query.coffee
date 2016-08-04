@@ -5,7 +5,7 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-08-03
+# Date: 2016-08-04
 ###
 
 ((coffeFix, _waff) ->
@@ -37,6 +37,10 @@
         else
           @waff[key.slice 1] = value
 ) null, (->
+  ###*
+  # @namespace waff
+  # @desc ok
+  ###
   waff =
     ps: (->
       ###*
@@ -86,16 +90,15 @@
     qq: (->
       ###*
       # @func waff#query.all
-      # @alias waff#q#all
+      # @alias waff#q.all
       # @alias waff#qq
-      # @desc Query all elemnt
+      # @desc Query all elements
       # @param {String|String[]} qs - Query Selector
       # @param {Element|Array|NodeList} [root] - Element to perform query on
       # @example
-      # // AMD users
-      # waff.query.all('body')
-      # // Non AMD users
-      # query.all('body')
+      # var divs = waff.query.all('div')
+      # var divs = waff.qq('div')
+      # var divs = waff.q.all('div')
       # @returns {Element[]} - Returns found elements
       ###
       queryAll = (qs, root) ->
@@ -144,14 +147,12 @@
       ###*
       # @func waff#query
       # @alias waff#q
-      # @desc Query single elemnt
+      # @desc Query single element
       # @param {String} qs - Query Selector
       # @param {Element|Array|NodeList} [root] - Element to perform query on
       # @example
-      # // AMD users
-      # waff.query('body')
-      # // Non AMD users
-      # query('body')
+      # var body = waff.query('body')
+      # var body = waff.q('body')
       # @returns {Element|null} - Returns found element or null
       ###
       query = (qs, root) ->
@@ -167,10 +168,7 @@
       # @desc Creates element by CSS selector
       # @param {String} cs - CSS Selector
       # @example
-      # // AMD users
       # waff.element('.white-text')
-      # // Non AMD users
-      # element('.white-text')
       # @returns {Element} - Returns new element
       ###
       create = (cs) ->
@@ -189,10 +187,9 @@
       # @desc Creates TextNode
       # @param {String} t - Text
       # @example
-      # // AMD users
-      # waff.text('.white-text')
-      # // Non AMD users
-      # text('.white-text')
+      # var text = waff.text('The number of a waffle')
+      # text.set('<div></div>')
+      # text.get() // &lt;div&gt;&lt;/div&gt;
       # @returns {TextNode} - Returns new TextNode
       ###
       text = (t) ->
@@ -219,8 +216,8 @@
     # @desc Performs XHR GET
     # @param {String} url - URL to get
     # @param {Object} options
-    # * `json` (boolean) - determines if response is json. Default - `false`
-    # * `timeout` (number) - determines timeout in ms. Default - `2000`
+    # `json` (boolean) - determines if response is json. Default - `false` <br>
+    # `timeout` (number) - determines timeout in ms. Default - `2000`
     # @example
     # waff.get('https://wvffle.net')
     #   .then(function(res){
@@ -265,9 +262,9 @@
     # @param {String} url - URL to post
     # @param {Object} data - POST data
     # @param {Object} options
-    # * `json` (boolean) - determines if response is json. Default - `false`
-    # * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true`
-    # * `timeout` (number) - determines timeout in ms. Default - `2000`
+    # `json` (boolean) - determines if response is json. Default - `false` <br>
+    # `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true` <br>
+    # `timeout` (number) - determines timeout in ms. Default - `2000`
     # @example
     # waff.post('http://httpbin.org/post', { waffle_id: 666 })
     #   .then(function(res){
@@ -314,38 +311,166 @@
   )()
 
   waff._Promise = (->
-    ###*
-    # @class waff.Promise
-    # @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
-    ###
     class Promise
+      ###*
+      # @class waff.Promise
+      # @extends waff.EventEmitter
+      # @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
+      # @param {Function} executor - Executor function
+      # @fires fulfill
+      # @fires reject
+      ###
       constructor: (executor) ->
+        Event.extend @
         @_then = []
         @_catch = []
   
         executor @resolve(@), @reject(@)
   
+      ###*
+      # @function waff.Promise.then
+      # @desc Adds handler when fulfilled or rejected
+      # @param {Function} onFulfill - Fulfiull function
+      # @param {Function} [onReject] - Reject function
+      # @example
+      # var promise = new waff.Promise(function(){})
+      # promise.then(function(){
+      #
+      # })
+      ###
       then: (handler, errHandler) ->
         @_then.push handler
         if errHandler?
           @_catch.push errHandler
         @
   
+      ###*
+      # @function waff.Promise.catch
+      # @desc Adds handler when rejected
+      # @param {Function} onReject - Reject function
+      # @example
+      # var promise = new waff.Promise(function(){})
+      # promise.catch(function(){
+      #
+      # })
+      ###
       catch: (handler) ->
         @_catch.push handler
         @
   
       resolve: (self) ->
         ->
+          ###*
+          # @event waff.Promise.fulfill
+          # @desc Event emitted on fulfill
+          # @example
+          # var promise = new waff.Promise(function(){})
+          # promise.on('fulfill', function(){
+          #  // same as promise.then
+          # })
+          ###
+          self.emit 'fulfill'
           for handler in self._then
             handler.apply @, arguments
   
       reject: (self) ->
         ->
+          ###*
+          # @event waff.Promise.reject
+          # @desc Event emitted on reject
+          # @example
+          # var promise = new waff.Promise(function(){})
+          # promise.on('reject', function(){
+          #  // same as promise.catch
+          # })
+          ###
+          self.emit 'reject'
           for handler in self._then
             handler.apply @, arguments
   
     Promise
+  )()
+  waff._EventEmitter = (->
+    class EventEmitter
+      ###*
+      # @class waff.EventEmitter
+      # @classdesc Own implementation of EventEmitter. (untested)
+      # @example
+      # var ee = new waff.EventEmitter();
+      ###
+      constructor: ->
+        @_emitter = waff.e()
+  
+      ###*
+      # @function waff.EventEmitter.on
+      # @desc Adds handler for event
+      # @param {String|Array<String>} event - name of event
+      # @param {Function} handler - Handler function
+      # @param {Boolean} [capture] - Use capture
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Single event binding
+      # ee.on('event-name', function(data){})
+      # // Multi event binding
+      # ee.on(['event-name', 'event-name2'], function(data){})
+      ###
+      on: (event, handler, capture) ->
+        @_emitter.on.call {emitter: @_emitter, obj: @}, event, handler, capture
+  
+      ###*
+      # @function waff.EventEmitter.once
+      # @desc Adds handler only for one event emit
+      # @param {String|Array<String>} event - name of event
+      # @param {Function} handler - Handler function
+      # @param {Boolean} [capture] - Use capture
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Single event binding
+      # ee.once('event-name', function(data){})
+      # // Multi event binding
+      # ee.once(['event-name', 'event-name2'], function(data){})
+      ###
+      once: (event, handler, capture) ->
+        @_emitter.once.call {emitter: @_emitter, obj: @}, event, handler, capture
+  
+      ###*
+      # @function waff.EventEmitter.off
+      # @desc Removes specific event handler
+      # @param {String|Array<String>} event - name of event
+      # @param {Function} [handler] - Handler function
+      # @param {Boolean} [capture] - Use capture
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Single event unbinding for a specific handler
+      # ee.off('event-name', function(){})
+      # // Multi event unbinding for a specific handler
+      # ee.off(['event-name', 'event-name2'], function(){})
+      # // Unbinding all handlers for event
+      # ee.off('event-name')
+      ###
+      off: (event, handler, capture) ->
+        @_emitter.off.call {emitter: @_emitter, obj: @}, event, handler, capture
+  
+      ###*
+      # @function waff.EventEmitter.emit
+      # @desc Emits event
+      # @param {String} event - name of event
+      # @param {Object} [data] - Data to pass
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Emitting event
+      # ee.emit('event-name')
+      # // Emitting event with data
+      # ee.emit('event-name', {my: 'data'})
+      ###
+      emit: (event, data) ->
+        @_emitter.emit.call {emitter: @_emitter, obj: @}, event, data
+  
+      dispatchEvent: (event, handler, capture) ->
+        @_emitter.dispatchEvent.call @_emitter
+  
+  
+    EventEmitter
   )()
 
   # Register prototypes
@@ -358,19 +483,73 @@
   
   Element::query.all = Element::qq
   Element::q.all = Element::qq
+  ###*
+  # @function
+  # @typicalname Element.prototype.append
+  # @desc Adds element at the end
+  # @param {Element} element - element to append
+  # @example
+  # var span = waff.element('span.red')
+  # var body = waff.element('body')
+  # body.append(span
+  # // body
+  # //   <content>
+  # //   span.red
+  ###
   Element::append = (element) ->
     @appendChild element
     @
+  ###*
+  # @function
+  # @typicalname Element.prototype.prepend
+  # @desc Adds element at the beginning
+  # @param {Element} element - element to prepend
+  # @example
+  # var span = waff.element('span.red')
+  # var body = waff.element('body')
+  # body.prepend(span)
+  # // body
+  # //   span.red
+  # //   <content>
+  ###
   Element::prepend = (element) ->
     if @firstChild?
       @insertBefore element, @firstChild
     else
       @append element
     @
+  ###*
+  # @function
+  # @typicalname Element.prototype.before
+  # @desc Adds element before
+  # @param {Element} element - element to add
+  # @example
+  # var span = waff.element('span.red')
+  # var div = waff.element('div')
+  # waff.query('body').append(span)
+  # div.before(span)
+  # // body
+  # //   div
+  # //   span.red
+  ###
   Element::before = (element) ->
     return unless @parentElement
     @parentElement.insertBefore element, @
     @
+  ###*
+  # @function
+  # @typicalname Element.prototype.after
+  # @desc Adds element after
+  # @param {Element} element - element to add
+  # @example
+  # var span = waff.element('span.red')
+  # var div = waff.element('div')
+  # waff.query('body').append(span)
+  # div.after(span)
+  # // body
+  # //   span.red
+  # //   div
+  ###
   Element::after = (element) ->
     return unless @parentElement
     if @nextSibling?
@@ -378,6 +557,16 @@
     else
       @parentElement.append element
     @
+  ###*
+  # @function
+  # @typicalname Element.prototype.text
+  # @desc Sets text of Element to the given string
+  # @param {String} [text] - text to set
+  # @example
+  # var span = waff.element('span')
+  # span.text('<div></div>')
+  # span.text() // <div></div> as a string
+  ###
   Element::text = (text) ->
     unless text?
       return @textContent
@@ -400,6 +589,16 @@
     e = waff.t text
     @append e
     e
+  ###*
+  # @function
+  # @typicalname Element.prototype.html
+  # @desc Sets text of Element to the given string
+  # @param {String} [html] - html string to set
+  # @example
+  # var span = waff.element('span')
+  # span.html('<div></div>')
+  # span.html() // <div></div> as a string
+  ###
   Element::html = (html) ->
     unless html?
       return @innerHTML
@@ -420,6 +619,13 @@
     html = html.get() if html instanceof Text
     @innerHTML = html
     @
+  ###*
+  # @function
+  # @typicalname Element.prototype.path
+  # @desc Get unique path of an element
+  # @example
+  # waff.element('body').path() // html > body:nth-child(2)
+  ###
   Element::path = ->
     root = @
     path = []
@@ -442,8 +648,19 @@
         path.unshift root.tagName.toLowerCase() + ':nth-child(' + i + ')'
       root = root.parentNode
     path.join ' > '
+  ###*
+  # @function
+  # @typicalname Element.prototype.css
+  # @desc Get or set  elements CSS
+  # @param {String|Object} attr - attribute name or object with values
+  # @param {String} [value] - attribute value
+  # @example
+  # waff.element('body').css() // Object containing all properties
+  # waff.element('body').css('background-color') // Only `background-color`
+  # waff.element('body').css('background-color', '#f00') // sets `background-color` to #f00
+  # waff.element('body').css({'background-color': '#f00', 'color', '#ffa500'}) // sets `background-color` to #f00 and `color` to #ffa500
+  ###
   Element::css = (css, values) ->
-  
     camel = (str) ->
       str.replace /(\-[a-z])/g, (m) ->
         m.toUpperCase().slice 1
@@ -466,6 +683,17 @@
         if isNaN +prop
           res[prop] = style
   		res
+  ###*
+  # @function
+  # @typicalname Element.prototype.attr
+  # @desc Sets attributes of element
+  # @param {String|Object} attr - attribute name or object with values
+  # @param {String} [value] - attribute value
+  # @example
+  # var span = waff.element('span.red')
+  # span.attr('name', 'waffles!')
+  # span.attr({'name': 'waffles!', 'sth': true})
+  ###
   Element::attr = (attr, value) ->
     if typeof attr == 'object'
       for key, val of attr
@@ -606,10 +834,29 @@
     object.emit = emitter.emit.bind {emitter: emitter, obj: object} unless object.emit?
     object
 
+  ###*
+  # @function
+  # @typicalname Text.prototype.set
+  # @desc set nodeValue easier
+  # @example
+  # var text = waff.text('The number of a waffle')
+  # text.set('666')
+  # text.get() // 666 as a string
+  ###
   Text::set = (text) ->
     @nodeValue = text
+    @
+  ###*
+  # @function
+  # @typicalname Text.prototype.get
+  # @desc get nodeValue easier
+  # @example
+  # var text = waff.text('The number of a waffle')
+  # text.get() // The number of a waffle
+  ###
   Text::get = ->
     @nodeValue
+    @
 
   waff
 )()

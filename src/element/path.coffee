@@ -1,3 +1,10 @@
+###*
+# @function
+# @typicalname Element.prototype.path
+# @desc Get unique path of an element
+# @example
+# waff.element('body').path() // html > body:nth-child(2)
+###
 Element::path = ->
   root = @
   path = []

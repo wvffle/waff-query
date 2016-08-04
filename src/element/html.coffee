@@ -1,3 +1,13 @@
+###*
+# @function
+# @typicalname Element.prototype.html
+# @desc Sets text of Element to the given string
+# @param {String} [html] - html string to set
+# @example
+# var span = waff.element('span')
+# span.html('<div></div>')
+# span.html() // <div></div> as a string
+###
 Element::html = (html) ->
   unless html?
     return @innerHTML

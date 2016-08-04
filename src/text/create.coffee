@@ -5,10 +5,9 @@
   # @desc Creates TextNode
   # @param {String} t - Text
   # @example
-  # // AMD users
-  # waff.text('.white-text')
-  # // Non AMD users
-  # text('.white-text')
+  # var text = waff.text('The number of a waffle')
+  # text.set('<div></div>')
+  # text.get() // &lt;div&gt;&lt;/div&gt;
   # @returns {TextNode} - Returns new TextNode
   ###
   text = (t) ->
