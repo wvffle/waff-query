@@ -1,5 +1,5 @@
 ###
-# waff-query v0.5.6
+# waff-query v1.0.0
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
@@ -207,7 +207,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff._version = '0.5.6'
+  waff._version = '1.0.0'
 
   waff._get = (->
     ###*
@@ -855,7 +855,6 @@
   ###
   Text::get = ->
     @nodeValue
-    @
 
   waff
 )()

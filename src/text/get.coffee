@@ -8,4 +8,3 @@
 ###
 Text::get = ->
   @nodeValue
-  @

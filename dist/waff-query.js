@@ -1,5 +1,5 @@
 /*
- * waff-query v0.5.6
+ * waff-query v1.0.0
  * https://github.com/wvffle/waff-query.js#readme
  *
  * Copyright wvffle.net
@@ -272,7 +272,7 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '0.5.6';
+  waff._version = '1.0.0';
   waff._get = (function() {
 
     /**
@@ -1167,8 +1167,7 @@
    * text.get() // The number of a waffle
    */
   Text.prototype.get = function() {
-    this.nodeValue;
-    return this;
+    return this.nodeValue;
   };
   return waff;
 })());
