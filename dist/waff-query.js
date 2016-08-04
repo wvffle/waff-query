@@ -59,7 +59,6 @@
 
   /**
    * @namespace waff
-   * @desc ok
    */
   var waff;
   waff = {

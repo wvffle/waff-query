@@ -39,7 +39,6 @@
 ) null, (->
   ###*
   # @namespace waff
-  # @desc ok
   ###
   waff =
     ps: (->
