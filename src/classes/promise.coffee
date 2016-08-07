@@ -57,7 +57,7 @@
         #  // same as promise.then
         # })
         ###
-        self.emit 'fulfill'
+        self.emit 'fulfill', arguments
         for handler in self._then
           handler.apply @, arguments
 
@@ -72,7 +72,7 @@
         #  // same as promise.catch
         # })
         ###
-        self.emit 'reject'
+        self.emit 'reject', arguments
         for handler in self._then
           handler.apply @, arguments
 

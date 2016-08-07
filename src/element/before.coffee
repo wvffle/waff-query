@@ -13,6 +13,6 @@
 # //   span.red
 ###
 Element::before = (element) ->
-  return unless @parentElement
-  @parentElement.insertBefore element, @
+  return unless element.parentElement
+  element.parentElement.insertBefore @, element
   @

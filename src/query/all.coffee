@@ -42,7 +42,7 @@
         if qs instanceof Element
           _arr.push qs
         else
-          _arr.push.apply(_arr, root.querySelectorAll qs)
+          _arr.push.apply _arr, root.querySelectorAll qs
       arr = _arr
     else
       arr = [].slice.call root.querySelectorAll qs

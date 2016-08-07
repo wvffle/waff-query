@@ -7,6 +7,11 @@
 [![Waffle.io](https://img.shields.io/waffle/label/wvffle/waff-query.js/in%20progress.svg?maxAge=3600&style=flat-square)]()
 -->
 
+# Contents
+* [Global functions](#global-functions)
+* [Content manipulation](content-manipulation)
+* [Changing css](changing-css)
+
 # Global functions
 <a name="waff"></a>
 

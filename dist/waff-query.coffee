@@ -5,7 +5,7 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-08-04
+# Date: 2016-08-07
 ###
 
 ((coffeFix, _waff) ->
@@ -130,7 +130,7 @@
             if qs instanceof Element
               _arr.push qs
             else
-              _arr.push.apply(_arr, root.querySelectorAll qs)
+              _arr.push.apply _arr, root.querySelectorAll qs
           arr = _arr
         else
           arr = [].slice.call root.querySelectorAll qs
@@ -368,7 +368,7 @@
           #  // same as promise.then
           # })
           ###
-          self.emit 'fulfill'
+          self.emit 'fulfill', arguments
           for handler in self._then
             handler.apply @, arguments
   
@@ -383,7 +383,7 @@
           #  // same as promise.catch
           # })
           ###
-          self.emit 'reject'
+          self.emit 'reject', arguments
           for handler in self._then
             handler.apply @, arguments
   
@@ -532,8 +532,8 @@
   # //   span.red
   ###
   Element::before = (element) ->
-    return unless @parentElement
-    @parentElement.insertBefore element, @
+    return unless element.parentElement
+    element.parentElement.insertBefore @, element
     @
   ###*
   # @function
@@ -550,11 +550,11 @@
   # //   div
   ###
   Element::after = (element) ->
-    return unless @parentElement
+    return unless element.parentElement
     if @nextSibling?
-      @parentElement.insertBefore element, @nextSibling
+      element.parentElement.insertBefore @, element.nextSibling
     else
-      @parentElement.append element
+      element.parentElement.append @
     @
   ###*
   # @function
@@ -570,7 +570,7 @@
     unless text?
       return @textContent
     for node in @childNodes
-      node.remove()
+      node.remove() if node?
     if text instanceof NodeList or text instanceof Array
       _text = ''
       for t in [].slice.call text
@@ -603,7 +603,7 @@
       return @innerHTML
   
     for node in @childNodes
-      node.remove()
+      node.remove() if node?
   
     if html instanceof Element
       @append html

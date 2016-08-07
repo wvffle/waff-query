@@ -13,7 +13,7 @@ Element::html = (html) ->
     return @innerHTML
 
   for node in @childNodes
-    node.remove()
+    node.remove() if node?
 
   if html instanceof Element
     @append html

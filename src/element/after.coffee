@@ -13,9 +13,9 @@
 # //   div
 ###
 Element::after = (element) ->
-  return unless @parentElement
+  return unless element.parentElement
   if @nextSibling?
-    @parentElement.insertBefore element, @nextSibling
+    element.parentElement.insertBefore @, element.nextSibling
   else
-    @parentElement.append element
+    element.parentElement.append @
   @

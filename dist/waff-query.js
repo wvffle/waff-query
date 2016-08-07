@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-08-04
+ * Date: 2016-08-07
  */
 
 (function(coffeFix, _waff) {
@@ -482,7 +482,7 @@
            * })
            */
           var handler, j, len, ref, results;
-          self.emit('fulfill');
+          self.emit('fulfill', arguments);
           ref = self._then;
           results = [];
           for (j = 0, len = ref.length; j < len; j++) {
@@ -506,7 +506,7 @@
            * })
            */
           var handler, j, len, ref, results;
-          self.emit('reject');
+          self.emit('reject', arguments);
           ref = self._then;
           results = [];
           for (j = 0, len = ref.length; j < len; j++) {
@@ -699,10 +699,10 @@
    * //   span.red
    */
   Element.prototype.before = function(element) {
-    if (!this.parentElement) {
+    if (!element.parentElement) {
       return;
     }
-    this.parentElement.insertBefore(element, this);
+    element.parentElement.insertBefore(this, element);
     return this;
   };
 
@@ -721,13 +721,13 @@
    * //   div
    */
   Element.prototype.after = function(element) {
-    if (!this.parentElement) {
+    if (!element.parentElement) {
       return;
     }
     if (this.nextSibling != null) {
-      this.parentElement.insertBefore(element, this.nextSibling);
+      element.parentElement.insertBefore(this, element.nextSibling);
     } else {
-      this.parentElement.append(element);
+      element.parentElement.append(this);
     }
     return this;
   };
@@ -750,7 +750,9 @@
     ref = this.childNodes;
     for (j = 0, len = ref.length; j < len; j++) {
       node = ref[j];
-      node.remove();
+      if (node != null) {
+        node.remove();
+      }
     }
     if (text instanceof NodeList || text instanceof Array) {
       _text = '';
@@ -797,7 +799,9 @@
     ref = this.childNodes;
     for (j = 0, len = ref.length; j < len; j++) {
       node = ref[j];
-      node.remove();
+      if (node != null) {
+        node.remove();
+      }
     }
     if (html instanceof Element) {
       this.append(html);

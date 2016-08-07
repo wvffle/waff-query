@@ -7,7 +7,7 @@ describe('element', function() {
   context('Element.after()', function() {
 
     it('should put span.red after span.green', function () {
-      document.querySelector('span.green').after(document.querySelector('span.red'));
+      document.querySelector('span.red').after(document.querySelector('span.green'));
 
       expect( document.querySelector('span.green').nextSibling ).to.be.equal( document.querySelector('span.red') );
     });
@@ -56,7 +56,7 @@ describe('element', function() {
   context('Element.before()', function() {
 
     it('should put span.green before span.red', function () {
-      document.querySelector('span.red').before(document.querySelector('span.green'));
+      document.querySelector('span.green').before(document.querySelector('span.red'));
 
       expect( document.querySelector('span.green').nextSibling ).to.be.deep.equal( document.querySelector('span.red') );
     });
