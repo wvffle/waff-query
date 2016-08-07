@@ -9,8 +9,9 @@
 
 # Contents
 * [Global functions](#global-functions)
-* [Content manipulation](content-manipulation)
-* [Changing css](changing-css)
+* [Content manipulation](#content-manipulation)
+* [TextNode value manipulation](#textnode-value-manipulation)
+* [Changing css](#changing-css)
 
 # Global functions
 <a name="waff"></a>
