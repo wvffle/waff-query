@@ -1,5 +1,5 @@
 /*
- * waff-query v1.0.0
+ * waff-query v1.0.1
  * https://github.com/wvffle/waff-query.js#readme
  *
  * Copyright wvffle.net
@@ -272,7 +272,7 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '1.0.0';
+  waff._version = '1.0.1';
   waff._get = (function() {
 
     /**
@@ -743,22 +743,18 @@
    * span.text() // <div></div> as a string
    */
   Element.prototype.text = function(text) {
-    var _text, e, j, k, len, len1, node, ref, ref1, t;
+    var _text, e, j, len, ref, t;
     if (text == null) {
       return this.textContent;
     }
-    ref = this.childNodes;
-    for (j = 0, len = ref.length; j < len; j++) {
-      node = ref[j];
-      if (node != null) {
-        node.remove();
-      }
+    while (this.childNodes.length > 0) {
+      this.firstChild.remove();
     }
     if (text instanceof NodeList || text instanceof Array) {
       _text = '';
-      ref1 = [].slice.call(text);
-      for (k = 0, len1 = ref1.length; k < len1; k++) {
-        t = ref1[k];
+      ref = [].slice.call(text);
+      for (j = 0, len = ref.length; j < len; j++) {
+        t = ref[j];
         if (t instanceof Text) {
           _text += t.get();
         } else {
@@ -792,16 +788,12 @@
    * span.html() // <div></div> as a string
    */
   Element.prototype.html = function(html) {
-    var arr, h, j, k, len, len1, node, ref;
+    var arr, h, j, len;
     if (html == null) {
       return this.innerHTML;
     }
-    ref = this.childNodes;
-    for (j = 0, len = ref.length; j < len; j++) {
-      node = ref[j];
-      if (node != null) {
-        node.remove();
-      }
+    while (this.childNodes.length > 0) {
+      this.firstChild.remove();
     }
     if (html instanceof Element) {
       this.append(html);
@@ -809,8 +801,8 @@
     }
     if (html instanceof NodeList || html instanceof Array) {
       arr = [].slice.call(html);
-      for (k = 0, len1 = arr.length; k < len1; k++) {
-        h = arr[k];
+      for (j = 0, len = arr.length; j < len; j++) {
+        h = arr[j];
         if (h instanceof Element || h instanceof Text) {
           this.append(h);
         }

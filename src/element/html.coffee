@@ -11,9 +11,9 @@
 Element::html = (html) ->
   unless html?
     return @innerHTML
-
-  for node in @childNodes
-    node.remove() if node?
+    
+  while @childNodes.length > 0
+    @firstChild.remove()
 
   if html instanceof Element
     @append html

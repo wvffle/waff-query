@@ -11,8 +11,10 @@
 Element::text = (text) ->
   unless text?
     return @textContent
-  for node in @childNodes
-    node.remove() if node?
+
+  while @childNodes.length > 0
+    @firstChild.remove()
+
   if text instanceof NodeList or text instanceof Array
     _text = ''
     for t in [].slice.call text

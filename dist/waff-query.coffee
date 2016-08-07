@@ -1,5 +1,5 @@
 ###
-# waff-query v1.0.0
+# waff-query v1.0.1
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
@@ -207,7 +207,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff._version = '1.0.0'
+  waff._version = '1.0.1'
 
   waff._get = (->
     ###*
@@ -569,8 +569,10 @@
   Element::text = (text) ->
     unless text?
       return @textContent
-    for node in @childNodes
-      node.remove() if node?
+  
+    while @childNodes.length > 0
+      @firstChild.remove()
+  
     if text instanceof NodeList or text instanceof Array
       _text = ''
       for t in [].slice.call text
@@ -601,9 +603,9 @@
   Element::html = (html) ->
     unless html?
       return @innerHTML
-  
-    for node in @childNodes
-      node.remove() if node?
+      
+    while @childNodes.length > 0
+      @firstChild.remove()
   
     if html instanceof Element
       @append html
