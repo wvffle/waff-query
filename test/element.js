@@ -63,6 +63,16 @@ describe('element', function() {
 
   });
 
+  context('Element.clear()', function() {
+
+    it('should clear .workspace', function () {
+      document.querySelector('.workspace').clear()
+
+      expect( document.querySelector('.workspace').childNodes ).to.have.lengthOf( 0 )
+    });
+
+  });
+
   context('e()', function() {
 
     it('should create plain div', function () {

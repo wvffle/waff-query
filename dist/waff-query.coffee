@@ -570,8 +570,7 @@
     unless text?
       return @textContent
   
-    while @childNodes.length > 0
-      @firstChild.remove()
+    @clear()
   
     if text instanceof NodeList or text instanceof Array
       _text = ''
@@ -603,9 +602,8 @@
   Element::html = (html) ->
     unless html?
       return @innerHTML
-      
-    while @childNodes.length > 0
-      @firstChild.remove()
+  
+    @clear()
   
     if html instanceof Element
       @append html
@@ -705,6 +703,17 @@
         @setAttribute attr, value
       else
         return @getAttribute attr
+    @
+  ###*
+  # @function
+  # @typicalname Element.prototype.clear
+  # @desc Clears element content
+  # @example
+  # waff.element('body').clear()
+  ###
+  Element::clear = ->
+    while @childNodes.length > 0
+      @firstChild.remove()
     @
 
   Element::observe = ->

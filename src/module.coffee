@@ -69,6 +69,7 @@
   <%= include('element/path', '  ') %>
   <%= include('element/css', '  ') %>
   <%= include('element/attr', '  ') %>
+  <%= include('element/clear', '  ') %>
 
   <%= include('event/observe', '  ') %>
   <%= include('event/on', '  ') %>

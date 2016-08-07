@@ -747,9 +747,7 @@
     if (text == null) {
       return this.textContent;
     }
-    while (this.childNodes.length > 0) {
-      this.firstChild.remove();
-    }
+    this.clear();
     if (text instanceof NodeList || text instanceof Array) {
       _text = '';
       ref = [].slice.call(text);
@@ -792,9 +790,7 @@
     if (html == null) {
       return this.innerHTML;
     }
-    while (this.childNodes.length > 0) {
-      this.firstChild.remove();
-    }
+    this.clear();
     if (html instanceof Element) {
       this.append(html);
       return this;
@@ -923,6 +919,20 @@
       } else {
         return this.getAttribute(attr);
       }
+    }
+    return this;
+  };
+
+  /**
+   * @function
+   * @typicalname Element.prototype.clear
+   * @desc Clears element content
+   * @example
+   * waff.element('body').clear()
+   */
+  Element.prototype.clear = function() {
+    while (this.childNodes.length > 0) {
+      this.firstChild.remove();
     }
     return this;
   };

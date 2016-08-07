@@ -12,8 +12,7 @@ Element::text = (text) ->
   unless text?
     return @textContent
 
-  while @childNodes.length > 0
-    @firstChild.remove()
+  @clear()
 
   if text instanceof NodeList or text instanceof Array
     _text = ''
