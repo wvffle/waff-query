@@ -11,7 +11,9 @@
 * [Global functions](#global-functions)
 * [Content manipulation](#content-manipulation)
 * [TextNode value manipulation](#textnode-value-manipulation)
+* [Appending elements](#appending-elements)
 * [Changing css](#changing-css)
+* [Element path](#element-path)
 
 # Global functions
 <a name="waff"></a>
@@ -380,7 +382,54 @@ span.text('<div></div>')
 span.text() // <div></div> as a string
 ```
 
+<a name="Element+attr"></a>
 
+## Element.attr(attr, [value])
+Sets attributes of element
+
+**Kind**: instance method of <code>Element</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| attr | <code>String</code> &#124; <code>Object</code> | attribute name or object with values |
+| [value] | <code>String</code> | attribute value |
+
+**Example**  
+```js
+var span = waff.element('span.red')
+span.attr('name', 'waffles!')
+span.attr({'name': 'waffles!', 'sth': true})
+```
+
+
+# TextNode value manipulation
+<a name="Text+get"></a>
+
+## Text.get()
+get nodeValue easier
+
+**Kind**: instance method of <code>Text</code>  
+**Example**  
+```js
+var text = waff.text('The number of a waffle')
+text.get() // The number of a waffle
+```
+
+<a name="Text+set"></a>
+
+## Text.set()
+set nodeValue easier
+
+**Kind**: instance method of <code>Text</code>  
+**Example**  
+```js
+var text = waff.text('The number of a waffle')
+text.set('666')
+text.get() // 666 as a string
+```
+
+
+# Appending elements
 <a name="Element+append"></a>
 
 ## Element.append(element)
@@ -468,64 +517,6 @@ div.before(span)
 ```
 
 
-<a name="Element+attr"></a>
-
-## Element.attr(attr, [value])
-Sets attributes of element
-
-**Kind**: instance method of <code>Element</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| attr | <code>String</code> &#124; <code>Object</code> | attribute name or object with values |
-| [value] | <code>String</code> | attribute value |
-
-**Example**  
-```js
-var span = waff.element('span.red')
-span.attr('name', 'waffles!')
-span.attr({'name': 'waffles!', 'sth': true})
-```
-
-<a name="Element+path"></a>
-
-## Element.path()
-Get unique path of an element
-
-**Kind**: instance method of <code>Element</code>  
-**Example**  
-```js
-waff.element('body').path() // html > body:nth-child(2)
-```
-
-
-# TextNode value manipulation
-<a name="Text+get"></a>
-
-## Text.get()
-get nodeValue easier
-
-**Kind**: instance method of <code>Text</code>  
-**Example**  
-```js
-var text = waff.text('The number of a waffle')
-text.get() // The number of a waffle
-```
-
-<a name="Text+set"></a>
-
-## Text.set()
-set nodeValue easier
-
-**Kind**: instance method of <code>Text</code>  
-**Example**  
-```js
-var text = waff.text('The number of a waffle')
-text.set('666')
-text.get() // 666 as a string
-```
-
-
 # Changing css
 <a name="Element+css"></a>
 
@@ -545,5 +536,18 @@ waff.element('body').css() // Object containing all properties
 waff.element('body').css('background-color') // Only `background-color`
 waff.element('body').css('background-color', '#f00') // sets `background-color` to #f00
 waff.element('body').css({'background-color': '#f00', 'color', '#ffa500'}) // sets `background-color` to #f00 and `color` to #ffa500
+```
+
+
+# Element path
+<a name="Element+path"></a>
+
+## Element.path()
+Get unique path of an element
+
+**Kind**: instance method of <code>Element</code>  
+**Example**  
+```js
+waff.element('body').path() // html > body:nth-child(2)
 ```
 
