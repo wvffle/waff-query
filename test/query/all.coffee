@@ -27,6 +27,14 @@ describe 'qq()', ->
       	'div.red'
     	]
 
+  it 'should find body', ->
+    expect [ document.body ]
+    	.to.deep.equal qq()
+
+  it 'should find *', ->
+    expect [].slice.call document.querySelectorAll '*'
+    	.to.deep.equal qq ''
+
 describe 'query.all()', ->
 
   beforeEach ->

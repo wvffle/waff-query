@@ -147,6 +147,9 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         if (single == null) {
           single = false;
         }
+        if (qs === '') {
+          qs = '*';
+        }
         query = function(qs, root) {
           if (single === true) {
             return [root.querySelector(qs)];

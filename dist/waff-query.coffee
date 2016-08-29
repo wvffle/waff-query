@@ -102,7 +102,9 @@
       # @returns {Element[]} - Returns found elements
       ###
       queryAll = (qs = 'body', root, single = false) ->
-        
+    
+        qs = '*' if qs == ''
+    
         query = (qs, root) ->
           if single == true then [ root.querySelector qs ] else root.querySelectorAll qs
     

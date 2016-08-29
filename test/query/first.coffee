@@ -23,6 +23,14 @@ describe 'q()', ->
     expect document.querySelector 'span.green'
     	.to.deep.equal q '.green', document.querySelectorAll 'span'
 
+  it 'should find body', ->
+    expect document.body
+    	.to.deep.equal q()
+
+  it 'should find html', ->
+    expect document.querySelector 'html'
+    	.to.deep.equal q ''
+
 
 describe 'query()', ->
 
