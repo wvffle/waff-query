@@ -25,7 +25,7 @@
 * [waff](#waff)
     * _instance_
         * [.query(qs, [root])](#waff+query) ⇒ <code>Element</code> &#124; <code>null</code>
-            * [.all(qs, [root])](#waff+query.all) ⇒ <code>Array.&lt;Element&gt;</code>
+            * [.all(qs, [root], [single])](#waff+query.all) ⇒ <code>Array.&lt;Element&gt;</code>
         * [.element(cs)](#waff+element) ⇒ <code>Element</code>
         * [.text(t)](#waff+text) ⇒ <code>TextNode</code>
         * [.get(url, options)](#waff+get) ⇒ <code>[Promise](#waff.Promise)</code>
@@ -64,7 +64,7 @@ var body = waff.q('body')
 ```
 <a name="waff+query.all"></a>
 
-#### query.all(qs, [root]) ⇒ <code>Array.&lt;Element&gt;</code>
+#### query.all(qs, [root], [single]) ⇒ <code>Array.&lt;Element&gt;</code>
 Query all elements
 
 **Kind**: static method of <code>[query](#waff+query)</code>  
@@ -72,8 +72,9 @@ Query all elements
 
 | Param | Type | Description |
 | --- | --- | --- |
-| qs | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | Query Selector |
+| qs | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | Query Selector. Default: body |
 | [root] | <code>Element</code> &#124; <code>Array</code> &#124; <code>NodeList</code> | Element to perform query on |
+| [single] | <code>Boolean</code> | Specifies if the query is single. Default: false |
 
 **Example**  
 ```js

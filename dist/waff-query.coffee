@@ -92,15 +92,20 @@
       # @alias waff#q.all
       # @alias waff#qq
       # @desc Query all elements
-      # @param {String|String[]} qs - Query Selector
+      # @param {String|String[]} qs - Query Selector. Default: body
       # @param {Element|Array|NodeList} [root] - Element to perform query on
+      # @param {Boolean} [single] - Specifies if the query is single. Default: false
       # @example
       # var divs = waff.query.all('div')
       # var divs = waff.qq('div')
       # var divs = waff.q.all('div')
       # @returns {Element[]} - Returns found elements
       ###
-      queryAll = (qs, root) ->
+      queryAll = (qs = 'body', root, single = false) ->
+        
+        query = (qs, root) ->
+          if single == true then [ root.querySelector qs ] else root.querySelectorAll qs
+    
         if root instanceof Array or root instanceof NodeList
           s = @ps qs
           arr = [].slice.call root
@@ -130,10 +135,10 @@
             if qs instanceof Element
               _arr.push qs
             else
-              _arr.push.apply _arr, root.querySelectorAll qs
+              _arr.push.apply _arr, query qs, root
           arr = _arr
         else
-          arr = [].slice.call root.querySelectorAll qs
+          arr = [].slice.call query qs, root
         ret = []
     
         for element in arr
@@ -155,7 +160,7 @@
       # @returns {Element|null} - Returns found element or null
       ###
       query = (qs, root) ->
-        @qq(qs, root)[0] or null
+        @qq(qs, root, true)[0] or null
     
       query
     )()

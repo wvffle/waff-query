@@ -129,8 +129,9 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @alias waff#q.all
        * @alias waff#qq
        * @desc Query all elements
-       * @param {String|String[]} qs - Query Selector
+       * @param {String|String[]} qs - Query Selector. Default: body
        * @param {Element|Array|NodeList} [root] - Element to perform query on
+       * @param {Boolean} [single] - Specifies if the query is single. Default: false
        * @example
        * var divs = waff.query.all('div')
        * var divs = waff.qq('div')
@@ -138,8 +139,21 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @returns {Element[]} - Returns found elements
        */
       var queryAll;
-      queryAll = function(qs, root) {
-        var _arr, arr, c, element, j, k, l, len, len1, len2, len3, o, pass, ref, ret, s;
+      queryAll = function(qs, root, single) {
+        var _arr, arr, c, element, j, k, l, len, len1, len2, len3, o, pass, query, ref, ret, s;
+        if (qs == null) {
+          qs = 'body';
+        }
+        if (single == null) {
+          single = false;
+        }
+        query = function(qs, root) {
+          if (single === true) {
+            return [root.querySelector(qs)];
+          } else {
+            return root.querySelectorAll(qs);
+          }
+        };
         if (root instanceof Array || root instanceof NodeList) {
           s = this.ps(qs);
           arr = [].slice.call(root);
@@ -182,12 +196,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
             if (qs instanceof Element) {
               _arr.push(qs);
             } else {
-              _arr.push.apply(_arr, root.querySelectorAll(qs));
+              _arr.push.apply(_arr, query(qs, root));
             }
           }
           arr = _arr;
         } else {
-          arr = [].slice.call(root.querySelectorAll(qs));
+          arr = [].slice.call(query(qs, root));
         }
         ret = [];
         for (o = 0, len3 = arr.length; o < len3; o++) {
@@ -215,7 +229,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        */
       var query;
       query = function(qs, root) {
-        return this.qq(qs, root)[0] || null;
+        return this.qq(qs, root, true)[0] || null;
       };
       return query;
     })(),
