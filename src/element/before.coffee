@@ -12,7 +12,8 @@
 # //   div
 # //   span.red
 ###
-Element::before = (element) ->
-  return unless element.parentElement
-  element.parentElement.insertBefore @, element
+Element::before = ->
+  for element in arguments
+    if element.parentElement
+      element.parentElement.insertBefore @, element
   @

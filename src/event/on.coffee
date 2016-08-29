@@ -20,17 +20,3 @@ EventTarget::on = (name, next, capture) ->
       ), capture
     self._eventsInited[event] = true
   self
-
-Element::on = (name, next, capture) ->
-  unless name instanceof Array
-    name = [ name ]
-
-  _on = EventTarget::on
-
-  for event in name
-    switch event
-      when 'mutation'
-        @_observerHandlers.push next
-      else
-        _on.apply this, arguments
-  @

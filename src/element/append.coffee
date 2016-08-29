@@ -11,6 +11,7 @@
 # //   <content>
 # //   span.red
 ###
-Element::append = (element) ->
-  @appendChild element
+Element::append = ->
+  for element in arguments
+    @appendChild element
   @

@@ -1,11 +1,11 @@
 ###
-# waff-query v1.0.1
+# waff-query v1.0.2
 # https://github.com/wvffle/waff-query.js#readme
 #
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-08-07
+# Date: 2016-08-29
 ###
 
 ((coffeFix, _waff) ->
@@ -38,7 +38,7 @@
           @waff[key.slice 1] = value
 ) null, (->
   ###*
-  # @namespace waff
+  # @global waff
   ###
   waff =
     ps: (->
@@ -207,7 +207,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff._version = '1.0.1'
+  waff._version = '1.0.2'
 
   waff._get = (->
     ###*
@@ -309,8 +309,116 @@
     post
   )()
 
+  waff._EventEmitter = (->
+    class EventEmitter
+      ###*
+      # @class waff.EventEmitter
+      # @static
+      # @classdesc Own implementation of EventEmitter. (untested)
+      # @example
+      # var ee = new waff.EventEmitter();
+      ###
+      constructor: ->
+        @_emitter = waff.e()
+  
+      ###*
+      # @function waff.EventEmitter.on
+      # @instance
+      # @desc Adds handler for event
+      # @param {String|Array<String>} event - name of event
+      # @param {Function} handler - Handler function
+      # @param {Boolean} [capture] - Use capture
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Single event binding
+      # ee.on('event-name', function(data){})
+      # // Multi event binding
+      # ee.on(['event-name', 'event-name2'], function(data){})
+      ###
+      on: (event, handler, capture) ->
+        @_emitter.on.call {emitter: @_emitter, obj: @}, event, handler, capture
+  
+      ###*
+      # @function waff.EventEmitter.once
+      # @instance
+      # @desc Adds handler only for one event emit
+      # @param {String|Array<String>} event - name of event
+      # @param {Function} handler - Handler function
+      # @param {Boolean} [capture] - Use capture
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Single event binding
+      # ee.once('event-name', function(data){})
+      # // Multi event binding
+      # ee.once(['event-name', 'event-name2'], function(data){})
+      ###
+      once: (event, handler, capture) ->
+        @_emitter.once.call {emitter: @_emitter, obj: @}, event, handler, capture
+  
+      ###*
+      # @function waff.EventEmitter.off
+      # @instance
+      # @desc Removes specific event handler
+      # @param {String|Array<String>} event - name of event
+      # @param {Function} [handler] - Handler function
+      # @param {Boolean} [capture] - Use capture
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Single event unbinding for a specific handler
+      # ee.off('event-name', function(){})
+      # // Multi event unbinding for a specific handler
+      # ee.off(['event-name', 'event-name2'], function(){})
+      # // Unbinding all handlers for event
+      # ee.off('event-name')
+      ###
+      off: (event, handler, capture) ->
+        @_emitter.off.call {emitter: @_emitter, obj: @}, event, handler, capture
+  
+      ###*
+      # @function waff.EventEmitter.emit
+      # @desc Emits event
+      # @instance
+      # @param {String} event - name of event
+      # @param {Object} [data] - Data to pass
+      # @example
+      # var ee = new waff.EventEmitter();
+      # // Emitting event
+      # ee.emit('event-name')
+      # // Emitting event with data
+      # ee.emit('event-name', {my: 'data'})
+      ###
+      emit: (event, data) ->
+        @_emitter.emit.call {emitter: @_emitter, obj: @}, event, data
+  
+      dispatchEvent: (event, handler, capture) ->
+        @_emitter.dispatchEvent.call @_emitter, event, handler, capture
+  
+  
+    ###*
+    # @function waff.EventEmitter.extend
+    # @static
+    # @desc Extends events on object
+    # @param {Object} object - object to extend
+    # @example
+    # var obj = {};
+    # EventEmitter.extend(obj);
+    # obj.emit('event!')
+    ###
+    EventEmitter.extend = (object)->
+      emitter = object._emitter = waff.e()
+      object.on = emitter.on.bind {emitter: emitter, obj: object} unless object.on?
+      object.once = emitter.once.bind {emitter: emitter, obj: object} unless object.once?
+      object.off = emitter.off.bind {emitter: emitter, obj: object} unless object.off?
+      object.dispatchEvent = emitter.dispatchEvent.bind emitter unless object.dispatchEvent?
+      object.emit = emitter.emit.bind {emitter: emitter, obj: object} unless object.emit?
+      object
+  
+    EventEmitter
+  )()
   waff._Promise = (->
-    class Promise
+    class Promise extends waff._EventEmitter
+  
+  
       ###*
       # @class waff.Promise
       # @extends waff.EventEmitter
@@ -320,11 +428,13 @@
       # @fires reject
       ###
       constructor: (executor) ->
-        Event.extend @
+  
+        super()
+  
         @_then = []
         @_catch = []
   
-        executor @resolve(@), @reject(@)
+        executor @_resolve(@), @_reject(@)
   
       ###*
       # @function waff.Promise.then
@@ -357,7 +467,7 @@
         @_catch.push handler
         @
   
-      resolve: (self) ->
+      _resolve: (self) ->
         ->
           ###*
           # @event waff.Promise.fulfill
@@ -371,8 +481,10 @@
           self.emit 'fulfill', arguments
           for handler in self._then
             handler.apply @, arguments
+      resolve: ->
+        @_resolve(@).apply @, arguments
   
-      reject: (self) ->
+      _reject: (self) ->
         ->
           ###*
           # @event waff.Promise.reject
@@ -384,92 +496,12 @@
           # })
           ###
           self.emit 'reject', arguments
-          for handler in self._then
+          for handler in self._catch
             handler.apply @, arguments
+      reject: ->
+        @_reject(@).apply @, arguments
   
     Promise
-  )()
-  waff._EventEmitter = (->
-    class EventEmitter
-      ###*
-      # @class waff.EventEmitter
-      # @classdesc Own implementation of EventEmitter. (untested)
-      # @example
-      # var ee = new waff.EventEmitter();
-      ###
-      constructor: ->
-        @_emitter = waff.e()
-  
-      ###*
-      # @function waff.EventEmitter.on
-      # @desc Adds handler for event
-      # @param {String|Array<String>} event - name of event
-      # @param {Function} handler - Handler function
-      # @param {Boolean} [capture] - Use capture
-      # @example
-      # var ee = new waff.EventEmitter();
-      # // Single event binding
-      # ee.on('event-name', function(data){})
-      # // Multi event binding
-      # ee.on(['event-name', 'event-name2'], function(data){})
-      ###
-      on: (event, handler, capture) ->
-        @_emitter.on.call {emitter: @_emitter, obj: @}, event, handler, capture
-  
-      ###*
-      # @function waff.EventEmitter.once
-      # @desc Adds handler only for one event emit
-      # @param {String|Array<String>} event - name of event
-      # @param {Function} handler - Handler function
-      # @param {Boolean} [capture] - Use capture
-      # @example
-      # var ee = new waff.EventEmitter();
-      # // Single event binding
-      # ee.once('event-name', function(data){})
-      # // Multi event binding
-      # ee.once(['event-name', 'event-name2'], function(data){})
-      ###
-      once: (event, handler, capture) ->
-        @_emitter.once.call {emitter: @_emitter, obj: @}, event, handler, capture
-  
-      ###*
-      # @function waff.EventEmitter.off
-      # @desc Removes specific event handler
-      # @param {String|Array<String>} event - name of event
-      # @param {Function} [handler] - Handler function
-      # @param {Boolean} [capture] - Use capture
-      # @example
-      # var ee = new waff.EventEmitter();
-      # // Single event unbinding for a specific handler
-      # ee.off('event-name', function(){})
-      # // Multi event unbinding for a specific handler
-      # ee.off(['event-name', 'event-name2'], function(){})
-      # // Unbinding all handlers for event
-      # ee.off('event-name')
-      ###
-      off: (event, handler, capture) ->
-        @_emitter.off.call {emitter: @_emitter, obj: @}, event, handler, capture
-  
-      ###*
-      # @function waff.EventEmitter.emit
-      # @desc Emits event
-      # @param {String} event - name of event
-      # @param {Object} [data] - Data to pass
-      # @example
-      # var ee = new waff.EventEmitter();
-      # // Emitting event
-      # ee.emit('event-name')
-      # // Emitting event with data
-      # ee.emit('event-name', {my: 'data'})
-      ###
-      emit: (event, data) ->
-        @_emitter.emit.call {emitter: @_emitter, obj: @}, event, data
-  
-      dispatchEvent: (event, handler, capture) ->
-        @_emitter.dispatchEvent.call @_emitter
-  
-  
-    EventEmitter
   )()
 
   # Register prototypes
@@ -495,8 +527,9 @@
   # //   <content>
   # //   span.red
   ###
-  Element::append = (element) ->
-    @appendChild element
+  Element::append = ->
+    for element in arguments
+      @appendChild element
     @
   ###*
   # @function
@@ -511,11 +544,12 @@
   # //   span.red
   # //   <content>
   ###
-  Element::prepend = (element) ->
-    if @firstChild?
-      @insertBefore element, @firstChild
-    else
-      @append element
+  Element::prepend = ->
+    for element in arguments
+      if @firstChild?
+        @insertBefore element, @firstChild
+      else
+        @append element
     @
   ###*
   # @function
@@ -531,9 +565,10 @@
   # //   div
   # //   span.red
   ###
-  Element::before = (element) ->
-    return unless element.parentElement
-    element.parentElement.insertBefore @, element
+  Element::before = ->
+    for element in arguments
+      if element.parentElement
+        element.parentElement.insertBefore @, element
     @
   ###*
   # @function
@@ -549,12 +584,13 @@
   # //   span.red
   # //   div
   ###
-  Element::after = (element) ->
-    return unless element.parentElement
-    if @nextSibling?
-      element.parentElement.insertBefore @, element.nextSibling
-    else
-      element.parentElement.append @
+  Element::after = ->
+    for element in arguments
+      if element.parentElement
+        if @nextSibling?
+          element.parentElement.insertBefore @, element.nextSibling
+        else
+          element.parentElement.append @
     @
   ###*
   # @function
@@ -715,30 +751,115 @@
     while @childNodes.length > 0
       @firstChild.remove()
     @
-
-  Element::observe = ->
+  ###*
+  # @function
+  # @typicalname Element.prototype.watch
+  # @desc Observes for DOM changes
+  # @param {MutationObserverInit} [options] - MutationObserver options
+  # @fires attr change
+  # @fires attr:*
+  # @fires child add
+  # @fires child remove
+  # @fires text change
+  # @example
+  # var element = waff.query('span.red')
+  # element.watch()
+  ###
+  Element::watch = (options) ->
     unless @_observer?
-      @_observerHandlers = []
       @_observer = new MutationObserver (mutations) =>
-        for handler in @_observerHandlers
-          for mutation in mutations
-            handler.call @, mutation
+        for m in mutations
+          if m.type == 'attributes'
+            knownattrs = [ 'class', 'id', 'style', 'href', 'src' ]
+            event = { target: m.target, attr: m.attributeName, oldValue: m.oldValue, value: m.target.attr m.attributeName }
+            if -1 != knownattrs.indexOf m.attributeName
+              @emit m.attributeName+' change', event
+            ###*
+            # @event Element.prototype.watch.attr change
+            # @desc Event emitted on attribute change
+            # @example
+            # element.on('attr change', function(e){
+            #  // e.target
+            #  // e.attr
+            #  // e.value
+            #  // e.oldValue
+            # })
+            ###
+            @emit 'attr change', event
+            @emit 'attr:*', event
+            ###*
+            # @event Element.prototype.watch.attr:*
+            # @desc Event emitted on specific attribute change
+            # @example
+            # element.on('attr:class', function(e){
+            #  // e.target
+            #  // e.attr
+            #  // e.value
+            #  // e.oldValue
+            # })
+            ###
+            @emit 'attr:'+m.attributeName, event
+          if m.type = 'childList'
+            if m.addedNodes.length > 0
+              ###*
+              # @event Element.prototype.watch.child add
+              # @desc Event emitted on child addition
+              # @example
+              # element.on('child add', function(e){
+              #  // e.target
+              #  // e.nodes
+              # })
+              ###
+              @emit 'child add', { target: m.target, nodes: m.addedNodes }
+            if m.removedNodes.length > 0
+              ###*
+              # @event Element.prototype.watch.child remove
+              # @desc Event emitted on child remove
+              # @example
+              # element.on('child remove', function(e){
+              #  // e.target
+              #  // e.nodes
+              # })
+              ###
+              @emit 'child remove', { target: m.target, nodes: m.removedNodes }
+          if m.type = 'characterData'
+            ###*
+            # @event Element.prototype.watch.text change
+            # @desc Event emitted on text change
+            # @example
+            # element.on('text change', function(e){
+            #  // e.target
+            #  // e.value
+            #  // e.oldValue
+            # })
+            ###
+            @emit 'text change', { target: m.target, oldValue: m.oldValue, value: m.target.get() }
+  
         return @
       config =
         attributes: true
         childList: true
         characterData: true
-        subtree: true
         attributeOldValue: true
         characterDataOldValue: true
+        subtree: false
       @_observer.observe @, config
     @
-    
-  Element::stopObserving = ->
+  ###*
+  # @function
+  # @typicalname Element.prototype.unwatch
+  # @desc Stops observing for DOM changes
+  # @example
+  # var element = waff.query('span.red')
+  # element.watch()
+  # element.unwatch()
+  ###
+  Element::unwatch = ->
     if @_observer?
       @_observer.disconnect()
       delete @_observer
     @
+
   EventTarget::on = (name, next, capture) ->
     unless name instanceof Array
       name = [ name ]
@@ -761,20 +882,6 @@
         ), capture
       self._eventsInited[event] = true
     self
-  
-  Element::on = (name, next, capture) ->
-    unless name instanceof Array
-      name = [ name ]
-  
-    _on = EventTarget::on
-  
-    for event in name
-      switch event
-        when 'mutation'
-          @_observerHandlers.push next
-        else
-          _on.apply this, arguments
-    @
   EventTarget::off = (name, next, capture) ->
     unless name instanceof Array
       name = [ name ]
@@ -793,22 +900,6 @@
           detach next
       detach next
     self
-  
-  Element::off = (name, next, capture) ->
-    unless name instanceof Array
-      name = [ name ]
-  
-    _off = EventTarget::off
-  
-    for event in name
-      switch event
-        when 'mutation'
-          index = @_observerHandlers.indexOf next
-          if index != -1
-            @_observerHandlers.splice index, 1
-        else
-          _off.apply this, [event, next, capture]
-    @
   EventTarget::once = (name, next, capture) ->
     unless name instanceof Array
       name = [ name ]
@@ -835,14 +926,6 @@
       event.waffData = data if data
     event.waffThis = _this
     self.dispatchEvent  event
-  Event.extend = (object)->
-    emitter = object._emitter = waff.e()
-    object.on = emitter.on.bind {emitter: emitter, obj: object} unless object.on?
-    object.once = emitter.once.bind {emitter: emitter, obj: object} unless object.once?
-    object.off = emitter.off.bind {emitter: emitter, obj: object} unless object.off?
-    object.dispatchEvent = emitter.dispatchEvent.bind emitter unless object.dispatchEvent?
-    object.emit = emitter.emit.bind {emitter: emitter, obj: object} unless object.emit?
-    object
 
   ###*
   # @function

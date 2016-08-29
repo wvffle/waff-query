@@ -1,12 +1,15 @@
 /*
- * waff-query v1.0.1
+ * waff-query v1.0.2
  * https://github.com/wvffle/waff-query.js#readme
  *
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-08-07
+ * Date: 2016-08-29
  */
+
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 (function(coffeFix, _waff) {
   var key, results, value, waff;
@@ -58,7 +61,7 @@
 })(null, (function() {
 
   /**
-   * @namespace waff
+   * @global waff
    */
   var waff;
   waff = {
@@ -272,7 +275,7 @@
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '1.0.1';
+  waff._version = '1.0.2';
   waff._get = (function() {
 
     /**
@@ -412,9 +415,171 @@
     };
     return post;
   })();
+  waff._EventEmitter = (function() {
+    var EventEmitter;
+    EventEmitter = (function() {
+
+      /**
+       * @class waff.EventEmitter
+       * @static
+       * @classdesc Own implementation of EventEmitter. (untested)
+       * @example
+       * var ee = new waff.EventEmitter();
+       */
+      function EventEmitter() {
+        this._emitter = waff.e();
+      }
+
+
+      /**
+       * @function waff.EventEmitter.on
+       * @instance
+       * @desc Adds handler for event
+       * @param {String|Array<String>} event - name of event
+       * @param {Function} handler - Handler function
+       * @param {Boolean} [capture] - Use capture
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Single event binding
+       * ee.on('event-name', function(data){})
+       * // Multi event binding
+       * ee.on(['event-name', 'event-name2'], function(data){})
+       */
+
+      EventEmitter.prototype.on = function(event, handler, capture) {
+        return this._emitter.on.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, handler, capture);
+      };
+
+
+      /**
+       * @function waff.EventEmitter.once
+       * @instance
+       * @desc Adds handler only for one event emit
+       * @param {String|Array<String>} event - name of event
+       * @param {Function} handler - Handler function
+       * @param {Boolean} [capture] - Use capture
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Single event binding
+       * ee.once('event-name', function(data){})
+       * // Multi event binding
+       * ee.once(['event-name', 'event-name2'], function(data){})
+       */
+
+      EventEmitter.prototype.once = function(event, handler, capture) {
+        return this._emitter.once.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, handler, capture);
+      };
+
+
+      /**
+       * @function waff.EventEmitter.off
+       * @instance
+       * @desc Removes specific event handler
+       * @param {String|Array<String>} event - name of event
+       * @param {Function} [handler] - Handler function
+       * @param {Boolean} [capture] - Use capture
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Single event unbinding for a specific handler
+       * ee.off('event-name', function(){})
+       * // Multi event unbinding for a specific handler
+       * ee.off(['event-name', 'event-name2'], function(){})
+       * // Unbinding all handlers for event
+       * ee.off('event-name')
+       */
+
+      EventEmitter.prototype.off = function(event, handler, capture) {
+        return this._emitter.off.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, handler, capture);
+      };
+
+
+      /**
+       * @function waff.EventEmitter.emit
+       * @desc Emits event
+       * @instance
+       * @param {String} event - name of event
+       * @param {Object} [data] - Data to pass
+       * @example
+       * var ee = new waff.EventEmitter();
+       * // Emitting event
+       * ee.emit('event-name')
+       * // Emitting event with data
+       * ee.emit('event-name', {my: 'data'})
+       */
+
+      EventEmitter.prototype.emit = function(event, data) {
+        return this._emitter.emit.call({
+          emitter: this._emitter,
+          obj: this
+        }, event, data);
+      };
+
+      EventEmitter.prototype.dispatchEvent = function(event, handler, capture) {
+        return this._emitter.dispatchEvent.call(this._emitter, event, handler, capture);
+      };
+
+      return EventEmitter;
+
+    })();
+
+    /**
+     * @function waff.EventEmitter.extend
+     * @static
+     * @desc Extends events on object
+     * @param {Object} object - object to extend
+     * @example
+     * var obj = {};
+     * EventEmitter.extend(obj);
+     * obj.emit('event!')
+     */
+    EventEmitter.extend = function(object) {
+      var emitter;
+      emitter = object._emitter = waff.e();
+      if (object.on == null) {
+        object.on = emitter.on.bind({
+          emitter: emitter,
+          obj: object
+        });
+      }
+      if (object.once == null) {
+        object.once = emitter.once.bind({
+          emitter: emitter,
+          obj: object
+        });
+      }
+      if (object.off == null) {
+        object.off = emitter.off.bind({
+          emitter: emitter,
+          obj: object
+        });
+      }
+      if (object.dispatchEvent == null) {
+        object.dispatchEvent = emitter.dispatchEvent.bind(emitter);
+      }
+      if (object.emit == null) {
+        object.emit = emitter.emit.bind({
+          emitter: emitter,
+          obj: object
+        });
+      }
+      return object;
+    };
+    return EventEmitter;
+  })();
   waff._Promise = (function() {
     var Promise;
-    Promise = (function() {
+    Promise = (function(superClass) {
+      extend(Promise, superClass);
+
 
       /**
        * @class waff.Promise
@@ -424,11 +589,12 @@
        * @fires fulfill
        * @fires reject
        */
+
       function Promise(executor) {
-        Event.extend(this);
+        Promise.__super__.constructor.call(this);
         this._then = [];
         this._catch = [];
-        executor(this.resolve(this), this.reject(this));
+        executor(this._resolve(this), this._reject(this));
       }
 
 
@@ -469,7 +635,7 @@
         return this;
       };
 
-      Promise.prototype.resolve = function(self) {
+      Promise.prototype._resolve = function(self) {
         return function() {
 
           /**
@@ -493,7 +659,11 @@
         };
       };
 
-      Promise.prototype.reject = function(self) {
+      Promise.prototype.resolve = function() {
+        return this._resolve(this).apply(this, arguments);
+      };
+
+      Promise.prototype._reject = function(self) {
         return function() {
 
           /**
@@ -507,7 +677,7 @@
            */
           var handler, j, len, ref, results;
           self.emit('reject', arguments);
-          ref = self._then;
+          ref = self._catch;
           results = [];
           for (j = 0, len = ref.length; j < len; j++) {
             handler = ref[j];
@@ -517,122 +687,14 @@
         };
       };
 
+      Promise.prototype.reject = function() {
+        return this._reject(this).apply(this, arguments);
+      };
+
       return Promise;
 
-    })();
+    })(waff._EventEmitter);
     return Promise;
-  })();
-  waff._EventEmitter = (function() {
-    var EventEmitter;
-    EventEmitter = (function() {
-
-      /**
-       * @class waff.EventEmitter
-       * @classdesc Own implementation of EventEmitter. (untested)
-       * @example
-       * var ee = new waff.EventEmitter();
-       */
-      function EventEmitter() {
-        this._emitter = waff.e();
-      }
-
-
-      /**
-       * @function waff.EventEmitter.on
-       * @desc Adds handler for event
-       * @param {String|Array<String>} event - name of event
-       * @param {Function} handler - Handler function
-       * @param {Boolean} [capture] - Use capture
-       * @example
-       * var ee = new waff.EventEmitter();
-       * // Single event binding
-       * ee.on('event-name', function(data){})
-       * // Multi event binding
-       * ee.on(['event-name', 'event-name2'], function(data){})
-       */
-
-      EventEmitter.prototype.on = function(event, handler, capture) {
-        return this._emitter.on.call({
-          emitter: this._emitter,
-          obj: this
-        }, event, handler, capture);
-      };
-
-
-      /**
-       * @function waff.EventEmitter.once
-       * @desc Adds handler only for one event emit
-       * @param {String|Array<String>} event - name of event
-       * @param {Function} handler - Handler function
-       * @param {Boolean} [capture] - Use capture
-       * @example
-       * var ee = new waff.EventEmitter();
-       * // Single event binding
-       * ee.once('event-name', function(data){})
-       * // Multi event binding
-       * ee.once(['event-name', 'event-name2'], function(data){})
-       */
-
-      EventEmitter.prototype.once = function(event, handler, capture) {
-        return this._emitter.once.call({
-          emitter: this._emitter,
-          obj: this
-        }, event, handler, capture);
-      };
-
-
-      /**
-       * @function waff.EventEmitter.off
-       * @desc Removes specific event handler
-       * @param {String|Array<String>} event - name of event
-       * @param {Function} [handler] - Handler function
-       * @param {Boolean} [capture] - Use capture
-       * @example
-       * var ee = new waff.EventEmitter();
-       * // Single event unbinding for a specific handler
-       * ee.off('event-name', function(){})
-       * // Multi event unbinding for a specific handler
-       * ee.off(['event-name', 'event-name2'], function(){})
-       * // Unbinding all handlers for event
-       * ee.off('event-name')
-       */
-
-      EventEmitter.prototype.off = function(event, handler, capture) {
-        return this._emitter.off.call({
-          emitter: this._emitter,
-          obj: this
-        }, event, handler, capture);
-      };
-
-
-      /**
-       * @function waff.EventEmitter.emit
-       * @desc Emits event
-       * @param {String} event - name of event
-       * @param {Object} [data] - Data to pass
-       * @example
-       * var ee = new waff.EventEmitter();
-       * // Emitting event
-       * ee.emit('event-name')
-       * // Emitting event with data
-       * ee.emit('event-name', {my: 'data'})
-       */
-
-      EventEmitter.prototype.emit = function(event, data) {
-        return this._emitter.emit.call({
-          emitter: this._emitter,
-          obj: this
-        }, event, data);
-      };
-
-      EventEmitter.prototype.dispatchEvent = function(event, handler, capture) {
-        return this._emitter.dispatchEvent.call(this._emitter);
-      };
-
-      return EventEmitter;
-
-    })();
-    return EventEmitter;
   })();
   Element.prototype.qq = function(qs) {
     return waff.qq(qs, this);
@@ -657,8 +719,12 @@
    * //   <content>
    * //   span.red
    */
-  Element.prototype.append = function(element) {
-    this.appendChild(element);
+  Element.prototype.append = function() {
+    var element, j, len;
+    for (j = 0, len = arguments.length; j < len; j++) {
+      element = arguments[j];
+      this.appendChild(element);
+    }
     return this;
   };
 
@@ -675,11 +741,15 @@
    * //   span.red
    * //   <content>
    */
-  Element.prototype.prepend = function(element) {
-    if (this.firstChild != null) {
-      this.insertBefore(element, this.firstChild);
-    } else {
-      this.append(element);
+  Element.prototype.prepend = function() {
+    var element, j, len;
+    for (j = 0, len = arguments.length; j < len; j++) {
+      element = arguments[j];
+      if (this.firstChild != null) {
+        this.insertBefore(element, this.firstChild);
+      } else {
+        this.append(element);
+      }
     }
     return this;
   };
@@ -698,11 +768,14 @@
    * //   div
    * //   span.red
    */
-  Element.prototype.before = function(element) {
-    if (!element.parentElement) {
-      return;
+  Element.prototype.before = function() {
+    var element, j, len;
+    for (j = 0, len = arguments.length; j < len; j++) {
+      element = arguments[j];
+      if (element.parentElement) {
+        element.parentElement.insertBefore(this, element);
+      }
     }
-    element.parentElement.insertBefore(this, element);
     return this;
   };
 
@@ -720,14 +793,17 @@
    * //   span.red
    * //   div
    */
-  Element.prototype.after = function(element) {
-    if (!element.parentElement) {
-      return;
-    }
-    if (this.nextSibling != null) {
-      element.parentElement.insertBefore(this, element.nextSibling);
-    } else {
-      element.parentElement.append(this);
+  Element.prototype.after = function() {
+    var element, j, len;
+    for (j = 0, len = arguments.length; j < len; j++) {
+      element = arguments[j];
+      if (element.parentElement) {
+        if (this.nextSibling != null) {
+          element.parentElement.insertBefore(this, element.nextSibling);
+        } else {
+          element.parentElement.append(this);
+        }
+      }
     }
     return this;
   };
@@ -936,19 +1012,119 @@
     }
     return this;
   };
-  Element.prototype.observe = function() {
+
+  /**
+   * @function
+   * @typicalname Element.prototype.watch
+   * @desc Observes for DOM changes
+   * @param {MutationObserverInit} [options] - MutationObserver options
+   * @fires attr change
+   * @fires attr:*
+   * @fires child add
+   * @fires child remove
+   * @fires text change
+   * @example
+   * var element = waff.query('span.red')
+   * element.watch()
+   */
+  Element.prototype.watch = function(options) {
     var config;
     if (this._observer == null) {
-      this._observerHandlers = [];
       this._observer = new MutationObserver((function(_this) {
         return function(mutations) {
-          var handler, j, k, len, len1, mutation, ref;
-          ref = _this._observerHandlers;
-          for (j = 0, len = ref.length; j < len; j++) {
-            handler = ref[j];
-            for (k = 0, len1 = mutations.length; k < len1; k++) {
-              mutation = mutations[k];
-              handler.call(_this, mutation);
+          var event, j, knownattrs, len, m;
+          for (j = 0, len = mutations.length; j < len; j++) {
+            m = mutations[j];
+            if (m.type === 'attributes') {
+              knownattrs = ['class', 'id', 'style', 'href', 'src'];
+              event = {
+                target: m.target,
+                attr: m.attributeName,
+                oldValue: m.oldValue,
+                value: m.target.attr(m.attributeName)
+              };
+              if (-1 !== knownattrs.indexOf(m.attributeName)) {
+                _this.emit(m.attributeName + ' change', event);
+              }
+
+              /**
+               * @event Element.prototype.watch.attr change
+               * @desc Event emitted on attribute change
+               * @example
+               * element.on('attr change', function(e){
+               *  // e.target
+               *  // e.attr
+               *  // e.value
+               *  // e.oldValue
+               * })
+               */
+              _this.emit('attr change', event);
+              _this.emit('attr:*', event);
+
+              /**
+               * @event Element.prototype.watch.attr:*
+               * @desc Event emitted on specific attribute change
+               * @example
+               * element.on('attr:class', function(e){
+               *  // e.target
+               *  // e.attr
+               *  // e.value
+               *  // e.oldValue
+               * })
+               */
+              _this.emit('attr:' + m.attributeName, event);
+            }
+            if (m.type = 'childList') {
+              if (m.addedNodes.length > 0) {
+
+                /**
+                 * @event Element.prototype.watch.child add
+                 * @desc Event emitted on child addition
+                 * @example
+                 * element.on('child add', function(e){
+                 *  // e.target
+                 *  // e.nodes
+                 * })
+                 */
+                _this.emit('child add', {
+                  target: m.target,
+                  nodes: m.addedNodes
+                });
+              }
+              if (m.removedNodes.length > 0) {
+
+                /**
+                 * @event Element.prototype.watch.child remove
+                 * @desc Event emitted on child remove
+                 * @example
+                 * element.on('child remove', function(e){
+                 *  // e.target
+                 *  // e.nodes
+                 * })
+                 */
+                _this.emit('child remove', {
+                  target: m.target,
+                  nodes: m.removedNodes
+                });
+              }
+            }
+            if (m.type = 'characterData') {
+
+              /**
+               * @event Element.prototype.watch.text change
+               * @desc Event emitted on text change
+               * @example
+               * element.on('text change', function(e){
+               *  // e.target
+               *  // e.value
+               *  // e.oldValue
+               * })
+               */
+              _this.emit('text change', {
+                target: m.target,
+                oldValue: m.oldValue,
+                value: m.target.get()
+              });
             }
           }
           return _this;
@@ -958,15 +1134,25 @@
         attributes: true,
         childList: true,
         characterData: true,
-        subtree: true,
         attributeOldValue: true,
-        characterDataOldValue: true
+        characterDataOldValue: true,
+        subtree: false
       };
       this._observer.observe(this, config);
     }
     return this;
   };
-  Element.prototype.stopObserving = function() {
+
+  /**
+   * @function
+   * @typicalname Element.prototype.unwatch
+   * @desc Stops observing for DOM changes
+   * @example
+   * var element = waff.query('span.red')
+   * element.watch()
+   * element.unwatch()
+   */
+  Element.prototype.unwatch = function() {
     if (this._observer != null) {
       this._observer.disconnect();
       delete this._observer;
@@ -1011,24 +1197,6 @@
     }
     return self;
   };
-  Element.prototype.on = function(name, next, capture) {
-    var _on, event, j, len;
-    if (!(name instanceof Array)) {
-      name = [name];
-    }
-    _on = EventTarget.prototype.on;
-    for (j = 0, len = name.length; j < len; j++) {
-      event = name[j];
-      switch (event) {
-        case 'mutation':
-          this._observerHandlers.push(next);
-          break;
-        default:
-          _on.apply(this, arguments);
-      }
-    }
-    return this;
-  };
   EventTarget.prototype.off = function(name, next, capture) {
     var detach, event, j, len, self;
     if (!(name instanceof Array)) {
@@ -1059,27 +1227,6 @@
       detach(next);
     }
     return self;
-  };
-  Element.prototype.off = function(name, next, capture) {
-    var _off, event, index, j, len;
-    if (!(name instanceof Array)) {
-      name = [name];
-    }
-    _off = EventTarget.prototype.off;
-    for (j = 0, len = name.length; j < len; j++) {
-      event = name[j];
-      switch (event) {
-        case 'mutation':
-          index = this._observerHandlers.indexOf(next);
-          if (index !== -1) {
-            this._observerHandlers.splice(index, 1);
-          }
-          break;
-        default:
-          _off.apply(this, [event, next, capture]);
-      }
-    }
-    return this;
   };
   EventTarget.prototype.once = function(name, next, capture) {
     var _this, event, fn, j, len, self;
@@ -1116,38 +1263,6 @@
     }
     event.waffThis = _this;
     return self.dispatchEvent(event);
-  };
-  Event.extend = function(object) {
-    var emitter;
-    emitter = object._emitter = waff.e();
-    if (object.on == null) {
-      object.on = emitter.on.bind({
-        emitter: emitter,
-        obj: object
-      });
-    }
-    if (object.once == null) {
-      object.once = emitter.once.bind({
-        emitter: emitter,
-        obj: object
-      });
-    }
-    if (object.off == null) {
-      object.off = emitter.off.bind({
-        emitter: emitter,
-        obj: object
-      });
-    }
-    if (object.dispatchEvent == null) {
-      object.dispatchEvent = emitter.dispatchEvent.bind(emitter);
-    }
-    if (object.emit == null) {
-      object.emit = emitter.emit.bind({
-        emitter: emitter,
-        obj: object
-      });
-    }
-    return object;
   };
 
   /**

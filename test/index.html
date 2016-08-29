@@ -14,13 +14,13 @@
       color: rgb(255, 0, 0);
     }
   </style>
+  <script src="http://coffeescript.org/extras/coffee-script.js"></script>
+  <script src="https://rawgit.com/mochajs/mocha/v3.0.0/mocha.js"></script>
+  <script src="http://chaijs.com/chai.js"></script>
 </head>
 <body>
   <div class="workspace"></div>
   <div id="mocha"></div>
-
-  <script src="https://rawgit.com/mochajs/mocha/v3.0.0/mocha.js"></script>
-  <script src="http://chaijs.com/chai.js"></script>
   <script src="../dist/waff-query.js"></script>
   <script src="../bower_components/requirejs/require.js"></script>
   <script>
@@ -70,13 +70,33 @@
   <script>mocha.setup('bdd')</script>
   <script> var expect = chai.expect; </script>
 <!-- {{ -->
-<script src="../test/element.js"></script>
-<script src="../test/event.js"></script>
 <script src="../test/module.js"></script>
-<script src="../test/query.js"></script>
-<script src="../test/selector.js"></script>
-<script src="../test/text.js"></script>
-<script src="../test/xhr.js"></script>
+<script src="../test/classes/eventemitter.js"></script>
+<script src="../test/classes/promise.js"></script>
+<script src="../test/element/after.js"></script>
+<script src="../test/element/append.js"></script>
+<script src="../test/element/attr.js"></script>
+<script src="../test/element/before.js"></script>
+<script src="../test/element/clear.js"></script>
+<script src="../test/element/create.js"></script>
+<script src="../test/element/css.js"></script>
+<script src="../test/element/html.js"></script>
+<script src="../test/element/path.js"></script>
+<script src="../test/element/prepend.js"></script>
+<script src="../test/element/query.js"></script>
+<script src="../test/element/text.js"></script>
+<script src="../test/event/emit.js"></script>
+<script src="../test/event/off.js"></script>
+<script src="../test/event/on.js"></script>
+<script src="../test/event/once.js"></script>
+<script src="../test/query/all.js"></script>
+<script src="../test/query/first.js"></script>
+<script src="../test/selector/parse.js"></script>
+<script src="../test/text/create.js"></script>
+<script src="../test/text/get.js"></script>
+<script src="../test/text/set.js"></script>
+<script src="../test/xhr/get.js"></script>
+<script src="../test/xhr/post.js"></script>
 <!-- }} -->
   <script>
     mocha.checkLeaks();

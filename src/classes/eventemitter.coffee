@@ -2,6 +2,7 @@
   class EventEmitter
     ###*
     # @class waff.EventEmitter
+    # @static
     # @classdesc Own implementation of EventEmitter. (untested)
     # @example
     # var ee = new waff.EventEmitter();
@@ -11,6 +12,7 @@
 
     ###*
     # @function waff.EventEmitter.on
+    # @instance
     # @desc Adds handler for event
     # @param {String|Array<String>} event - name of event
     # @param {Function} handler - Handler function
@@ -27,6 +29,7 @@
 
     ###*
     # @function waff.EventEmitter.once
+    # @instance
     # @desc Adds handler only for one event emit
     # @param {String|Array<String>} event - name of event
     # @param {Function} handler - Handler function
@@ -43,6 +46,7 @@
 
     ###*
     # @function waff.EventEmitter.off
+    # @instance
     # @desc Removes specific event handler
     # @param {String|Array<String>} event - name of event
     # @param {Function} [handler] - Handler function
@@ -62,6 +66,7 @@
     ###*
     # @function waff.EventEmitter.emit
     # @desc Emits event
+    # @instance
     # @param {String} event - name of event
     # @param {Object} [data] - Data to pass
     # @example
@@ -75,8 +80,27 @@
       @_emitter.emit.call {emitter: @_emitter, obj: @}, event, data
 
     dispatchEvent: (event, handler, capture) ->
-      @_emitter.dispatchEvent.call @_emitter
+      @_emitter.dispatchEvent.call @_emitter, event, handler, capture
 
+
+  ###*
+  # @function waff.EventEmitter.extend
+  # @static
+  # @desc Extends events on object
+  # @param {Object} object - object to extend
+  # @example
+  # var obj = {};
+  # EventEmitter.extend(obj);
+  # obj.emit('event!')
+  ###
+  EventEmitter.extend = (object)->
+    emitter = object._emitter = waff.e()
+    object.on = emitter.on.bind {emitter: emitter, obj: object} unless object.on?
+    object.once = emitter.once.bind {emitter: emitter, obj: object} unless object.once?
+    object.off = emitter.off.bind {emitter: emitter, obj: object} unless object.off?
+    object.dispatchEvent = emitter.dispatchEvent.bind emitter unless object.dispatchEvent?
+    object.emit = emitter.emit.bind {emitter: emitter, obj: object} unless object.emit?
+    object
 
   EventEmitter
 )()

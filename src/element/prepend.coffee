@@ -11,9 +11,10 @@
 # //   span.red
 # //   <content>
 ###
-Element::prepend = (element) ->
-  if @firstChild?
-    @insertBefore element, @firstChild
-  else
-    @append element
+Element::prepend = ->
+  for element in arguments
+    if @firstChild?
+      @insertBefore element, @firstChild
+    else
+      @append element
   @

@@ -12,10 +12,11 @@
 # //   span.red
 # //   div
 ###
-Element::after = (element) ->
-  return unless element.parentElement
-  if @nextSibling?
-    element.parentElement.insertBefore @, element.nextSibling
-  else
-    element.parentElement.append @
+Element::after = ->
+  for element in arguments
+    if element.parentElement
+      if @nextSibling?
+        element.parentElement.insertBefore @, element.nextSibling
+      else
+        element.parentElement.append @
   @

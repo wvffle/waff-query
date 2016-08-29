@@ -39,6 +39,19 @@ module.exports = function(grunt) {
         files: {
           'dist/waff-query.js': 'dist/waff-query.coffee'
         }
+      },
+      test: {
+        options: {
+          bare: true
+        },
+        files: [{
+          expand: true,
+          cwd: 'test',
+          src: '**/*.coffee',
+          dest: 'test',
+          ext: '.js'
+
+        }]
       }
     },
     uglify: {
@@ -116,8 +129,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('tests', function () {
     index = grunt.file.read('test/index.html');
-    modules = grunt.file.expand(['test/module/**/*.js']);
-    files = grunt.file.expand(['test/**/*.js', '!test/module/**/*.js']);
+    modules = grunt.file.expand(['test/module.js']);
+    files = grunt.file.expand(['test/**/*.js', '!test/module.js']);
     res = '<!-- {{ -->\n'
     for (var i = 0; i < modules.length; i++) {
       res += '<script src="../'+modules[i]+'"></script>\n'
@@ -131,8 +144,8 @@ module.exports = function(grunt) {
   })
 
   grunt.registerTask('default', ['build', 'test', 'docs', 'publish']);
-  grunt.registerTask('build', ['concat', 'coffee', 'usebanner', 'uglify']);
-  grunt.registerTask('test', ['tests', 'open:tests']);
+  grunt.registerTask('build', ['concat', 'coffee:compile', 'usebanner', 'uglify']);
+  grunt.registerTask('test', ['coffee:test', 'tests', 'open:tests']);
   grunt.registerTask('docs', ['jsdoc2md']);
   grunt.registerTask('publish', ['modify_json']);
 

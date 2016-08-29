@@ -1,5 +1,7 @@
 (->
-  class Promise
+  class Promise extends waff._EventEmitter
+
+
     ###*
     # @class waff.Promise
     # @extends waff.EventEmitter
@@ -9,11 +11,13 @@
     # @fires reject
     ###
     constructor: (executor) ->
-      Event.extend @
+
+      super()
+
       @_then = []
       @_catch = []
 
-      executor @resolve(@), @reject(@)
+      executor @_resolve(@), @_reject(@)
 
     ###*
     # @function waff.Promise.then
@@ -46,7 +50,7 @@
       @_catch.push handler
       @
 
-    resolve: (self) ->
+    _resolve: (self) ->
       ->
         ###*
         # @event waff.Promise.fulfill
@@ -60,8 +64,10 @@
         self.emit 'fulfill', arguments
         for handler in self._then
           handler.apply @, arguments
+    resolve: ->
+      @_resolve(@).apply @, arguments
 
-    reject: (self) ->
+    _reject: (self) ->
       ->
         ###*
         # @event waff.Promise.reject
@@ -73,8 +79,10 @@
         # })
         ###
         self.emit 'reject', arguments
-        for handler in self._then
+        for handler in self._catch
           handler.apply @, arguments
+    reject: ->
+      @_reject(@).apply @, arguments
 
   Promise
 )()

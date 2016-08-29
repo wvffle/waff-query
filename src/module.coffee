@@ -28,7 +28,7 @@
           @waff[key.slice 1] = value
 ) null, (->
   ###*
-  # @namespace waff
+  # @global waff
   ###
   waff =
     ps: <%= include('selector/parse', '    ') %>
@@ -55,8 +55,8 @@
   waff._get = <%= include('xhr/get', '  ') %>
   waff._post = <%= include('xhr/post', '  ') %>
 
-  waff._Promise = <%= include('classes/promise', '  ') %>
   waff._EventEmitter = <%= include('classes/eventemitter', '  ') %>
+  waff._Promise = <%= include('classes/promise', '  ') %>
 
   # Register prototypes
   <%= include('element/query', '  ') %>
@@ -70,13 +70,12 @@
   <%= include('element/css', '  ') %>
   <%= include('element/attr', '  ') %>
   <%= include('element/clear', '  ') %>
+  <%= include('element/watch', '  ') %>
 
-  <%= include('event/observe', '  ') %>
   <%= include('event/on', '  ') %>
   <%= include('event/off', '  ') %>
   <%= include('event/once', '  ') %>
   <%= include('event/emit', '  ') %>
-  <%= include('event/extend', '  ') %>
 
   <%= include('text/set', '  ') %>
   <%= include('text/get', '  ') %>

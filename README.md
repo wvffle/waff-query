@@ -13,15 +13,16 @@
 * [TextNode value manipulation](#textnode-value-manipulation)
 * [Appending elements](#appending-elements)
 * [Changing css](#changing-css)
+* [Observers](#observers)
 * [Element path](#element-path)
 
 # Global functions
 <a name="waff"></a>
 
-## waff : <code>object</code>
-**Kind**: global namespace  
+## waff
+**Kind**: global variable  
 
-* [waff](#waff) : <code>object</code>
+* [waff](#waff)
     * _instance_
         * [.query(qs, [root])](#waff+query) ⇒ <code>Element</code> &#124; <code>null</code>
             * [.all(qs, [root])](#waff+query.all) ⇒ <code>Array.&lt;Element&gt;</code>
@@ -30,17 +31,18 @@
         * [.get(url, options)](#waff+get) ⇒ <code>[Promise](#waff.Promise)</code>
         * [.post(url, data, options)](#waff+post) ⇒ <code>[Promise](#waff.Promise)</code>
     * _static_
+        * [.EventEmitter](#waff.EventEmitter)
+            * [.on(event, handler, [capture])](#waff.EventEmitter.on)
+            * [.once(event, handler, [capture])](#waff.EventEmitter.once)
+            * [.off(event, [handler], [capture])](#waff.EventEmitter.off)
+            * [.emit(event, [data])](#waff.EventEmitter.emit)
+            * [.extend(object)](#waff.EventEmitter.extend)
         * [.Promise](#waff.Promise) ⇐ <code>[EventEmitter](#waff.EventEmitter)</code>
             * [new Promise(executor)](#new_waff.Promise_new)
             * [.then(onFulfill, [onReject])](#waff.Promise.then)
             * [.catch(onReject)](#waff.Promise.catch)
             * ["fulfill"](#waff.Promise.event_fulfill)
             * ["reject"](#waff.Promise.event_reject)
-        * [.EventEmitter](#waff.EventEmitter)
-            * [.on(event, handler, [capture])](#waff.EventEmitter.on)
-            * [.once(event, handler, [capture])](#waff.EventEmitter.once)
-            * [.off(event, [handler], [capture])](#waff.EventEmitter.off)
-            * [.emit(event, [data])](#waff.EventEmitter.emit)
 
 <a name="waff+query"></a>
 
@@ -160,6 +162,122 @@ waff.post('http://httpbin.org/post', { waffle_id: 666 })
 
   })
 ```
+<a name="waff.EventEmitter"></a>
+
+### waff.EventEmitter
+Own implementation of EventEmitter. (untested)
+
+**Kind**: static class of <code>[waff](#waff)</code>  
+
+* [.EventEmitter](#waff.EventEmitter)
+    * [.on(event, handler, [capture])](#waff.EventEmitter.on)
+    * [.once(event, handler, [capture])](#waff.EventEmitter.once)
+    * [.off(event, [handler], [capture])](#waff.EventEmitter.off)
+    * [.emit(event, [data])](#waff.EventEmitter.emit)
+    * [.extend(object)](#waff.EventEmitter.extend)
+
+<a name="waff.EventEmitter.on"></a>
+
+#### EventEmitter.on(event, handler, [capture])
+Adds handler for event
+
+**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | name of event |
+| handler | <code>function</code> | Handler function |
+| [capture] | <code>Boolean</code> | Use capture |
+
+**Example**  
+```js
+var ee = new waff.EventEmitter();
+// Single event binding
+ee.on('event-name', function(data){})
+// Multi event binding
+ee.on(['event-name', 'event-name2'], function(data){})
+```
+<a name="waff.EventEmitter.once"></a>
+
+#### EventEmitter.once(event, handler, [capture])
+Adds handler only for one event emit
+
+**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | name of event |
+| handler | <code>function</code> | Handler function |
+| [capture] | <code>Boolean</code> | Use capture |
+
+**Example**  
+```js
+var ee = new waff.EventEmitter();
+// Single event binding
+ee.once('event-name', function(data){})
+// Multi event binding
+ee.once(['event-name', 'event-name2'], function(data){})
+```
+<a name="waff.EventEmitter.off"></a>
+
+#### EventEmitter.off(event, [handler], [capture])
+Removes specific event handler
+
+**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | name of event |
+| [handler] | <code>function</code> | Handler function |
+| [capture] | <code>Boolean</code> | Use capture |
+
+**Example**  
+```js
+var ee = new waff.EventEmitter();
+// Single event unbinding for a specific handler
+ee.off('event-name', function(){})
+// Multi event unbinding for a specific handler
+ee.off(['event-name', 'event-name2'], function(){})
+// Unbinding all handlers for event
+ee.off('event-name')
+```
+<a name="waff.EventEmitter.emit"></a>
+
+#### EventEmitter.emit(event, [data])
+Emits event
+
+**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>String</code> | name of event |
+| [data] | <code>Object</code> | Data to pass |
+
+**Example**  
+```js
+var ee = new waff.EventEmitter();
+// Emitting event
+ee.emit('event-name')
+// Emitting event with data
+ee.emit('event-name', {my: 'data'})
+```
+<a name="waff.EventEmitter.extend"></a>
+
+#### EventEmitter.extend(object)
+Extends events on object
+
+**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| object | <code>Object</code> | object to extend |
+
+**Example**  
+```js
+var obj = {};
+EventEmitter.extend(obj);
+obj.emit('event!')
+```
 <a name="waff.Promise"></a>
 
 ### waff.Promise ⇐ <code>[EventEmitter](#waff.EventEmitter)</code>
@@ -247,105 +365,18 @@ promise.on('reject', function(){
  // same as promise.catch
 })
 ```
-<a name="waff.EventEmitter"></a>
-
-### waff.EventEmitter
-Own implementation of EventEmitter. (untested)
-
-**Kind**: static class of <code>[waff](#waff)</code>  
-
-* [.EventEmitter](#waff.EventEmitter)
-    * [.on(event, handler, [capture])](#waff.EventEmitter.on)
-    * [.once(event, handler, [capture])](#waff.EventEmitter.once)
-    * [.off(event, [handler], [capture])](#waff.EventEmitter.off)
-    * [.emit(event, [data])](#waff.EventEmitter.emit)
-
-<a name="waff.EventEmitter.on"></a>
-
-#### EventEmitter.on(event, handler, [capture])
-Adds handler for event
-
-**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | name of event |
-| handler | <code>function</code> | Handler function |
-| [capture] | <code>Boolean</code> | Use capture |
-
-**Example**  
-```js
-var ee = new waff.EventEmitter();
-// Single event binding
-ee.on('event-name', function(data){})
-// Multi event binding
-ee.on(['event-name', 'event-name2'], function(data){})
-```
-<a name="waff.EventEmitter.once"></a>
-
-#### EventEmitter.once(event, handler, [capture])
-Adds handler only for one event emit
-
-**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | name of event |
-| handler | <code>function</code> | Handler function |
-| [capture] | <code>Boolean</code> | Use capture |
-
-**Example**  
-```js
-var ee = new waff.EventEmitter();
-// Single event binding
-ee.once('event-name', function(data){})
-// Multi event binding
-ee.once(['event-name', 'event-name2'], function(data){})
-```
-<a name="waff.EventEmitter.off"></a>
-
-#### EventEmitter.off(event, [handler], [capture])
-Removes specific event handler
-
-**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>String</code> &#124; <code>Array.&lt;String&gt;</code> | name of event |
-| [handler] | <code>function</code> | Handler function |
-| [capture] | <code>Boolean</code> | Use capture |
-
-**Example**  
-```js
-var ee = new waff.EventEmitter();
-// Single event unbinding for a specific handler
-ee.off('event-name', function(){})
-// Multi event unbinding for a specific handler
-ee.off(['event-name', 'event-name2'], function(){})
-// Unbinding all handlers for event
-ee.off('event-name')
-```
-<a name="waff.EventEmitter.emit"></a>
-
-#### EventEmitter.emit(event, [data])
-Emits event
-
-**Kind**: static method of <code>[EventEmitter](#waff.EventEmitter)</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>String</code> | name of event |
-| [data] | <code>Object</code> | Data to pass |
-
-**Example**  
-```js
-var ee = new waff.EventEmitter();
-// Emitting event
-ee.emit('event-name')
-// Emitting event with data
-ee.emit('event-name', {my: 'data'})
-```
 # Content manipulation
+<a name="Element+clear"></a>
+
+## Element.clear()
+Clears element content
+
+**Kind**: instance method of <code>Element</code>  
+**Example**  
+```js
+waff.element('body').clear()
+```
+
 <a name="Element+html"></a>
 
 ## Element.html([html])
@@ -536,6 +567,117 @@ waff.element('body').css() // Object containing all properties
 waff.element('body').css('background-color') // Only `background-color`
 waff.element('body').css('background-color', '#f00') // sets `background-color` to #f00
 waff.element('body').css({'background-color': '#f00', 'color', '#ffa500'}) // sets `background-color` to #f00 and `color` to #ffa500
+```
+
+
+# Observers
+<a name="Element+watch"></a>
+
+## Element.watch([options])
+Observes for DOM changes
+
+**Kind**: instance method of <code>Element</code>  
+**Emits**: <code>event:attr change</code>, <code>attr:\*</code>, <code>event:child add</code>, <code>event:child remove</code>, <code>event:text change</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>MutationObserverInit</code> | MutationObserver options |
+
+**Example**  
+```js
+var element = waff.query('span.red')
+element.watch()
+```
+
+* [.watch([options])](#Element+watch)
+    * ["attr change"](#Element+watch.event_attr change)
+    * ["attr:*"](#Element+watch.attr_*)
+    * ["child add"](#Element+watch.event_child add)
+    * ["child remove"](#Element+watch.event_child remove)
+    * ["text change"](#Element+watch.event_text change)
+
+<a name="Element+watch.event_attr change"></a>
+
+### "attr change"
+Event emitted on attribute change
+
+**Kind**: event emitted by <code>[watch](#Element+watch)</code>  
+**Example**  
+```js
+element.on('attr change', function(e){
+ // e.target
+ // e.attr
+ // e.value
+ // e.oldValue
+})
+```
+<a name="Element+watch.attr_*"></a>
+
+### "attr:*"
+Event emitted on specific attribute change
+
+**Kind**: event emitted by <code>[watch](#Element+watch)</code>  
+**Example**  
+```js
+element.on('attr:class', function(e){
+ // e.target
+ // e.attr
+ // e.value
+ // e.oldValue
+})
+```
+<a name="Element+watch.event_child add"></a>
+
+### "child add"
+Event emitted on child addition
+
+**Kind**: event emitted by <code>[watch](#Element+watch)</code>  
+**Example**  
+```js
+element.on('child add', function(e){
+ // e.target
+ // e.nodes
+})
+```
+<a name="Element+watch.event_child remove"></a>
+
+### "child remove"
+Event emitted on child remove
+
+**Kind**: event emitted by <code>[watch](#Element+watch)</code>  
+**Example**  
+```js
+element.on('child remove', function(e){
+ // e.target
+ // e.nodes
+})
+```
+<a name="Element+watch.event_text change"></a>
+
+### "text change"
+Event emitted on text change
+
+**Kind**: event emitted by <code>[watch](#Element+watch)</code>  
+**Example**  
+```js
+element.on('text change', function(e){
+ // e.target
+ // e.value
+ // e.oldValue
+})
+```
+
+<a name="Element+unwatch"></a>
+
+## Element.unwatch()
+Stops observing for DOM changes
+
+**Kind**: instance method of <code>Element</code>  
+**Example**  
+```js
+var element = waff.query('span.red')
+element.watch()
+element.unwatch()
 ```
 
 

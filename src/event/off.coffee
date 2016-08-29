@@ -16,19 +16,3 @@ EventTarget::off = (name, next, capture) ->
         detach next
     detach next
   self
-
-Element::off = (name, next, capture) ->
-  unless name instanceof Array
-    name = [ name ]
-
-  _off = EventTarget::off
-
-  for event in name
-    switch event
-      when 'mutation'
-        index = @_observerHandlers.indexOf next
-        if index != -1
-          @_observerHandlers.splice index, 1
-      else
-        _off.apply this, [event, next, capture]
-  @
