@@ -5,5 +5,5 @@ describe 'Element::path', ->
 
   it 'should return element\'s path', ->
     span = document.querySelector 'span.green'
-    expect document.querySelector span.path()
+    expect document.querySelector span.path
     	.to.be.equal span

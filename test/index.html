@@ -60,6 +60,11 @@
         var h1 = ce('h1');
         h1.innerHTML = 'Yaaaaaaaaaaaaay';
         span.appendChild(h1);
+        var span = ce('span');
+        span.classList.add('orange');
+        workspace.appendChild(span);
+        var t = document.createTextNode('wut??');
+        span.appendChild(t);
       },
       clear: function () {
         this.element.innerHTML = '';

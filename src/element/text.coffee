@@ -12,7 +12,8 @@ Element::text = (text) ->
   unless text?
     return @textContent
 
-  @clear()
+  content = not (@childNodes.length == 1 and @childNodes[0] instanceof Text)
+  @clear() if content
 
   if text instanceof NodeList or text instanceof Array
     _text = ''
@@ -24,10 +25,22 @@ Element::text = (text) ->
           _text += t
         else
           _text += t.toString()
-    e = waff.t _text
-    @append e
-    return e
+    unless content
+      return @childNodes[0].set _text
+    else
+      e = waff.t _text
+      @append e
+      return e
   text = text.get() if text instanceof Text
-  e = waff.t text
-  @append e
-  e
+  unless content
+    @childNodes[0].set text
+  else
+    e = waff.t text
+    @append e
+    e
+
+Array::text = ->
+  for element in @
+    if element instanceof Element
+      element.text.apply element, arguments
+  @

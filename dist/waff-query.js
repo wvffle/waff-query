@@ -63,7 +63,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   /**
    * @global waff
    */
-  var waff;
+  var Target, j, k, l, len, len1, len2, len3, o, ref, ref1, ref2, ref3, waff;
   waff = {
     ps: (function() {
 
@@ -432,6 +432,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     };
     return post;
   })();
+  waff._EventTargets = [Element, Document, Window, Node, XMLHttpRequest];
   waff._EventEmitter = (function() {
     var EventEmitter;
     EventEmitter = (function() {
@@ -722,6 +723,15 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   Element.prototype.query = Element.prototype.q;
   Element.prototype.query.all = Element.prototype.qq;
   Element.prototype.q.all = Element.prototype.qq;
+  Array.prototype.q = function(qs) {
+    return waff.q(qs, this);
+  };
+  Array.prototype.qq = function(qs) {
+    return waff.qq(qs, this);
+  };
+  Array.prototype.query = Array.prototype.q;
+  Array.prototype.query.all = Array.prototype.qq;
+  Array.prototype.q.all = Array.prototype.qq;
 
   /**
    * @function
@@ -836,11 +846,14 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * span.text() // <div></div> as a string
    */
   Element.prototype.text = function(text) {
-    var _text, e, j, len, ref, t;
+    var _text, content, e, j, len, ref, t;
     if (text == null) {
       return this.textContent;
     }
-    this.clear();
+    content = !(this.childNodes.length === 1 && this.childNodes[0] instanceof Text);
+    if (content) {
+      this.clear();
+    }
     if (text instanceof NodeList || text instanceof Array) {
       _text = '';
       ref = [].slice.call(text);
@@ -856,16 +869,34 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           }
         }
       }
-      e = waff.t(_text);
-      this.append(e);
-      return e;
+      if (!content) {
+        return this.childNodes[0].set(_text);
+      } else {
+        e = waff.t(_text);
+        this.append(e);
+        return e;
+      }
     }
     if (text instanceof Text) {
       text = text.get();
     }
-    e = waff.t(text);
-    this.append(e);
-    return e;
+    if (!content) {
+      return this.childNodes[0].set(text);
+    } else {
+      e = waff.t(text);
+      this.append(e);
+      return e;
+    }
+  };
+  Array.prototype.text = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.text.apply(element, arguments);
+      }
+    }
+    return this;
   };
 
   /**
@@ -904,6 +935,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     this.innerHTML = html;
     return this;
   };
+  Array.prototype.html = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.html.apply(element, arguments);
+      }
+    }
+    return this;
+  };
 
   /**
    * @function
@@ -912,30 +953,36 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * @example
    * waff.element('body').path() // html > body:nth-child(2)
    */
-  Element.prototype.path = function() {
-    var e, i, path, root;
-    root = this;
-    path = [];
-    while (root.parentNode) {
-      if (root.id !== '') {
-        path.unshift('#' + root.id);
-        break;
-      }
-      if (root === waff.q('html')) {
-        path.unshift(root.tagName.toLowerCase());
-      } else {
-        i = 1;
-        e = root;
-        while (e.previousElementSibling) {
-          e = e.previousElementSibling;
-          i++;
+  Object.defineProperty(Element.prototype, 'path', {
+    configurable: true,
+    get: function() {
+      var e, i, path, root;
+      root = this;
+      path = [];
+      while (root.parentNode) {
+        if (root.id !== '') {
+          path.unshift('#' + root.id);
+          break;
         }
-        path.unshift(root.tagName.toLowerCase() + ':nth-child(' + i + ')');
+        if (root === waff.q('html')) {
+          path.unshift(root.tagName.toLowerCase());
+        } else {
+          i = 1;
+          e = root;
+          while (e.previousElementSibling) {
+            e = e.previousElementSibling;
+            i++;
+          }
+          path.unshift(root.tagName.toLowerCase() + ':nth-child(' + i + ')');
+        }
+        root = root.parentNode;
       }
-      root = root.parentNode;
+      return path.join(' > ');
+    },
+    set: function() {
+      return this;
     }
-    return path.join(' > ');
-  };
+  });
 
   /**
    * @function
@@ -986,6 +1033,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return res;
   };
+  Array.prototype.css = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.css.apply(element, arguments);
+      }
+    }
+    return this;
+  };
 
   /**
    * @function
@@ -1015,6 +1072,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
+  Array.prototype.attr = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.attr.apply(element, arguments);
+      }
+    }
+    return this;
+  };
 
   /**
    * @function
@@ -1029,16 +1096,26 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
+  Array.prototype.clear = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.clear.apply(element, arguments);
+      }
+    }
+    return this;
+  };
 
   /**
    * @function
-   * @typicalname Element.prototype.classes
-   * @desc Set of classes
+   * @typicalname Element.prototype.class
+   * @desc classList shortcut
    * @example
-   * waff.element('body').classes.contains('cls')
-   * waff.element('body').classes.remove('cls')
-   * waff.element('body').classes.add('cls')
-   * waff.element('body').classes.toggle('cls')
+   * waff.element('body').class.contains('cls')
+   * waff.element('body').class.remove('cls')
+   * waff.element('body').class.add('cls')
+   * waff.element('body').class.toggle('cls')
    */
   Object.defineProperty(Element.prototype, 'class', {
     configurable: true,
@@ -1179,6 +1256,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
+  Array.prototype.watch = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.watch.apply(element, arguments);
+      }
+    }
+    return this;
+  };
 
   /**
    * @function
@@ -1196,111 +1283,163 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
-  EventTarget.prototype.on = function(name, next, capture) {
-    var _this, event, j, len, self;
-    if (!(name instanceof Array)) {
-      name = [name];
-    }
-    self = this.emitter != null ? this.emitter : this;
-    _this = this.emitter != null ? this.obj : this;
-    if (self._events == null) {
-      self._events = {};
-    }
-    if (self._eventsInited == null) {
-      self._eventsInited = {};
-    }
-    for (j = 0, len = name.length; j < len; j++) {
-      event = name[j];
-      if (self._events[event] == null) {
-        self._events[event] = [];
+  Array.prototype.unwatch = function() {
+    var element, j, len;
+    for (j = 0, len = this.length; j < len; j++) {
+      element = this[j];
+      if (element instanceof Element) {
+        element.unwatch.apply(element, arguments);
       }
-      self._events[event].push(next);
-      if (self._eventsInited[event] !== true) {
-        self.addEventListener(event, (function(ev) {
-          var handler, k, len1, ref, results;
-          if (ev.waffData != null) {
-            ev = ev.waffData;
-          }
-          ref = self._events[event];
-          results = [];
-          for (k = 0, len1 = ref.length; k < len1; k++) {
-            handler = ref[k];
-            results.push(handler.call(_this, ev));
-          }
-          return results;
-        }), capture);
-      }
-      self._eventsInited[event] = true;
     }
-    return self;
+    return this;
   };
-  EventTarget.prototype.off = function(name, next, capture) {
-    var detach, event, j, len, self;
-    if (!(name instanceof Array)) {
-      name = [name];
-    }
-    self = this.emitter != null ? this.emitter : this;
-    if (self._events == null) {
-      self._events = {};
-    }
-    for (j = 0, len = name.length; j < len; j++) {
-      event = name[j];
-      if (self._events[event] == null) {
-        self._events[event] = [];
-      }
-      if (next == null) {
-        self._events[event] = [];
-      }
-      detach = (function(_this) {
-        return function(next) {
-          var index;
-          index = self._events[event].indexOf(next);
-          if (index !== -1) {
-            self._events[event].splice(index, 1);
-            return detach(next);
-          }
-        };
-      })(this);
-      detach(next);
-    }
-    return self;
-  };
-  EventTarget.prototype.once = function(name, next, capture) {
-    var _this, event, fn, j, len, self;
-    if (!(name instanceof Array)) {
-      name = [name];
-    }
-    self = this.emitter != null ? this.emitter : this;
-    _this = this.emitter != null ? this.obj : this;
-    fn = function(event) {
-      var n;
-      n = function(ev) {
-        next.call(_this, ev);
-        return self.off(event, n, capture);
+  ref = waff._EventTargets;
+  for (j = 0, len = ref.length; j < len; j++) {
+    Target = ref[j];
+    Target.prototype.on = function(name, next, capture) {
+      var _this, event, k, len1, listen, self;
+      listen = function() {
+        var args, el, ev;
+        args = [].slice.call(arguments);
+        el = args.shift();
+        ev = args.shift();
+        if (el.addEventListener != null) {
+          args.unshift(ev);
+          return el.addEventListener.apply(el, args);
+        } else {
+          args.unshift('on' + ev);
+          return el.attachEvent.apply(el, args);
+        }
       };
-      return self.on(event, n, capture);
-    };
-    for (j = 0, len = name.length; j < len; j++) {
-      event = name[j];
-      fn(event);
-    }
-    return self;
-  };
-  EventTarget.prototype.emit = function(event, data) {
-    var _this, self;
-    self = this.emitter != null ? this.emitter : this;
-    _this = this.emitter != null ? this.obj : this;
-    if (typeof event === 'string') {
-      event = new Event(event);
-    }
-    if (typeof event === 'object') {
-      if (data) {
-        event.waffData = data;
+      if (!(name instanceof Array)) {
+        name = [name];
       }
-    }
-    event.waffThis = _this;
-    return self.dispatchEvent(event);
-  };
+      self = this.emitter != null ? this.emitter : this;
+      _this = this.emitter != null ? this.obj : this;
+      if (self._events == null) {
+        self._events = {};
+      }
+      if (self._eventsInited == null) {
+        self._eventsInited = {};
+      }
+      for (k = 0, len1 = name.length; k < len1; k++) {
+        event = name[k];
+        if (self._events[event] == null) {
+          self._events[event] = [];
+        }
+        self._events[event].push(next);
+        if (self._eventsInited[event] !== true) {
+          listen(self, event, (function(ev) {
+            var handler, l, len2, ref1, results;
+            if (ev.waffData != null) {
+              ev = ev.waffData;
+            }
+            ref1 = self._events[event];
+            results = [];
+            for (l = 0, len2 = ref1.length; l < len2; l++) {
+              handler = ref1[l];
+              results.push(handler.call(_this, ev));
+            }
+            return results;
+          }), capture);
+        }
+        self._eventsInited[event] = true;
+      }
+      return self;
+    };
+  }
+  ref1 = waff._EventTargets;
+  for (k = 0, len1 = ref1.length; k < len1; k++) {
+    Target = ref1[k];
+    Target.prototype.off = function(name, next, capture) {
+      var detach, event, l, len2, self;
+      if (!(name instanceof Array)) {
+        name = [name];
+      }
+      self = this.emitter != null ? this.emitter : this;
+      if (self._events == null) {
+        self._events = {};
+      }
+      for (l = 0, len2 = name.length; l < len2; l++) {
+        event = name[l];
+        if (self._events[event] == null) {
+          self._events[event] = [];
+        }
+        if (next == null) {
+          self._events[event] = [];
+        }
+        detach = (function(_this) {
+          return function(next) {
+            var index;
+            index = self._events[event].indexOf(next);
+            if (index !== -1) {
+              self._events[event].splice(index, 1);
+              return detach(next);
+            }
+          };
+        })(this);
+        detach(next);
+      }
+      return self;
+    };
+  }
+  ref2 = waff._EventTargets;
+  for (l = 0, len2 = ref2.length; l < len2; l++) {
+    Target = ref2[l];
+    Target.prototype.once = function(name, next, capture) {
+      var _this, event, fn, len3, o, self;
+      if (!(name instanceof Array)) {
+        name = [name];
+      }
+      self = this.emitter != null ? this.emitter : this;
+      _this = this.emitter != null ? this.obj : this;
+      fn = function(event) {
+        var n;
+        n = function(ev) {
+          next.call(_this, ev);
+          return self.off(event, n, capture);
+        };
+        return self.on(event, n, capture);
+      };
+      for (o = 0, len3 = name.length; o < len3; o++) {
+        event = name[o];
+        fn(event);
+      }
+      return self;
+    };
+  }
+  ref3 = waff._EventTargets;
+  for (o = 0, len3 = ref3.length; o < len3; o++) {
+    Target = ref3[o];
+    Target.prototype.emit = function(event, data) {
+      var _this, dispatch, self;
+      dispatch = function() {
+        var args, el, ev;
+        args = [].slice.call(arguments);
+        el = args.shift();
+        ev = args.shift();
+        if (el.dispatchEvent != null) {
+          args.unshift(ev);
+          return el.dispatchEvent.apply(el, args);
+        } else {
+          args.unshift('on' + ev);
+          return el.fireEvent.apply(el, args);
+        }
+      };
+      self = this.emitter != null ? this.emitter : this;
+      _this = this.emitter != null ? this.obj : this;
+      if (typeof event === 'string') {
+        event = new Event(event);
+      }
+      if (typeof event === 'object') {
+        if (data) {
+          event.waffData = data;
+        }
+      }
+      event.waffThis = _this;
+      return dispatch(self, event);
+    };
+  }
 
   /**
    * @function

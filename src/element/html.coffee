@@ -27,3 +27,9 @@ Element::html = (html) ->
   html = html.get() if html instanceof Text
   @innerHTML = html
   @
+
+Array::html = ->
+  for element in @
+    if element instanceof Element
+      element.html.apply element, arguments
+  @

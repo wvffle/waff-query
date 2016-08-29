@@ -92,17 +92,9 @@ Element::watch = (options) ->
       subtree: false
     @_observer.observe @, config
   @
-###*
-# @function
-# @typicalname Element.prototype.unwatch
-# @desc Stops observing for DOM changes
-# @example
-# var element = waff.query('span.red')
-# element.watch()
-# element.unwatch()
-###
-Element::unwatch = ->
-  if @_observer?
-    @_observer.disconnect()
-    delete @_observer
+
+Array::watch = ->
+  for element in @
+    if element instanceof Element
+      element.watch.apply element, arguments
   @

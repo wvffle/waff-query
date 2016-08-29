@@ -5,7 +5,7 @@
 # @example
 # waff.element('body').path() // html > body:nth-child(2)
 ###
-Object.defineProperty Element::, 'class',
+Object.defineProperty Element::, 'path',
   configurable: true
   get: ->
     root = @

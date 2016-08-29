@@ -33,3 +33,9 @@ Element::css = (css, values) ->
       if isNaN +prop
         res[prop] = style
 		res
+
+Array::css = ->
+  for element in @
+    if element instanceof Element
+      element.css.apply element, arguments
+  @

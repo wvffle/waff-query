@@ -55,6 +55,7 @@
   waff._get = <%= include('xhr/get', '  ') %>
   waff._post = <%= include('xhr/post', '  ') %>
 
+  waff._EventTargets = <%= include('event/targets', '  ') %>
   waff._EventEmitter = <%= include('classes/eventemitter', '  ') %>
   waff._Promise = <%= include('classes/promise', '  ') %>
 
@@ -72,6 +73,7 @@
   <%= include('element/clear', '  ') %>
   <%= include('element/classes', '  ') %>
   <%= include('element/watch', '  ') %>
+  <%= include('element/unwatch', '  ') %>
 
   <%= include('event/on', '  ') %>
   <%= include('event/off', '  ') %>

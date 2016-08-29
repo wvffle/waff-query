@@ -20,3 +20,9 @@ Element::attr = (attr, value) ->
     else
       return @getAttribute attr
   @
+
+Array::attr = ->
+  for element in @
+    if element instanceof Element
+      element.attr.apply element, arguments
+  @

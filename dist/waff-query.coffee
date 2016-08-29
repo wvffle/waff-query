@@ -316,6 +316,13 @@
     post
   )()
 
+  waff._EventTargets = [
+    Element
+    Document
+    Window
+    Node
+    XMLHttpRequest
+  ]
   waff._EventEmitter = (->
     class EventEmitter
       ###*
@@ -521,6 +528,17 @@
   
   Element::query.all = Element::qq
   Element::q.all = Element::qq
+  
+  
+  Array::q = (qs) ->
+    waff.q qs, @
+  Array::qq = (qs) ->
+    waff.qq qs, @
+  
+  Array::query = Array::q
+  
+  Array::query.all = Array::qq
+  Array::q.all = Array::qq
   ###*
   # @function
   # @typicalname Element.prototype.append
@@ -613,7 +631,8 @@
     unless text?
       return @textContent
   
-    @clear()
+    content = not (@childNodes.length == 1 and @childNodes[0] instanceof Text)
+    @clear() if content
   
     if text instanceof NodeList or text instanceof Array
       _text = ''
@@ -625,13 +644,25 @@
             _text += t
           else
             _text += t.toString()
-      e = waff.t _text
-      @append e
-      return e
+      unless content
+        return @childNodes[0].set _text
+      else
+        e = waff.t _text
+        @append e
+        return e
     text = text.get() if text instanceof Text
-    e = waff.t text
-    @append e
-    e
+    unless content
+      @childNodes[0].set text
+    else
+      e = waff.t text
+      @append e
+      e
+  
+  Array::text = ->
+    for element in @
+      if element instanceof Element
+        element.text.apply element, arguments
+    @
   ###*
   # @function
   # @typicalname Element.prototype.html
@@ -661,6 +692,12 @@
     html = html.get() if html instanceof Text
     @innerHTML = html
     @
+  
+  Array::html = ->
+    for element in @
+      if element instanceof Element
+        element.html.apply element, arguments
+    @
   ###*
   # @function
   # @typicalname Element.prototype.path
@@ -668,28 +705,32 @@
   # @example
   # waff.element('body').path() // html > body:nth-child(2)
   ###
-  Element::path = ->
-    root = @
-    path = []
-    while root.parentNode
-      if root.id != ''
-        path.unshift '#' + root.id
-        break
-      if root == waff.q 'html'
-        path.unshift root.tagName.toLowerCase()
-      else
-        i = 1
-        e = root
-        while e.previousElementSibling
-          e = e.previousElementSibling
-          i++
+  Object.defineProperty Element::, 'path',
+    configurable: true
+    get: ->
+      root = @
+      path = []
+      while root.parentNode
+        if root.id != ''
+          path.unshift '#' + root.id
+          break
+        if root == waff.q 'html'
+          path.unshift root.tagName.toLowerCase()
+        else
+          i = 1
+          e = root
+          while e.previousElementSibling
+            e = e.previousElementSibling
+            i++
   
-        # TODO:
-        # Add classes from root.classList
+          # TODO:
+          # Add classes from root.classList
   
-        path.unshift root.tagName.toLowerCase() + ':nth-child(' + i + ')'
-      root = root.parentNode
-    path.join ' > '
+          path.unshift root.tagName.toLowerCase() + ':nth-child(' + i + ')'
+        root = root.parentNode
+      path.join ' > '
+    set: ->
+      @
   ###*
   # @function
   # @typicalname Element.prototype.css
@@ -725,6 +766,12 @@
         if isNaN +prop
           res[prop] = style
   		res
+  
+  Array::css = ->
+    for element in @
+      if element instanceof Element
+        element.css.apply element, arguments
+    @
   ###*
   # @function
   # @typicalname Element.prototype.attr
@@ -747,6 +794,12 @@
       else
         return @getAttribute attr
     @
+  
+  Array::attr = ->
+    for element in @
+      if element instanceof Element
+        element.attr.apply element, arguments
+    @
   ###*
   # @function
   # @typicalname Element.prototype.clear
@@ -758,15 +811,21 @@
     while @childNodes.length > 0
       @firstChild.remove()
     @
+  
+  Array::clear = ->
+    for element in @
+      if element instanceof Element
+        element.clear.apply element, arguments
+    @
   ###*
   # @function
-  # @typicalname Element.prototype.classes
-  # @desc Set of classes
+  # @typicalname Element.prototype.class
+  # @desc classList shortcut
   # @example
-  # waff.element('body').classes.contains('cls')
-  # waff.element('body').classes.remove('cls')
-  # waff.element('body').classes.add('cls')
-  # waff.element('body').classes.toggle('cls')
+  # waff.element('body').class.contains('cls')
+  # waff.element('body').class.remove('cls')
+  # waff.element('body').class.add('cls')
+  # waff.element('body').class.toggle('cls')
   ###
   Object.defineProperty Element::, 'class',
     configurable: true
@@ -868,6 +927,13 @@
         subtree: false
       @_observer.observe @, config
     @
+  
+  Array::watch = ->
+    for element in @
+      if element instanceof Element
+        element.watch.apply element, arguments
+    @
+  
   ###*
   # @function
   # @typicalname Element.prototype.unwatch
@@ -882,73 +948,103 @@
       @_observer.disconnect()
       delete @_observer
     @
+  
+  Array::unwatch = ->
+    for element in @
+      if element instanceof Element
+        element.unwatch.apply element, arguments
+    @
 
-  EventTarget::on = (name, next, capture) ->
-    unless name instanceof Array
-      name = [ name ]
+  for Target in waff._EventTargets
+    Target::on = (name, next, capture) ->
+      listen = ->
+        args = [].slice.call arguments
+        el = args.shift()
+        ev = args.shift()
+        if el.addEventListener?
+          args.unshift ev
+          el.addEventListener.apply el, args
+        else
+          args.unshift 'on' + ev
+          el.attachEvent.apply el, args
+      unless name instanceof Array
+        name = [ name ]
   
-    self = if @emitter? then @emitter else @
-    _this = if @emitter? then @obj else @
+      self = if @emitter? then @emitter else @
+      _this = if @emitter? then @obj else @
   
-    self._events = {} unless self._events?
-    self._eventsInited = {} unless self._eventsInited?
+      self._events = {} unless self._events?
+      self._eventsInited = {} unless self._eventsInited?
   
-    for event in name
-      self._events[event] = [] unless self._events[event]?
+      for event in name
+        self._events[event] = [] unless self._events[event]?
   
-      self._events[event].push next
-      if self._eventsInited[event] != true
-        self.addEventListener event, ((ev) ->
-          ev = ev.waffData if ev.waffData?
-          for handler in self._events[event]
-            handler.call _this, ev
-        ), capture
-      self._eventsInited[event] = true
-    self
-  EventTarget::off = (name, next, capture) ->
-    unless name instanceof Array
-      name = [ name ]
+        self._events[event].push next
+        if self._eventsInited[event] != true
+          listen self, event, ((ev) ->
+            ev = ev.waffData if ev.waffData?
+            for handler in self._events[event]
+              handler.call _this, ev
+          ), capture
+        self._eventsInited[event] = true
+      self
+  for Target in waff._EventTargets
+    Target::off = (name, next, capture) ->
+      unless name instanceof Array
+        name = [ name ]
   
-    self = if @emitter? then @emitter else @
-    self._events = {} unless self._events?
+      self = if @emitter? then @emitter else @
+      self._events = {} unless self._events?
   
-    for event in name
-      self._events[event] = [] unless self._events[event]?
-      self._events[event] = [] unless next?
+      for event in name
+        self._events[event] = [] unless self._events[event]?
+        self._events[event] = [] unless next?
   
-      detach = (next) =>
-        index = self._events[event].indexOf next
-        if index != -1
-          self._events[event].splice index, 1
-          detach next
-      detach next
-    self
-  EventTarget::once = (name, next, capture) ->
-    unless name instanceof Array
-      name = [ name ]
+        detach = (next) =>
+          index = self._events[event].indexOf next
+          if index != -1
+            self._events[event].splice index, 1
+            detach next
+        detach next
+      self
+  for Target in waff._EventTargets
+    Target::once = (name, next, capture) ->
+      unless name instanceof Array
+        name = [ name ]
   
-    self = if @emitter? then @emitter else @
-    _this = if @emitter? then @obj else @
+      self = if @emitter? then @emitter else @
+      _this = if @emitter? then @obj else @
   
-    for event in name
-      ((event)->
-        n = (ev) ->
-          next.call _this, ev
-          self.off event, n, capture
+      for event in name
+        ((event)->
+          n = (ev) ->
+            next.call _this, ev
+            self.off event, n, capture
   
-        self.on event, n, capture
-      )(event)
+          self.on event, n, capture
+        )(event)
   
-    self
-  EventTarget::emit = (event, data) ->
-    self = if @emitter? then @emitter else @
-    _this = if @emitter? then @obj else @
-    if typeof event == 'string'
-      event = new Event event
-    if typeof event == 'object'
-      event.waffData = data if data
-    event.waffThis = _this
-    self.dispatchEvent  event
+      self
+  for Target in waff._EventTargets
+    Target::emit = (event, data) ->
+      dispatch = ->
+        args = [].slice.call arguments
+        el = args.shift()
+        ev = args.shift()
+        if el.dispatchEvent?
+          args.unshift ev
+          el.dispatchEvent.apply el, args
+        else
+          args.unshift 'on' + ev
+          el.fireEvent.apply el, args
+      self = if @emitter? then @emitter else @
+      _this = if @emitter? then @obj else @
+      if typeof event == 'string'
+        event = new Event event
+      if typeof event == 'object'
+        event.waffData = data if data
+      event.waffThis = _this
+      dispatch self, event
 
   ###*
   # @function
