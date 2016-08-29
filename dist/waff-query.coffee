@@ -760,6 +760,22 @@
     @
   ###*
   # @function
+  # @typicalname Element.prototype.classes
+  # @desc Set of classes
+  # @example
+  # waff.element('body').classes.contains('cls')
+  # waff.element('body').classes.remove('cls')
+  # waff.element('body').classes.add('cls')
+  # waff.element('body').classes.toggle('cls')
+  ###
+  Object.defineProperty Element::, 'class',
+    configurable: true
+    get: ->
+      @classList
+    set: ->
+      @classList
+  ###*
+  # @function
   # @typicalname Element.prototype.watch
   # @desc Observes for DOM changes
   # @param {MutationObserverInit} [options] - MutationObserver options

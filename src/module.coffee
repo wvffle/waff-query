@@ -70,6 +70,7 @@
   <%= include('element/css', '  ') %>
   <%= include('element/attr', '  ') %>
   <%= include('element/clear', '  ') %>
+  <%= include('element/classes', '  ') %>
   <%= include('element/watch', '  ') %>
 
   <%= include('event/on', '  ') %>

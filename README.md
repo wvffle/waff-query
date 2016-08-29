@@ -433,6 +433,7 @@ span.attr('name', 'waffles!')
 span.attr({'name': 'waffles!', 'sth': true})
 ```
 
+ERROR, Cannot find function.
 
 # TextNode value manipulation
 <a name="Text+get"></a>

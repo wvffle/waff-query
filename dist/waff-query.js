@@ -1032,6 +1032,26 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
+   * @typicalname Element.prototype.classes
+   * @desc Set of classes
+   * @example
+   * waff.element('body').classes.contains('cls')
+   * waff.element('body').classes.remove('cls')
+   * waff.element('body').classes.add('cls')
+   * waff.element('body').classes.toggle('cls')
+   */
+  Object.defineProperty(Element.prototype, 'class', {
+    configurable: true,
+    get: function() {
+      return this.classList;
+    },
+    set: function() {
+      return this.classList;
+    }
+  });
+
+  /**
+   * @function
    * @typicalname Element.prototype.watch
    * @desc Observes for DOM changes
    * @param {MutationObserverInit} [options] - MutationObserver options
