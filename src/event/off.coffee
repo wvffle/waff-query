@@ -1,6 +1,6 @@
 for Target in waff._EventTargets
   Target::off = (name, next, capture) ->
-    unless name instanceof Array
+    unless waff.__isarray name
       name = [ name ]
 
     self = if @emitter? then @emitter else @
@@ -11,8 +11,8 @@ for Target in waff._EventTargets
       self._events[event] = [] unless next?
 
       detach = (next) =>
-        index = self._events[event].indexOf next
-        if index != -1
+        index = waff.__index self._events[event], next
+        unless index == -1
           self._events[event].splice index, 1
           detach next
       detach next

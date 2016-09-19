@@ -10,7 +10,6 @@ describe 'EventTarget::emit', ->
     # We're expecting EventTarget.once() to pass all tests
     span.once 'ev', ->
       done()
-      span.remove()
     span.emit 'ev'
 
   it 'should call event with custom data', (done) ->
@@ -21,5 +20,4 @@ describe 'EventTarget::emit', ->
     span.once 'ev', (data) ->
       expect(data.passed).to.be.true
       done()
-      span.remove()
     span.emit 'ev', passed: true

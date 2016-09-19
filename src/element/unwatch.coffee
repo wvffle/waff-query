@@ -1,7 +1,7 @@
 
 ###*
 # @function
-# @typicalname Element.prototype.unwatch
+# @typicalname Element#unwatch
 # @desc Stops observing for DOM changes
 # @example
 # var element = waff.query('span.red')
@@ -11,7 +11,7 @@
 Element::unwatch = ->
   if @_observer?
     @_observer.disconnect()
-    delete @_observer
+    @_observer = null
   @
 
 Array::unwatch = ->

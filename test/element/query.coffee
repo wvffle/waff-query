@@ -7,6 +7,10 @@ describe 'Element::q', ->
     expect workspace.element.q 'span.green'
     	.to.be.equal workspace.element.querySelector 'span.green'
 
+  it 'should return .orange.blue', ->
+    expect workspace.element.q '.orange.blue'
+    	.to.be.equal workspace.element.querySelector '.orange.blue'
+
 
 describe 'Element::query', ->
 

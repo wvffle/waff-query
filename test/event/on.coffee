@@ -10,7 +10,6 @@ describe 'EventTarget::on', ->
       expect this
       	.to.be.equal span
       done()
-      span.remove()
     span.dispatchEvent new Event 'ev'
 
   it 'should attach many events', (done) ->
@@ -23,7 +22,6 @@ describe 'EventTarget::on', ->
       e++
       if e == 2
         done()
-        span.remove()
 
     span.dispatchEvent new Event 'ev'
     span.dispatchEvent new Event 'ev2'

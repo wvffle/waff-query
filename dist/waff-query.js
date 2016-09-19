@@ -1,18 +1,18 @@
 /*
- * waff-query v1.0.2
- * https://github.com/wvffle/waff-query.js#readme
+ * waff-query v2.0.0-beta
+ * https://wvffle.net
  *
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-08-29
+ * Date: 2016-09-19
  */
 
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 (function(coffeFix, _waff) {
-  var key, results, value, waff;
+  var key, value, waff;
   if (typeof module !== 'undefined') {
     waff = {};
     for (key in _waff) {
@@ -43,27 +43,30 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     });
   } else {
     this.waff = _waff;
-    results = [];
     for (key in _waff) {
       value = _waff[key];
       if (_waff.hasOwnProperty(key)) {
-        if (key[0] !== '_') {
-          results.push(this[key] = value);
-        } else {
-          results.push(this.waff[key.slice(1)] = value);
+        if (key[0] === '_') {
+          this.waff[key.slice(1)] = value;
         }
-      } else {
-        results.push(void 0);
       }
     }
-    return results;
+    this.ps = this.waff.ps;
+    this.qq = this.waff.qq;
+    this.q = this.waff.q;
+    this.e = this.waff.e;
+    this.t = this.waff.t;
+    this.selector = this.waff.selector;
+    this.element = this.waff.element;
+    this.text = this.waff.text;
+    return this.query = this.waff.query;
   }
 })(null, (function() {
 
   /**
-   * @global waff
+   * @namespace waff
    */
-  var Target, j, k, l, len, len1, len2, len3, o, ref, ref1, ref2, ref3, waff;
+  var Target, arropts, j, k, l, len, len1, len2, len3, o, opts, ref, ref1, ref2, ref3, waff;
   waff = {
     ps: (function() {
 
@@ -73,23 +76,99 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @desc Parse CSS selectors
        * @param {String} cs - CSS Selector
        * @example
-       * // AMD users
-       * waff.selector.parse('div#header.white-text')
-       * // Non AMD users
        * selector.parse('div#header.white-text')
        * //  {
        * //    tag: 'div',
        * //    id: 'header',
-       * //    classList: [ 'white-text' ]
+       * //    class: [ 'white-text' ]
        * //  }
        * @returns {Object} - Returns parsed selector
        */
       var parseSelector;
       parseSelector = function(cs) {
-        var _id, _tag, c, cn, i, id, j, len, selector, tag;
+        var _id, _tag, at, atr, c, char, cn, i, id, j, k, len, len1, parseAttr, sel, selector, tag;
         tag = false;
         id = false;
+        at = false;
         selector = cs || '';
+        sel = '';
+        atr = '';
+        parseAttr = function(res) {
+          var char, j, last, len, op, str, vel;
+          res = res.slice(1, -1);
+          cs = -1 !== res.indexOf(' i', res.length - 2);
+          op = false;
+          if (cs) {
+            res = res.slice(0, -2);
+          }
+          vel = {};
+          last = '';
+          str = '';
+          if (res === '') {
+            return;
+          }
+          for (j = 0, len = res.length; j < len; j++) {
+            char = res[j];
+            if (vel.op == null) {
+              if (-1 !== waff.__index(['=', '|', '*', '^', '$', '~'], char)) {
+                vel.op = char;
+                vel.na = str;
+                str = '';
+                char = '';
+              }
+            } else {
+              if (char === '=') {
+                if (-1 !== waff.__index(['|', '*', '^', '$', '~'], vel.op)) {
+                  vel.op += char;
+                  char = '';
+                }
+              }
+            }
+            str += char;
+            last = char;
+          }
+          if (!((vel.op != null) && (vel.na != null))) {
+            vel.na = str;
+            str = null;
+          }
+          if (vel.na == null) {
+            return;
+          }
+          if ((vel.op != null) && str === '') {
+            return;
+          }
+          if ((vel.op != null) && vel.na === '') {
+            return;
+          }
+          if (at === false) {
+            at = {};
+          }
+          if ((str != null) && ((str[0] === '\'' && str[str.length - 1] === '\'') || (str[0] === '"' && str[str.length - 1] === '"'))) {
+            str = JSON.parse(str);
+          }
+          return at[vel.na] = {
+            operator: vel.op || false,
+            value: str || false,
+            caseSensitive: cs
+          };
+        };
+        for (j = 0, len = selector.length; j < len; j++) {
+          char = selector[j];
+          if (char === '[') {
+            atr += char;
+          } else if (char === ']') {
+            atr += char;
+            parseAttr(atr);
+            atr = '';
+          } else {
+            if (atr.length === 0) {
+              sel += char;
+            } else {
+              atr += char;
+            }
+          }
+        }
+        selector = sel;
         cn = selector.split('.');
         if (selector[0] !== '.') {
           tag = cn[0];
@@ -98,13 +177,13 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         if (tag === '') {
           tag = false;
         }
-        if (tag !== false && -1 !== tag.indexOf('#')) {
+        if (tag !== false && -1 !== waff.__index(tag, '#')) {
           _tag = tag.split('#');
           tag = _tag[0];
           id = _tag[1];
         }
         if (id === false) {
-          for (i = j = 0, len = cn.length; j < len; i = ++j) {
+          for (i = k = 0, len1 = cn.length; k < len1; i = ++k) {
             c = cn[i];
             _id = c.split('#');
             if (_id[1]) {
@@ -117,7 +196,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         return {
           tag: tag,
           id: id,
-          classList: cn
+          "class": cn,
+          attr: at
         };
       };
       return parseSelector;
@@ -129,20 +209,41 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @alias waff#q.all
        * @alias waff#qq
        * @desc Query all elements
-       * @param {String|String[]} qs - Query Selector. Default: body
-       * @param {Element|Array|NodeList} [root] - Element to perform query on
-       * @param {Boolean} [single] - Specifies if the query is single. Default: false
+       * @param {String} selector='body' - CSS Selector
+       * @param {Element} [root=document] - Element to perform query on
+       * @param {Boolean} [single=false] - Specifies if the query is single
        * @example
        * var divs = waff.query.all('div')
        * var divs = waff.qq('div')
        * var divs = waff.q.all('div')
-       * @returns {Element[]} - Returns found elements
+       * @returns {Element[]} Returns found elements
        */
-      var queryAll;
+      var queryAll, queryElement, querySelector;
+      querySelector = function(qs, root, single) {
+        if (single === true) {
+          return [root.querySelector(qs)];
+        } else {
+          return root.querySelectorAll(qs);
+        }
+      };
+      queryElement = function(qs, root, single) {
+        if (/^[A-z0-9*-]+$/.test(qs)) {
+          return root.getElementsByTagName(qs);
+        } else if (/^#[A-z0-9*-]+$/.test(qs)) {
+          return [document.getElementById(qs.slice(1))];
+        } else if (/^\.[A-z0-9*-.]+$/.test(qs)) {
+          return root.getElementsByClassName((qs.replace(/\./g, ' ')).slice(1));
+        } else {
+          return querySelector(qs, root, single);
+        }
+      };
       queryAll = function(qs, root, single) {
-        var _arr, arr, c, element, j, k, l, len, len1, len2, len3, o, pass, query, ref, ret, s;
+        var _arr, arr, attr, c, element, i, j, k, l, len, len1, len2, len3, o, parsed, pass, q, ref, ref1, ret, s, v;
         if (qs == null) {
           qs = 'body';
+        }
+        if (root == null) {
+          root = document;
         }
         if (single == null) {
           single = false;
@@ -150,39 +251,84 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         if (qs === '') {
           qs = '*';
         }
-        query = function(qs, root) {
-          if (single === true) {
-            return [root.querySelector(qs)];
-          } else {
-            return root.querySelectorAll(qs);
-          }
-        };
-        if (root instanceof Array || root instanceof NodeList) {
+        if (waff.__isarray(root)) {
           s = this.ps(qs);
-          arr = [].slice.call(root);
+          arr = waff.__toarray(root);
           ret = [];
+          _arr = [];
           for (j = 0, len = arr.length; j < len; j++) {
             element = arr[j];
-            pass = true;
             if (element instanceof Element) {
-              if (pass === true && s.tag !== false && element.tagName.toLowerCase() !== s.tag.toLowerCase()) {
-                pass = false;
+              _arr.push(element);
+            }
+          }
+          arr = _arr;
+          _arr = null;
+          if (s.tag === '*') {
+            if (single === true) {
+              return arr[0];
+            } else {
+              return arr;
+            }
+          }
+          for (k = 0, len1 = arr.length; k < len1; k++) {
+            element = arr[k];
+            pass = true;
+            if (pass === true && s.tag !== false && element.tagName.toLowerCase() !== s.tag.toLowerCase()) {
+              pass = false;
+            }
+            if (pass === true && s.id !== false && element.id !== s.id) {
+              pass = false;
+            }
+            if (pass === true) {
+              ref = s["class"];
+              for (l = 0, len2 = ref.length; l < len2; l++) {
+                c = ref[l];
+                if (!element["class"].has(c)) {
+                  pass = false;
+                }
               }
-              if (pass === true && s.id !== false && element.id !== s.id) {
-                pass = false;
-              }
-              if (pass === true) {
-                ref = s.classList;
-                for (k = 0, len1 = ref.length; k < len1; k++) {
-                  c = ref[k];
-                  if (!element.classList.contains(c)) {
-                    pass = false;
+            }
+            if (pass === true && s.attr !== false) {
+              ref1 = s.attr;
+              for (attr in ref1) {
+                parsed = ref1[attr];
+                if (pass === true) {
+                  switch (parsed.operator) {
+                    case false:
+                      pass = element.hasAttribute(attr);
+                      break;
+                    case '=':
+                      pass = parsed.value === element.attr(attr);
+                      break;
+                    case '^=':
+                      pass = 0 === waff.__index(element.attr(attr), parsed.value);
+                      break;
+                    case '$=':
+                      v = element.attr(attr);
+                      pass = -1 !== v.indexOf(parsed.value, v.length - parsed.value);
+                      break;
+                    case '~=':
+                      pass = -1 !== waff.__index(element.attr(attr).split(' '), parsed.value);
+                      break;
+                    case '|=':
+                      v = element.attr(attr);
+                      pass = parsed.value === v;
+                      if (pass !== true) {
+                        pass = 0 === waff.__index(v, parsed.value + '-');
+                      }
+                      break;
+                    case '*=':
+                      pass = -1 !== waff.__index(element.attr(attr), parsed.value);
                   }
                 }
               }
-              if (pass === true) {
-                ret.push(element);
+            }
+            if (pass === true) {
+              if (single === true) {
+                return element;
               }
+              ret.push(element);
             }
           }
           return ret;
@@ -190,30 +336,32 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         if (qs instanceof Element) {
           return [qs];
         }
-        root = root instanceof Element ? root : document;
-        if (qs instanceof NodeList || qs instanceof Array) {
-          arr = [].slice.call(qs);
+        if (waff.__isarray(qs)) {
+          arr = waff.__toarray(qs);
           _arr = [];
-          for (l = 0, len2 = arr.length; l < len2; l++) {
-            qs = arr[l];
+          for (i = o = 0, len3 = arr.length; o < len3; i = ++o) {
+            qs = arr[i];
             if (qs instanceof Element) {
+              if (single === true) {
+                return qs;
+              }
               _arr.push(qs);
             } else {
-              _arr.push.apply(_arr, query(qs, root));
+              q = queryElement(qs, root, single);
+              if (single === true) {
+                return q[0];
+              }
+              _arr.push.apply(_arr, q);
             }
           }
-          arr = _arr;
+          return _arr;
         } else {
-          arr = [].slice.call(query(qs, root));
-        }
-        ret = [];
-        for (o = 0, len3 = arr.length; o < len3; o++) {
-          element = arr[o];
-          if (element instanceof Element) {
-            ret.push(element);
+          if (single === true) {
+            return queryElement(qs, root, single)[0];
+          } else {
+            return waff.__toarray(queryElement(qs, root, single));
           }
         }
-        return ret;
       };
       return queryAll;
     })(),
@@ -223,16 +371,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @func waff#query
        * @alias waff#q
        * @desc Query single element
-       * @param {String} qs - Query Selector
-       * @param {Element|Array|NodeList} [root] - Element to perform query on
+       * @param {String} selector='body' - CSS Selector
+       * @param {Element} [root=document] - Element to perform query on
        * @example
        * var body = waff.query('body')
        * var body = waff.q('body')
-       * @returns {Element|null} - Returns found element or null
+       * @returns {Element|null} Returns found element or null
        */
       var query;
       query = function(qs, root) {
-        return this.qq(qs, root, true)[0] || null;
+        return this.qq(qs, root, true) || null;
       };
       return query;
     })(),
@@ -241,24 +389,33 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       /**
        * @func waff#element
        * @alias waff#e
-       * @desc Creates element by CSS selector
-       * @param {String} cs - CSS Selector
+       * @desc Creates element with CSS selector
+       * @param {String} selector - CSS Selector
        * @example
        * waff.element('.white-text')
-       * @returns {Element} - Returns new element
+       * @returns {Element} Returns new element
        */
       var create;
       create = function(cs) {
-        var c, el, j, len, ref, s;
+        var attr, c, el, j, len, parsed, ref, ref1, s;
         s = this.ps(cs);
         el = document.createElement(s.tag || 'div');
         if (s.id) {
           el.id = s.id;
         }
-        ref = s.classList;
+        ref = s["class"];
         for (j = 0, len = ref.length; j < len; j++) {
           c = ref[j];
-          el.classList.add(c);
+          el["class"].add(c);
+        }
+        if (s.attr) {
+          ref1 = s.attr;
+          for (attr in ref1) {
+            parsed = ref1[attr];
+            if (parsed.operator === '=') {
+              el.attr(attr, parsed.value);
+            }
+          }
         }
         return el;
       };
@@ -270,12 +427,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @func waff#text
        * @alias waff#t
        * @desc Creates TextNode
-       * @param {String} t - Text
+       * @param {String} str - Text
        * @example
        * var text = waff.text('The number of a waffle')
        * text.set('<div></div>')
        * text.get() // &lt;div&gt;&lt;/div&gt;
-       * @returns {TextNode} - Returns new TextNode
+       * @returns {TextNode} Returns new TextNode
        */
       var text;
       text = function(t) {
@@ -292,154 +449,312 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '1.0.2';
-  waff._get = (function() {
-
-    /**
-     * @func waff#get
-     * @desc Performs XHR GET
-     * @param {String} url - URL to get
-     * @param {Object} options
-     * `json` (boolean) - determines if response is json. Default - `false` <br>
-     * `timeout` (number) - determines timeout in ms. Default - `2000`
-     * @example
-     * waff.get('https://wvffle.net')
-     *   .then(function(res){
-     *
-     *   })
-     *   .catch(function(err){
-     *
-     *   })
-     * @returns {waff.Promise} - Returns promise of request
-     */
-    var get;
-    get = function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return new waff._Promise(function(f, r) {
-        var req;
-        req = new XMLHttpRequest;
-        req.open('get', url, true);
-        req.timeout = options.timeout || 2000;
-        req.on('readystatechange', function(e) {
-          var res;
-          if (req.readyState === 4) {
-            if (req.status >= 200 && req.status < 400) {
-              res = req.responseText;
-              if (options.json === true) {
-                res = JSON.parse(res);
-              }
-              req.res = res;
-              return f.call(req, res);
-            }
-          }
-        });
-        req.on('error', function(e) {
-          req.res = {
-            status: req.status,
-            error: req.statusText
-          };
-          return r.call(req, res);
-        });
-        req.on('timeout', function(e) {
-          req.res = {
-            status: req.status,
-            error: req.statusText
-          };
-          return r.call(req, res);
-        });
-        req.overrideMimeType('text/plain');
-        return req.send();
-      });
+  waff._version = '2.0.0-beta';
+  waff.__isarray = (function() {
+    var isarray;
+    isarray = function(arr) {
+      return arr instanceof Array || arr instanceof NodeList;
     };
-    return get;
+    return isarray;
   })();
-  waff._post = (function() {
-
-    /**
-     * @func waff#post
-     * @desc Performs XHR POST
-     * @param {String} url - URL to post
-     * @param {Object} data - POST data
-     * @param {Object} options
-     * `json` (boolean) - determines if response is json. Default - `false` <br>
-     * `form` (boolean) - determines if data should be converted to FormData or just pure JSON. Default - `true` <br>
-     * `timeout` (number) - determines timeout in ms. Default - `2000`
-     * @example
-     * waff.post('http://httpbin.org/post', { waffle_id: 666 })
-     *   .then(function(res){
-     *
-     *   })
-     *   .catch(function(err){
-     *
-     *   })
-     * @returns {waff.Promise} - Returns promise of request
-     */
-    var post;
-    post = function(url, data, options) {
-      if (data == null) {
-        data = {};
-      }
-      if (options == null) {
-        options = {};
-      }
-      return new waff._Promise(function(f, r) {
-        var form, key, req, value;
-        req = new XMLHttpRequest;
-        req.open('post', url, true);
-        req.timeout = options.timeout || 2000;
-        req.on('readystatechange', function(e) {
-          var res;
-          if (req.readyState === 4) {
-            if (req.status >= 200 && req.status < 400) {
-              res = req.responseText;
-              if (options.json === true) {
-                res = JSON.parse(res);
-              }
-              req.res = res;
-              return f.call(req, res);
-            }
-          }
-        });
-        req.on('error', function(e) {
-          req.res = {
-            status: req.status,
-            error: req.statusText
-          };
-          return r.call(req, res);
-        });
-        req.on('timeout', function(e) {
-          req.res = {
-            status: req.status,
-            error: req.statusText
-          };
-          return r.call(req, res);
-        });
-        if ((options.form == null) || options.form === true) {
-          req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-          form = new FormData;
-          for (key in data) {
-            value = data[key];
-            if (data.hasOwnProperty(key)) {
-              form.append(key, value);
-            }
-          }
-          data = form;
+  waff.__toarray = (function() {
+    var toarray;
+    toarray = function(arr) {
+      var a;
+      a = [];
+      Array.prototype.push.apply(a, arr);
+      return a;
+    };
+    return toarray;
+  })();
+  waff.__has = (function() {
+    var has;
+    has = function(arr, element) {
+      var el, i, j, len;
+      for (i = j = 0, len = arr.length; j < len; i = ++j) {
+        el = arr[i];
+        if (el === element) {
+          return true;
         }
-        return req.send(data);
-      });
+      }
+      return false;
     };
-    return post;
+    return has;
   })();
-  waff._EventTargets = [Element, Document, Window, Node, XMLHttpRequest];
+  waff.__index = (function() {
+    var index;
+    index = function(arr, target) {
+      var i, j, len, subject;
+      for (i = j = 0, len = arr.length; j < len; i = ++j) {
+        subject = arr[i];
+        if (subject === target) {
+          return i;
+        }
+      }
+      return -1;
+    };
+    return index;
+  })();
+  waff.__prop = (function() {
+    var defineProp;
+    defineProp = function(obj, prop, desc) {
+      var err, error;
+      try {
+        return Object.defineProperty(obj, prop, desc);
+      } catch (error) {
+        err = error;
+        if (desc.get != null) {
+          Object.prototype.__defineGetter__.call(obj, prop, desc.get);
+        }
+        if (desc.set != null) {
+          Object.prototype.__defineSetter__.call(obj, prop, desc.set);
+        }
+        if (desc.value != null) {
+          return obj[prop] = desc.value;
+        }
+      }
+    };
+    return defineProp;
+  })();
+  (function() {
+    if (!window.console) {
+      return window.console = {
+        log: function() {},
+        warn: function() {},
+        error: function() {}
+      };
+    }
+  })();
+  (function() {
+    window.XMLHttpRequest = window.XMLHttpRequest || function() {
+      var _, error, error1, error2, error3;
+      try {
+        return new XDomainRequest;
+      } catch (error) {
+        _ = error;
+      }
+      try {
+        return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+      } catch (error1) {
+        _ = error1;
+      }
+      try {
+        return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+      } catch (error2) {
+        _ = error2;
+      }
+      try {
+        return new ActiveXObject('Msxml2.XMLHTTP');
+      } catch (error3) {
+        _ = error3;
+      }
+    };
+    XMLHttpRequest.UNSENT = 0;
+    XMLHttpRequest.OPENED = 1;
+    XMLHttpRequest.HEADERS_RECEIVED = 2;
+    XMLHttpRequest.LOADING = 3;
+    XMLHttpRequest.DONE = 4;
+    return (function() {
+      var FormData, send;
+      FormData = function(form) {
+        var element, i, results;
+        this._data = [];
+        if (!form) {
+          return;
+        }
+        i = 0;
+        results = [];
+        while (i < form.elements.length) {
+          element = form.elements[i];
+          if (element.name !== '') {
+            this.append(element.name, element.value);
+          }
+          results.push(++i);
+        }
+        return results;
+      };
+      if ('FormData' in window) {
+        return;
+      }
+      FormData.prototype = {
+        append: function(name, value) {
+          if ('Blob' in window && value instanceof window.Blob) {
+            throw TypeError('Blob not supported');
+          }
+          name = String(name);
+          return this._data.push([name, value]);
+        },
+        toString: function() {
+          return this._data.map(function(pair) {
+            return encodeURIComponent(pair[0]) + '=' + encodeURIComponent(pair[1]);
+          }).join('&');
+        }
+      };
+      window.FormData = FormData;
+      send = window.XMLHttpRequest.prototype.send;
+      return window.XMLHttpRequest.prototype.send = function(body) {
+        if (body instanceof FormData) {
+          if (this.setRequestHeader != null) {
+            this.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          }
+          arguments[0] = body.toString();
+        }
+        return send.apply(this, arguments);
+      };
+    })();
+  })();
+  (function() {
+    var err, error;
+    try {
+      return new Event('waff :3');
+    } catch (error) {
+      err = error;
+      return window.Event = function(name, init) {
+        var ev;
+        if (init == null) {
+          init = {};
+        }
+        ev = document.createEvent('Event');
+        ev.initEvent(name, !!init.bubbles, !!init.cancelable);
+        return ev;
+      };
+    }
+  })();
+  (function() {
+    var MutationObserver, _, error;
+    try {
+      return window.MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver || (function() {
+        throw '-,-';
+      })();
+    } catch (error) {
+      _ = error;
+      MutationObserver = (function() {
+        function MutationObserver(callback) {
+          this.callback = callback;
+          this.elements = [];
+        }
+
+        MutationObserver.prototype.observe = function(element, init) {
+          this.elements.push(element);
+          if (init.childList === true) {
+            element.on('DOMNodeInserted', (function(_this) {
+              return function(e) {
+                if (!(e.relatedNode === e.currentTarget || init.subtree === true)) {
+                  return;
+                }
+                return _this.callback([
+                  {
+                    target: e.relatedNode,
+                    type: 'childList',
+                    addedNodes: [e.target],
+                    removedNodes: []
+                  }
+                ]);
+              };
+            })(this));
+            element.on('DOMNodeRemoved', (function(_this) {
+              return function(e) {
+                if (!(e.relatedNode === e.currentTarget || init.subtree === true)) {
+                  return;
+                }
+                return _this.callback([
+                  {
+                    target: e.relatedNode,
+                    type: 'childList',
+                    removedNodes: [e.target],
+                    addedNodes: []
+                  }
+                ]);
+              };
+            })(this));
+          }
+          if (init.attributes === true) {
+            element.on('DOMAttrModified', (function(_this) {
+              return function(e) {
+                var p;
+                if (!(e.target === e.currentTarget || init.subtree === true)) {
+                  return;
+                }
+                p = {
+                  target: e.target,
+                  type: 'attributes',
+                  attributeName: e.attrName
+                };
+                if (init.attributeOldValue === true) {
+                  p.oldValue = e.prevValue;
+                }
+                return _this.callback([p]);
+              };
+            })(this));
+          }
+          if (init.characterData === true) {
+            return element.on('DOMCharacterDataModified', (function(_this) {
+              return function(e) {
+                var p;
+                if (!(e.target === e.currentTarget || init.subtree === true)) {
+                  return;
+                }
+                p = {
+                  target: e.target,
+                  type: 'characterData'
+                };
+                if (init.characterDataOldValue === true) {
+                  p.oldValue = e.prevValue;
+                }
+                return _this.callback([p]);
+              };
+            })(this));
+          }
+        };
+
+        MutationObserver.prototype.disconnect = function() {
+          var element, j, len, ref, results;
+          ref = this.elements;
+          results = [];
+          for (j = 0, len = ref.length; j < len; j++) {
+            element = ref[j];
+            element.off('DOMNodeInserted');
+            element.off('DOMNodeRemoved');
+            element.off('DOMAttrModified');
+            results.push(element.off('DOMCharacterDataModified'));
+          }
+          return results;
+        };
+
+        return MutationObserver;
+
+      })();
+      return window.MutationObserver = MutationObserver;
+    }
+  })();
+  waff._EventTargets = (function() {
+    var error, targets;
+    try {
+      EventTarget.prototype.waff = ':3';
+      if (EventTarget.prototype.waff !== Element.prototype.waff) {
+        throw '';
+      }
+      return [EventTarget];
+    } catch (error) {
+      targets = [Element, Document, Node, FormData, window.constructor];
+      if ('XMLHttpRequest' in window) {
+        targets.push(window.XMLHttpRequest);
+      }
+      if ('FileReader' in window) {
+        targets.push(window.FileReader);
+      }
+      if ('Blob' in window) {
+        targets.push(window.Blob);
+      }
+      return targets;
+    }
+  })();
   waff._EventEmitter = (function() {
     var EventEmitter;
     EventEmitter = (function() {
 
       /**
-       * @class waff.EventEmitter
-       * @static
+       * @class waff#EventEmitter
        * @classdesc Own implementation of EventEmitter. (untested)
        * @example
        * var ee = new waff.EventEmitter();
@@ -450,12 +765,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @function waff.EventEmitter.on
-       * @instance
+       * @function waff#EventEmitter#on
        * @desc Adds handler for event
-       * @param {String|Array<String>} event - name of event
+       * @param {String|Array<String>} event - Name of event
        * @param {Function} handler - Handler function
        * @param {Boolean} [capture] - Use capture
+       * @returns {waff#EventEmitter} instance
        * @example
        * var ee = new waff.EventEmitter();
        * // Single event binding
@@ -473,12 +788,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @function waff.EventEmitter.once
-       * @instance
+       * @function waff#EventEmitter#once
        * @desc Adds handler only for one event emit
-       * @param {String|Array<String>} event - name of event
+       * @param {String|Array<String>} event - Name of event
        * @param {Function} handler - Handler function
        * @param {Boolean} [capture] - Use capture
+       * @returns {waff#EventEmitter} instance
        * @example
        * var ee = new waff.EventEmitter();
        * // Single event binding
@@ -496,12 +811,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @function waff.EventEmitter.off
-       * @instance
+       * @function waff#EventEmitter#off
        * @desc Removes specific event handler
-       * @param {String|Array<String>} event - name of event
+       * @param {String|Array<String>} event - Name of event
        * @param {Function} [handler] - Handler function
        * @param {Boolean} [capture] - Use capture
+       * @returns {waff#EventEmitter} instance
        * @example
        * var ee = new waff.EventEmitter();
        * // Single event unbinding for a specific handler
@@ -521,11 +836,11 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @function waff.EventEmitter.emit
+       * @function waff#EventEmitter#emit
        * @desc Emits event
-       * @instance
-       * @param {String} event - name of event
+       * @param {String} event - Name of event
        * @param {Object} [data] - Data to pass
+       * @returns {waff#EventEmitter} instance
        * @example
        * var ee = new waff.EventEmitter();
        * // Emitting event
@@ -550,10 +865,11 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     })();
 
     /**
-     * @function waff.EventEmitter.extend
+     * @function waff#EventEmitter.extend
      * @static
      * @desc Extends events on object
-     * @param {Object} object - object to extend
+     * @param {Object} object - Object to extend
+     * @returns object
      * @example
      * var obj = {};
      * EventEmitter.extend(obj);
@@ -600,8 +916,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @class waff.Promise
-       * @extends waff.EventEmitter
+       * @class waff#Promise
+       * @extends waff#EventEmitter
        * @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
        * @param {Function} executor - Executor function
        * @fires fulfill
@@ -617,10 +933,11 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @function waff.Promise.then
+       * @function waff#Promise.then
        * @desc Adds handler when fulfilled or rejected
        * @param {Function} onFulfill - Fulfiull function
        * @param {Function} [onReject] - Reject function
+       * @returns {waff#Promise} instance
        * @example
        * var promise = new waff.Promise(function(){})
        * promise.then(function(){
@@ -638,9 +955,10 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
 
       /**
-       * @function waff.Promise.catch
+       * @function waff#Promise#catch
        * @desc Adds handler when rejected
        * @param {Function} onReject - Reject function
+       * @returns {waff#Promise} instance
        * @example
        * var promise = new waff.Promise(function(){})
        * promise.catch(function(){
@@ -657,7 +975,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         return function() {
 
           /**
-           * @event waff.Promise.fulfill
+           * @event waff#Promise.fulfill
            * @desc Event emitted on fulfill
            * @example
            * var promise = new waff.Promise(function(){})
@@ -677,15 +995,27 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         };
       };
 
+
+      /**
+       * @function waff#Promise#resolve
+       * @desc Resolves promise
+       * @param {*} ..arg - Arguments to pass
+       * @returns {waff#Promise} instance
+       * @example
+       * var promise = new waff.Promise(function(){})
+       * promise.resolve()
+       */
+
       Promise.prototype.resolve = function() {
-        return this._resolve(this).apply(this, arguments);
+        this._resolve(this).apply(this, arguments);
+        return this;
       };
 
       Promise.prototype._reject = function(self) {
         return function() {
 
           /**
-           * @event waff.Promise.reject
+           * @event waff#Promise.reject
            * @desc Event emitted on reject
            * @example
            * var promise = new waff.Promise(function(){})
@@ -705,6 +1035,17 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         };
       };
 
+
+      /**
+       * @function waff#Promise#reject
+       * @desc Rejects promise
+       * @param {*} ..arg - Arguments to pass
+       * @returns {waff#Promise} instance
+       * @example
+       * var promise = new waff.Promise(function(){})
+       * promise.reject()
+       */
+
       Promise.prototype.reject = function() {
         return this._reject(this).apply(this, arguments);
       };
@@ -714,11 +1055,194 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     })(waff._EventEmitter);
     return Promise;
   })();
-  Element.prototype.qq = function(qs) {
-    return waff.qq(qs, this);
-  };
+  waff._get = (function() {
+
+    /**
+     * @func waff#get
+     * @desc Performs XHR GET
+     * @param {String} url - URL to get
+     * @param {Object} options - Options object
+     * @param {Boolean} options.json=false - Determines if response is json
+     * @param {Boolean} options.timeout=2000 - Determines timeout in ms
+     * @example
+     * waff.get('https://wvffle.net')
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {waff#Promise} Returns promise of request
+     */
+    var get;
+    get = function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return new waff._Promise(function(f, r) {
+        var err, error, req;
+        try {
+          req = new XMLHttpRequest;
+          req.open('get', url, true);
+          req.timeout = options.timeout || 2000;
+          req.on('readystatechange', function(e) {
+            var res;
+            if (req.readyState === 4) {
+              if (req.status >= 200 && req.status < 400) {
+                res = req.responseText;
+                if (options.json === true) {
+                  res = JSON.parse(res);
+                }
+                req.res = res;
+                return f.call(req, res);
+              }
+            }
+          });
+          req.on('error', function(e) {
+            req.res = {
+              status: req.status,
+              error: req.statusText
+            };
+            return r.call(req, req.res);
+          });
+          req.on('timeout', function(e) {
+            req.res = {
+              status: req.status,
+              error: req.statusText
+            };
+            return r.call(req, req.res);
+          });
+          try {
+            req.overrideMimeType('text/plain');
+          } catch (undefined) {}
+          return req.send();
+        } catch (error) {
+          err = error;
+          if (-1 === err.message.indexOf('Access is denied.')) {
+            throw err;
+          }
+          return console.error('IE<11 does not handle xhr well');
+        }
+      });
+    };
+    return get;
+  })();
+  waff._post = (function() {
+
+    /**
+     * @func waff#post
+     * @desc Performs XHR POST
+     * @param {String} url - URL to post
+     * @param {Object} data={} - POST data
+     * @param {Object} options - Options object
+     * @param {Boolean} options.json=false - Determines if response is json
+     * @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+     * @param {Boolean} options.timeout=2000 - Determines timeout in ms
+     * @example
+     * waff.post('http://httpbin.org/post', { waffle_id: 666 })
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {waff#Promise} Returns promise of request
+     */
+    var post;
+    post = function(url, data, options) {
+      var err, error;
+      if (data == null) {
+        data = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      try {
+        return new waff._Promise(function(f, r) {
+          var form, key, req, value;
+          req = new XMLHttpRequest;
+          req.open('post', url, true);
+          req.timeout = options.timeout || 2000;
+          req.on('readystatechange', function(e) {
+            var res;
+            if (req.readyState === 4) {
+              if (req.status >= 200 && req.status < 400) {
+                res = req.responseText;
+                if (options.json === true) {
+                  res = JSON.parse(res);
+                }
+                req.res = res;
+                return f.call(req, res);
+              }
+            }
+          });
+          req.on('error', function(e) {
+            req.res = {
+              status: req.status,
+              error: req.statusText
+            };
+            return r.call(req, req.res);
+          });
+          req.on('timeout', function(e) {
+            req.res = {
+              status: req.status,
+              error: req.statusText
+            };
+            return r.call(req, req.res);
+          });
+          if ((options.form == null) || options.form === true) {
+            req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+            form = new FormData;
+            for (key in data) {
+              value = data[key];
+              if (data.hasOwnProperty(key)) {
+                form.append(key, value);
+              }
+            }
+            data = form;
+          }
+          return req.send(data);
+        });
+      } catch (error) {
+        err = error;
+        if (-1 === err.message.indexOf('Access is denied.')) {
+          throw err;
+        }
+        return console.error('IE<11 does not handle xhr well');
+      }
+    };
+    return post;
+  })();
+
+  /**
+   * @class Element
+   * @global
+   */
+
+  /**
+   * @function
+   * @name Element#query
+   * @desc Query single element
+   * @param {String} selector='body' - CSS Selector
+   * @example
+   * var nav = document.body.query('nav')
+   * @returns {Element|null} Returns found element or null
+   */
   Element.prototype.q = function(qs) {
     return waff.q(qs, this);
+  };
+
+  /**
+   * @function
+   * @name Element#query.all
+   * @desc Query single element
+   * @param {String} selector='body' - CSS Selector
+   * @example
+   * var divs = document.body.query.all('div')
+   * @returns {Element[]} Returns found elements
+   */
+  Element.prototype.qq = function(qs) {
+    return waff.qq(qs, this);
   };
   Element.prototype.query = Element.prototype.q;
   Element.prototype.query.all = Element.prototype.qq;
@@ -735,47 +1259,47 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.append
+   * @typicalname Element#append
    * @desc Adds element at the end
-   * @param {Element} element - element to append
+   * @param {Element|Element[]} ...element - Element to append
    * @example
    * var span = waff.element('span.red')
-   * var body = waff.element('body')
-   * body.append(span
+   * var body = waff.query('body')
+   * body.append(span)
    * // body
    * //   <content>
+   * //   span.red
+   *
+   * var span = waff.element('span.orange')
+   * var span2 = waff.element('span.red')
+   * var body = waff.query('body')
+   * body.append(span, span2)
+   * // body
+   * //   <content>
+   * //   span.orange
+   * //   span.red
+   *
+   * var span = waff.element('span.orange')
+   * var span2 = waff.element('span.red')
+   * var body = waff.query('body')
+   * body.append([span, span2])
+   * // body
+   * //   <content>
+   * //   span.orange
    * //   span.red
    */
   Element.prototype.append = function() {
-    var element, j, len;
+    var el, element, j, k, len, len1, ref;
     for (j = 0, len = arguments.length; j < len; j++) {
       element = arguments[j];
-      this.appendChild(element);
-    }
-    return this;
-  };
-
-  /**
-   * @function
-   * @typicalname Element.prototype.prepend
-   * @desc Adds element at the beginning
-   * @param {Element} element - element to prepend
-   * @example
-   * var span = waff.element('span.red')
-   * var body = waff.element('body')
-   * body.prepend(span)
-   * // body
-   * //   span.red
-   * //   <content>
-   */
-  Element.prototype.prepend = function() {
-    var element, j, len;
-    for (j = 0, len = arguments.length; j < len; j++) {
-      element = arguments[j];
-      if (this.firstChild != null) {
-        this.insertBefore(element, this.firstChild);
+      if (waff.__isarray(element)) {
+        ref = waff.__toarray(element);
+        for (k = 0, len1 = ref.length; k < len1; k++) {
+          el = ref[k];
+          this.appendChild(element);
+        }
       } else {
-        this.append(element);
+        this.appendChild(element);
       }
     }
     return this;
@@ -783,9 +1307,65 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.before
+   * @typicalname Element#prepend
+   * @desc Adds element at the beginning
+   * @param {Element|Element[]} ...element - Element to prepend
+   * @example
+   * var span = waff.element('span.red')
+   * var body = waff.query('body')
+   * body.prepend(span)
+   * // body
+   * //   span.red
+   * //   <content>
+   *
+   * var span = waff.element('span.orange')
+   * var span2 = waff.element('span.red')
+   * var body = waff.query('body')
+   * body.prepend(span, span2)
+   * // body
+   * //   span.orange
+   * //   span.red
+   * //   <content>
+   *
+   * var span = waff.element('span.orange')
+   * var span2 = waff.element('span.red')
+   * var body = waff.query('body')
+   * body.prepend([span, span2])
+   * // body
+   * //   span.orange
+   * //   span.red
+   * //   <content>
+   */
+  Element.prototype.prepend = function() {
+    var el, element, j, k, ref;
+    for (j = arguments.length - 1; j >= 0; j += -1) {
+      element = arguments[j];
+      if (waff.__isarray(element)) {
+        ref = waff.__toarray(element);
+        for (k = ref.length - 1; k >= 0; k += -1) {
+          el = ref[k];
+          if (this.firstChild != null) {
+            this.insertBefore(el, this.firstChild);
+          } else {
+            this.append(el);
+          }
+        }
+      } else {
+        if (this.firstChild != null) {
+          this.insertBefore(element, this.firstChild);
+        } else {
+          this.append(element);
+        }
+      }
+    }
+    return this;
+  };
+
+  /**
+   * @function
+   * @typicalname Element#before
    * @desc Adds element before
-   * @param {Element} element - element to add
+   * @param {Element} element - Next element
    * @example
    * var span = waff.element('span.red')
    * var div = waff.element('div')
@@ -795,22 +1375,18 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * //   div
    * //   span.red
    */
-  Element.prototype.before = function() {
-    var element, j, len;
-    for (j = 0, len = arguments.length; j < len; j++) {
-      element = arguments[j];
-      if (element.parentElement) {
-        element.parentElement.insertBefore(this, element);
-      }
+  Element.prototype.before = function(element) {
+    if (element.parent != null) {
+      element.parent.insertBefore(this, element);
     }
     return this;
   };
 
   /**
    * @function
-   * @typicalname Element.prototype.after
+   * @typicalname Element#after
    * @desc Adds element after
-   * @param {Element} element - element to add
+   * @param {Element} element - Previous element
    * @example
    * var span = waff.element('span.red')
    * var div = waff.element('div')
@@ -820,16 +1396,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * //   span.red
    * //   div
    */
-  Element.prototype.after = function() {
-    var element, j, len;
-    for (j = 0, len = arguments.length; j < len; j++) {
-      element = arguments[j];
-      if (element.parentElement) {
-        if (this.nextSibling != null) {
-          element.parentElement.insertBefore(this, element.nextSibling);
-        } else {
-          element.parentElement.append(this);
-        }
+  Element.prototype.after = function(element) {
+    if (element.parent != null) {
+      if (element.nextSibling != null) {
+        element.parent.insertBefore(this, element.nextSibling);
+      } else {
+        element.parent.append(this);
       }
     }
     return this;
@@ -837,9 +1409,9 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.text
-   * @desc Sets text of Element to the given string
-   * @param {String} [text] - text to set
+   * @typicalname Element#text
+   * @desc Sets text of Element to the given string or returns text string
+   * @param {String} [text] - Text to set
    * @example
    * var span = waff.element('span')
    * span.text('<div></div>')
@@ -854,9 +1426,9 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     if (content) {
       this.clear();
     }
-    if (text instanceof NodeList || text instanceof Array) {
+    if (waff.__isarray(text)) {
       _text = '';
-      ref = [].slice.call(text);
+      ref = waff.__toarray(text);
       for (j = 0, len = ref.length; j < len; j++) {
         t = ref[j];
         if (t instanceof Text) {
@@ -901,9 +1473,9 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.html
-   * @desc Sets text of Element to the given string
-   * @param {String} [html] - html string to set
+   * @typicalname Element#html
+   * @desc Sets text of Element to the given string or returns html string
+   * @param {String} [html] - Html string to set
    * @example
    * var span = waff.element('span')
    * span.html('<div></div>')
@@ -919,8 +1491,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       this.append(html);
       return this;
     }
-    if (html instanceof NodeList || html instanceof Array) {
-      arr = [].slice.call(html);
+    if (html instanceof NodeList || waff.__isarray(html)) {
+      arr = waff.__toarray(html);
       for (j = 0, len = arr.length; j < len; j++) {
         h = arr[j];
         if (h instanceof Element || h instanceof Text) {
@@ -945,16 +1517,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
-
-  /**
-   * @function
-   * @typicalname Element.prototype.path
-   * @desc Get unique path of an element
-   * @example
-   * waff.element('body').path() // html > body:nth-child(2)
-   */
-  Object.defineProperty(Element.prototype, 'path', {
+  waff.__prop(Element.prototype, 'path', {
     configurable: true,
+
+    /**
+     * @function Element#path
+     * @typicalname Element#path
+     * @desc Get unique path of an element
+     * @example
+     * waff.query('body').path() // html > body:nth-child(2)
+     */
     get: function() {
       var e, i, path, root;
       root = this;
@@ -986,38 +1558,61 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.css
-   * @desc Get or set  elements CSS
-   * @param {String|Object} attr - attribute name or object with values
-   * @param {String} [value] - attribute value
+   * @typicalname Element#css
+   * @desc Gets or sets  elements CSS
+   * @param {String|Object} attr - Attribute name or object with values
+   * @param {String} [value] - Attribute value
    * @example
-   * waff.element('body').css() // Object containing all properties
-   * waff.element('body').css('background-color') // Only `background-color`
-   * waff.element('body').css('background-color', '#f00') // sets `background-color` to #f00
-   * waff.element('body').css({'background-color': '#f00', 'color', '#ffa500'}) // sets `background-color` to #f00 and `color` to #ffa500
+   * // Object containing all properties
+   * waff.element('body').css()
+   *
+   * // Only `background-color`
+   * waff.element('body').css('background-color')
+   *
+   * // sets `background-color` to #f00
+   * waff.element('body').css('background-color', '#f00')
+   *
+   * // sets `background-color` to #f00 and `color` to #ffa500
+   * // (supports camelcase and kebabcase)
+   * waff.element('body').css({backgroundColor: '#f00', 'color', '#ffa500'})
    */
   Element.prototype.css = function(css, values) {
-    var camel, dash, prop, res, style;
+    var camel, j, kebab, knownProps, len, prop, props, res, rule, style, text, trbl;
     camel = function(str) {
       return str.replace(/(\-[a-z])/g, function(m) {
         return m.toUpperCase().slice(1);
       });
     };
-    dash = function(str) {
+    kebab = function(str) {
       return str.replace(/([A-Z])/g, function(m) {
         return "-" + m.toLowerCase();
       });
     };
+    trbl = function(prop, suf) {
+      if (suf == null) {
+        suf = '';
+      }
+      prop = camel(prop);
+      return [prop + suf, prop + 'Top' + suf, prop + 'Bottom' + suf, prop + 'Left' + suf, prop + 'Right' + suf];
+    };
+    knownProps = ['width', 'height', 'lineHeight', 'fontSize', 'textIndent', 'top', 'left', 'right', 'bottom', 'wordSpacing'];
+    [].push.apply(knownProps, trbl('margin'));
+    [].push.apply(knownProps, trbl('padding'));
+    [].push.apply(knownProps, trbl('border', 'Width'));
     if (typeof css === 'string') {
       if (values == null) {
-        return this.css()[camel(css)] || this.css()[dash(css)];
+        return this.css()[camel(css)] || this.css()[kebab(css)];
       }
       this.style[camel(css)] = values;
     }
     if (typeof css === 'object') {
       for (prop in css) {
         style = css[prop];
-        this.style[camel(prop)] = style;
+        prop = camel(prop);
+        if (!((isNaN(+style)) || -1 === waff.__index(knownProps, prop))) {
+          style += 'px';
+        }
+        this.style[prop] = style;
       }
       return this;
     }
@@ -1028,6 +1623,18 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         style = css[prop];
         if (isNaN(+prop)) {
           res[prop] = style;
+        }
+      }
+      if (res.color === void 0) {
+        text = res.cssText;
+        res = {};
+        props = text.split(';');
+        for (j = 0, len = props.length; j < len; j++) {
+          prop = props[j];
+          rule = prop.split(':');
+          if (rule[1] !== void 0) {
+            res[rule[0].replace(/^\s+|\s+$/, '')] = rule[1].replace(/^\s+|\s+$/, '');
+          }
         }
       }
     }
@@ -1046,10 +1653,10 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.attr
-   * @desc Sets attributes of element
-   * @param {String|Object} attr - attribute name or object with values
-   * @param {String} [value] - attribute value
+   * @typicalname Element#attr
+   * @desc Gets or sets attributes of element
+   * @param {String|Object} attr - Attribute name or object with values
+   * @param {String} [value] - Attribute value
    * @example
    * var span = waff.element('span.red')
    * span.attr('name', 'waffles!')
@@ -1060,12 +1667,14 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     if (typeof attr === 'object') {
       for (key in attr) {
         val = attr[key];
-        this.setAttribute(key, val);
+        this.attr(key, val);
       }
       return this;
     } else {
       if (value != null) {
         this.setAttribute(attr, value);
+      } else if (value === null) {
+        this.removeAttribute(attr);
       } else {
         return this.getAttribute(attr);
       }
@@ -1085,14 +1694,14 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.clear
+   * @typicalname Element#clear
    * @desc Clears element content
    * @example
-   * waff.element('body').clear()
+   * waff.query('body').clear()
    */
   Element.prototype.clear = function() {
     while (this.childNodes.length > 0) {
-      this.firstChild.remove();
+      this.removeChild(this.firstChild);
     }
     return this;
   };
@@ -1106,34 +1715,303 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
+  opts = {
+    configurable: true,
 
-  /**
-   * @function
-   * @typicalname Element.prototype.class
-   * @desc classList shortcut
-   * @example
-   * waff.element('body').class.contains('cls')
-   * waff.element('body').class.remove('cls')
-   * waff.element('body').class.add('cls')
-   * waff.element('body').class.toggle('cls')
-   */
-  Object.defineProperty(Element.prototype, 'class', {
+    /**
+     * @function Element#classes
+     * @instance
+     * @typicalname Element#classese
+     * @desc custom class list
+     */
+    get: function() {
+      var cn;
+      cn = this.className.split(' ');
+      return {
+        target: this,
+
+        /**
+         * @function Element#classes#has
+         * @desc Checks if element has class or classes
+         * @returns Boolean
+         * @param {String|Array} class - class to check
+         * @param {String} [...class] - classes to check
+         * @example
+         * waff.query('body').class.has('cls')
+         * waff.query('body').class.has('cls', 'cls2')
+         * waff.query('body').class.has(['cls', 'cls2'])
+         */
+        has: function(c) {
+          var cl, cl2, j, k, len, len1, ref;
+          for (j = 0, len = arguments.length; j < len; j++) {
+            cl = arguments[j];
+            if (typeof cl === 'string') {
+              if (!waff.__has(cn, cl)) {
+                return false;
+              }
+            } else {
+              ref = waff.__toarray(cl);
+              for (k = 0, len1 = ref.length; k < len1; k++) {
+                cl2 = ref[k];
+                if (!this.has(cn, cl2)) {
+                  return false;
+                }
+              }
+            }
+          }
+          return true;
+        },
+
+        /**
+         * @function Element#classes#add
+         * @desc Adds class or classes
+         * @param {String|Array} class - class to add
+         * @param {String} [...class] - classes to add
+         * @returns {Element#classes} instance
+         * @example
+         * waff.query('body').class.add('cls')
+         * waff.query('body').class.add('cls', 'cls2')
+         * waff.query('body').class.add(['cls', 'cls2'])
+         */
+        add: function(c) {
+          var cl, cl2, j, k, len, len1, ref;
+          for (j = 0, len = arguments.length; j < len; j++) {
+            cl = arguments[j];
+            if (typeof cl === 'string') {
+              if (!(cl === '' || waff.__has(cn, cl))) {
+                cn.push(cl);
+                c = cn.join(' ');
+                while (c[0] === ' ') {
+                  c = c.slice(1);
+                }
+                this.target.className = c;
+              }
+            } else {
+              ref = waff.__toarray(cl);
+              for (k = 0, len1 = ref.length; k < len1; k++) {
+                cl2 = ref[k];
+                if (!(cl2 === '' || waff.__has(cn, cl2))) {
+                  cn.push(cl2);
+                  c = cn.join(' ');
+                  while (c[0] === ' ') {
+                    c = c.slice(1);
+                  }
+                  this.target.className = c;
+                }
+              }
+            }
+          }
+          return this;
+        },
+
+        /**
+         * @function Element#classes#remove
+         * @desc Removes class or classes
+         * @param {String|Array} class - class to remove
+         * @param {String} [...class] - classes to remove
+         * @returns {Element#classes} instance
+         * @example
+         * waff.query('body').class.remove('cls')
+         * waff.query('body').class.remove('cls', 'cls2')
+         * waff.query('body').class.remove(['cls', 'cls2'])
+         */
+        remove: function(c) {
+          var cl, cl2, i, j, k, len, len1, ref;
+          for (j = 0, len = arguments.length; j < len; j++) {
+            cl = arguments[j];
+            if (typeof cl === 'string') {
+              if (cl !== '' && waff.__has(cn, cl)) {
+                while (-1 !== (i = waff.__index(cn, cl))) {
+                  cn.splice(i, 1);
+                  c = cn.join(' ');
+                  while (c[0] === ' ') {
+                    c = c.slice(1);
+                  }
+                }
+                this.target.className = c;
+              }
+            } else {
+              ref = waff.__toarray(cl);
+              for (k = 0, len1 = ref.length; k < len1; k++) {
+                cl2 = ref[k];
+                if (cl !== '' && waff.__has(cn, cl2)) {
+                  while (-1 !== (i = waff.__index(cn, cl2))) {
+                    cn.splice(i, 1);
+                    c = cn.join(' ');
+                    while (c[0] === ' ') {
+                      c = c.slice(1);
+                    }
+                  }
+                  this.target.className = c;
+                }
+              }
+            }
+          }
+          return this;
+        },
+
+        /**
+         * @function Element#classes#toggle
+         * @desc Toggles class or classes
+         * @param {String|Array} class - class to toggle
+         * @param {String} [...class] - classes to toggle
+         * @returns {Element#classes} instance
+         * @example
+         * waff.query('body').class.toggle('cls')
+         * waff.query('body').class.toggle('cls', 'cls2')
+         * waff.query('body').class.toggle(['cls', 'cls2'])
+         */
+        toggle: function(c) {
+          var cl, cl2, j, len, results;
+          results = [];
+          for (j = 0, len = arguments.length; j < len; j++) {
+            cl = arguments[j];
+            if (typeof cl === 'string') {
+              if (waff.__has(cn, cl)) {
+                results.push(this.remove(cl));
+              } else {
+                results.push(this.add(cl));
+              }
+            } else {
+              results.push((function() {
+                var k, len1, ref, results1;
+                ref = waff.__toarray(cl);
+                results1 = [];
+                for (k = 0, len1 = ref.length; k < len1; k++) {
+                  cl2 = ref[k];
+                  if (waff.__has(cn, cl2)) {
+                    results1.push(this.remove(cl2));
+                  } else {
+                    results1.push(this.add(cl2));
+                  }
+                }
+                return results1;
+              }).call(this));
+            }
+          }
+          return results;
+        }
+      };
+    },
+    set: function(c) {
+      var cl, j, len, results;
+      results = [];
+      for (j = 0, len = arguments.length; j < len; j++) {
+        cl = arguments[j];
+        if (typeof cl === 'string') {
+          results.push(this.className = cl);
+        } else if (waff.__isarray(cl)) {
+          results.push(this.className = (waff.__toarray(cl)).join(' '));
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    }
+  };
+  waff.__prop(Element.prototype, 'class', opts);
+  waff.__prop(Element.prototype, 'classes', opts);
+  arropts = {
     configurable: true,
     get: function() {
-      return this.classList;
+      return {
+        add: function() {
+          var el, element, j, len, results;
+          results = [];
+          for (j = 0, len = this.length; j < len; j++) {
+            element = this[j];
+            if (waff.__isarray(element)) {
+              results.push((function() {
+                var k, len1, results1;
+                results1 = [];
+                for (k = 0, len1 = element.length; k < len1; k++) {
+                  el = element[k];
+                  results1.push(el["class"].add.apply(el, arguments));
+                }
+                return results1;
+              }).apply(this, arguments));
+            } else {
+              results.push(element["class"].add.apply(element, arguments));
+            }
+          }
+          return results;
+        },
+        remove: function() {
+          var el, element, j, len, results;
+          results = [];
+          for (j = 0, len = this.length; j < len; j++) {
+            element = this[j];
+            if (waff.__isarray(element)) {
+              results.push((function() {
+                var k, len1, results1;
+                results1 = [];
+                for (k = 0, len1 = element.length; k < len1; k++) {
+                  el = element[k];
+                  results1.push(el["class"].remove.apply(el, arguments));
+                }
+                return results1;
+              }).apply(this, arguments));
+            } else {
+              results.push(element["class"].remove.apply(element, arguments));
+            }
+          }
+          return results;
+        },
+        toggle: function() {
+          var el, element, j, len, results;
+          results = [];
+          for (j = 0, len = this.length; j < len; j++) {
+            element = this[j];
+            if (waff.__isarray(element)) {
+              results.push((function() {
+                var k, len1, results1;
+                results1 = [];
+                for (k = 0, len1 = element.length; k < len1; k++) {
+                  el = element[k];
+                  results1.push(el["class"].toggle.apply(el, arguments));
+                }
+                return results1;
+              }).apply(this, arguments));
+            } else {
+              results.push(element["class"].toggle.apply(element, arguments));
+            }
+          }
+          return results;
+        }
+      };
     },
     set: function() {
-      return this.classList;
+      var el, element, j, len, results;
+      results = [];
+      for (j = 0, len = this.length; j < len; j++) {
+        element = this[j];
+        if (waff.__isarray(element)) {
+          results.push((function() {
+            var k, len1, results1;
+            results1 = [];
+            for (k = 0, len1 = element.length; k < len1; k++) {
+              el = element[k];
+              results1.push(el["class"] = arguments);
+            }
+            return results1;
+          }).apply(this, arguments));
+        } else {
+          results.push(element["class"] = arguments);
+        }
+      }
+      return results;
     }
-  });
+  };
+  waff.__prop(Array.prototype, 'class', arropts);
+  waff.__prop(Array.prototype, 'classes', arropts);
 
   /**
    * @function
-   * @typicalname Element.prototype.watch
+   * @typicalname Element#watch
    * @desc Observes for DOM changes
-   * @param {MutationObserverInit} [options] - MutationObserver options
-   * @fires attr change
+   * @param {MutationObserverInit} [options={ attributes: true, childList: true, characterData: true, attributeOldValue: true, characterDataOldValue: true, subtree: false }] - MutationObserver options
    * @fires attr:*
+   * @fires attr change
    * @fires child add
    * @fires child remove
    * @fires text change
@@ -1141,7 +2019,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * var element = waff.query('span.red')
    * element.watch()
    */
-  Element.prototype.watch = function(options) {
+  Node.prototype.watch = function(options) {
     var config;
     if (this._observer == null) {
       this._observer = new MutationObserver((function(_this) {
@@ -1157,12 +2035,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
                 oldValue: m.oldValue,
                 value: m.target.attr(m.attributeName)
               };
-              if (-1 !== knownattrs.indexOf(m.attributeName)) {
+              if (-1 !== waff.__index(knownattrs, m.attributeName)) {
                 _this.emit(m.attributeName + ' change', event);
               }
 
               /**
-               * @event Element.prototype.watch.attr change
+               * @event Element#watch.attr change
                * @desc Event emitted on attribute change
                * @example
                * element.on('attr change', function(e){
@@ -1176,7 +2054,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
               _this.emit('attr:*', event);
 
               /**
-               * @event Element.prototype.watch.attr:*
+               * @event Element#watch.attr:*
                * @desc Event emitted on specific attribute change
                * @example
                * element.on('attr:class', function(e){
@@ -1187,12 +2065,11 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
                * })
                */
               _this.emit('attr:' + m.attributeName, event);
-            }
-            if (m.type = 'childList') {
+            } else if (m.type === 'childList') {
               if (m.addedNodes.length > 0) {
 
                 /**
-                 * @event Element.prototype.watch.child add
+                 * @event Element#watch.child add
                  * @desc Event emitted on child addition
                  * @example
                  * element.on('child add', function(e){
@@ -1202,13 +2079,13 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
                  */
                 _this.emit('child add', {
                   target: m.target,
-                  nodes: m.addedNodes
+                  nodes: waff.__toarray(m.addedNodes)
                 });
               }
               if (m.removedNodes.length > 0) {
 
                 /**
-                 * @event Element.prototype.watch.child remove
+                 * @event Element#watch.child remove
                  * @desc Event emitted on child remove
                  * @example
                  * element.on('child remove', function(e){
@@ -1218,14 +2095,13 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
                  */
                 _this.emit('child remove', {
                   target: m.target,
-                  nodes: m.removedNodes
+                  nodes: waff.__toarray(m.removedNodes)
                 });
               }
-            }
-            if (m.type = 'characterData') {
+            } else if (m.type === 'characterData') {
 
               /**
-               * @event Element.prototype.watch.text change
+               * @event Element#watch.text change
                * @desc Event emitted on text change
                * @example
                * element.on('text change', function(e){
@@ -1269,7 +2145,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Element.prototype.unwatch
+   * @typicalname Element#unwatch
    * @desc Stops observing for DOM changes
    * @example
    * var element = waff.query('span.red')
@@ -1279,7 +2155,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   Element.prototype.unwatch = function() {
     if (this._observer != null) {
       this._observer.disconnect();
-      delete this._observer;
+      this._observer = null;
     }
     return this;
   };
@@ -1293,6 +2169,47 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     }
     return this;
   };
+
+  /**
+   * @function
+   * @typicalname Element#parent
+   * @desc Get parent element
+   * @example
+   * waff.query('body').parent() // html
+   */
+  waff.__prop(Element.prototype, 'parent', {
+    configurable: true,
+    get: function() {
+      if (this.parentNode instanceof Element) {
+        return this.parentNode;
+      }
+      return this.parentElement;
+    },
+    set: function(parent) {
+      if (parent instanceof Element) {
+        parent.append(this);
+      }
+      return this;
+    }
+  });
+
+  /**
+   * @function
+   * @typicalname Element#clone
+   * @desc Clones element
+   * @param {Boolean} [deep=false] - Deep clone
+   * @example
+   * waff.query('body').clone()
+   */
+  Element.prototype.clone = function(deep) {
+    var clone;
+    if (deep == null) {
+      deep = false;
+    }
+    clone = this.cloneNode(deep);
+    clone.original = this;
+    return clone;
+  };
   ref = waff._EventTargets;
   for (j = 0, len = ref.length; j < len; j++) {
     Target = ref[j];
@@ -1300,7 +2217,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       var _this, event, k, len1, listen, self;
       listen = function() {
         var args, el, ev;
-        args = [].slice.call(arguments);
+        args = waff.__toarray(arguments);
         el = args.shift();
         ev = args.shift();
         if (el.addEventListener != null) {
@@ -1311,7 +2228,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           return el.attachEvent.apply(el, args);
         }
       };
-      if (!(name instanceof Array)) {
+      if (!waff.__isarray(name)) {
         name = [name];
       }
       self = this.emitter != null ? this.emitter : this;
@@ -1353,7 +2270,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     Target = ref1[k];
     Target.prototype.off = function(name, next, capture) {
       var detach, event, l, len2, self;
-      if (!(name instanceof Array)) {
+      if (!waff.__isarray(name)) {
         name = [name];
       }
       self = this.emitter != null ? this.emitter : this;
@@ -1371,7 +2288,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         detach = (function(_this) {
           return function(next) {
             var index;
-            index = self._events[event].indexOf(next);
+            index = waff.__index(self._events[event], next);
             if (index !== -1) {
               self._events[event].splice(index, 1);
               return detach(next);
@@ -1388,7 +2305,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
     Target = ref2[l];
     Target.prototype.once = function(name, next, capture) {
       var _this, event, fn, len3, o, self;
-      if (!(name instanceof Array)) {
+      if (!waff.__isarray(name)) {
         name = [name];
       }
       self = this.emitter != null ? this.emitter : this;
@@ -1415,7 +2332,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       var _this, dispatch, self;
       dispatch = function() {
         var args, el, ev;
-        args = [].slice.call(arguments);
+        args = waff.__toarray(arguments);
         el = args.shift();
         ev = args.shift();
         if (el.dispatchEvent != null) {
@@ -1442,9 +2359,14 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   }
 
   /**
+   * @class Text
+   * @global
+   */
+
+  /**
    * @function
-   * @typicalname Text.prototype.set
-   * @desc set nodeValue easier
+   * @typicalname Text#set
+   * @desc Sets nodeValue
    * @example
    * var text = waff.text('The number of a waffle')
    * text.set('666')
@@ -1457,8 +2379,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 
   /**
    * @function
-   * @typicalname Text.prototype.get
-   * @desc get nodeValue easier
+   * @typicalname Text#get
+   * @desc Gets nodeValue
    * @example
    * var text = waff.text('The number of a waffle')
    * text.get() // The number of a waffle

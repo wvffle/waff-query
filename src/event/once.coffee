@@ -1,6 +1,6 @@
 for Target in waff._EventTargets
   Target::once = (name, next, capture) ->
-    unless name instanceof Array
+    unless waff.__isarray name
       name = [ name ]
 
     self = if @emitter? then @emitter else @

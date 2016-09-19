@@ -1,5 +1,5 @@
 describe 'Element::attr', ->
-  
+
   beforeEach ->
     workspace.reset()
 
@@ -26,3 +26,10 @@ describe 'Element::attr', ->
     at = green.attr 'name'
     expect at
     	.to.be.equal 'passed'
+
+  it 'should remove [name] of span.green', ->
+    green = document.querySelector 'span.green'
+    green.setAttribute 'name', 'passed'
+    green.attr 'name', null
+    expect green.attr 'name'
+    	.to.be.oneOf [null, '']

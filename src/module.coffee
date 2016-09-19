@@ -22,13 +22,22 @@
     @waff = _waff
     for key, value of _waff
       if _waff.hasOwnProperty key
-        unless key[0] == '_'
-          @[key] = value
-        else
+        if key[0] == '_'
           @waff[key.slice 1] = value
+
+    # temporary IntelliJ Idea fix
+    @ps = @waff.ps
+    @qq = @waff.qq
+    @q = @waff.q
+    @e = @waff.e
+    @t = @waff.t
+    @selector = @waff.selector
+    @element = @waff.element
+    @text = @waff.text
+    @query = @waff.query
 ) null, (->
   ###*
-  # @global waff
+  # @namespace waff
   ###
   waff =
     ps: <%= include('selector/parse', '    ') %>
@@ -52,13 +61,28 @@
 
   waff._version = '<%= version %>'
 
-  waff._get = <%= include('xhr/get', '  ') %>
-  waff._post = <%= include('xhr/post', '  ') %>
+  waff.__isarray = <%= include('util/isarray', '  ') %>
+  waff.__toarray = <%= include('util/toarray', '  ') %>
+  waff.__has = <%= include('util/has', '  ') %>
+  waff.__index = <%= include('util/index', '  ') %>
+  waff.__prop = <%= include('util/defineproperty', '  ') %>
+
+  <%= include('polyfill/console', '  ') %>
+  <%= include('polyfill/xhr', '  ') %>
+  <%= include('polyfill/event', '  ') %>
+  <%= include('polyfill/mutation', '  ') %>
 
   waff._EventTargets = <%= include('event/targets', '  ') %>
   waff._EventEmitter = <%= include('classes/eventemitter', '  ') %>
   waff._Promise = <%= include('classes/promise', '  ') %>
 
+  waff._get = <%= include('xhr/get', '  ') %>
+  waff._post = <%= include('xhr/post', '  ') %>
+
+  ###*
+  # @class Element
+  # @global
+  ###
   # Register prototypes
   <%= include('element/query', '  ') %>
   <%= include('element/append', '  ') %>
@@ -74,12 +98,18 @@
   <%= include('element/classes', '  ') %>
   <%= include('element/watch', '  ') %>
   <%= include('element/unwatch', '  ') %>
+  <%= include('element/parent', '  ') %>
+  <%= include('element/clone', '  ') %>
 
   <%= include('event/on', '  ') %>
   <%= include('event/off', '  ') %>
   <%= include('event/once', '  ') %>
   <%= include('event/emit', '  ') %>
 
+  ###*
+  # @class Text
+  # @global
+  ###
   <%= include('text/set', '  ') %>
   <%= include('text/get', '  ') %>
 

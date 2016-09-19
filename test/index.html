@@ -1,6 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Mocha Tests</title>
   <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
   <style>
@@ -14,21 +16,21 @@
       color: rgb(255, 0, 0);
     }
   </style>
-  <script src="http://coffeescript.org/extras/coffee-script.js"></script>
+  <script src="https://coffeescript.org/extras/coffee-script.js"></script>
   <script src="https://rawgit.com/mochajs/mocha/v3.0.0/mocha.js"></script>
-  <script src="http://chaijs.com/chai.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
 </head>
 <body>
   <div class="workspace"></div>
   <div id="mocha"></div>
   <script src="../dist/waff-query.js"></script>
-  <script src="../bower_components/requirejs/require.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.js"></script>
   <script>
     requirejs.onError = function (err) {
-    console.log(err.requireType);
-    console.log('modules: ' + err.requireModules);
-    throw err;
-};
+      console.log(err.requireType);
+      console.log('modules: ' + err.requireModules);
+      throw err;
+    };
     var workspace = {
       reset: function(){
         var ce = document.createElement.bind(document);
@@ -36,7 +38,7 @@
         var workspace = this.element;
         for (var i = 0; i < 3; i++) {
           var div = ce('div')
-          div.classList.add('red');
+          div.className += 'red'
           div.innerHTML = 'r'+(1+i);
           workspace.appendChild(div);
         }
@@ -46,25 +48,29 @@
         workspace.appendChild(text);
         for (var i = 0; i < 3; i++) {
           var div = ce('div');
-          div.classList.add('green');
+          div.className += 'green'
           div.innerHTML = 'g'+(1+i);
           workspace.appendChild(div);
         }
         var span = ce('span');
-        span.classList.add('red');
+        span.className += 'red'
         span.innerHTML = 'r4';
         workspace.appendChild(span);
         var span = ce('span');
-        span.classList.add('green');
+        span.className += 'green'
         workspace.appendChild(span);
         var h1 = ce('h1');
         h1.innerHTML = 'Yaaaaaaaaaaaaay';
         span.appendChild(h1);
         var span = ce('span');
-        span.classList.add('orange');
+        span.className += 'orange'
         workspace.appendChild(span);
         var t = document.createTextNode('wut??');
         span.appendChild(t);
+        var span = ce('span');
+        span.className += 'orange'
+        span.className += 'blue'
+        workspace.appendChild(span);
       },
       clear: function () {
         this.element.innerHTML = '';
@@ -82,14 +88,19 @@
 <script src="../test/element/append.js"></script>
 <script src="../test/element/attr.js"></script>
 <script src="../test/element/before.js"></script>
+<script src="../test/element/classes.js"></script>
 <script src="../test/element/clear.js"></script>
+<script src="../test/element/clone.js"></script>
 <script src="../test/element/create.js"></script>
 <script src="../test/element/css.js"></script>
 <script src="../test/element/html.js"></script>
+<script src="../test/element/parent.js"></script>
 <script src="../test/element/path.js"></script>
 <script src="../test/element/prepend.js"></script>
 <script src="../test/element/query.js"></script>
 <script src="../test/element/text.js"></script>
+<script src="../test/element/unwatch.js"></script>
+<script src="../test/element/watch.js"></script>
 <script src="../test/event/emit.js"></script>
 <script src="../test/event/off.js"></script>
 <script src="../test/event/on.js"></script>

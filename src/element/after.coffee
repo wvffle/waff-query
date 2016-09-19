@@ -1,8 +1,8 @@
 ###*
 # @function
-# @typicalname Element.prototype.after
+# @typicalname Element#after
 # @desc Adds element after
-# @param {Element} element - element to add
+# @param {Element} element - Previous element
 # @example
 # var span = waff.element('span.red')
 # var div = waff.element('div')
@@ -12,11 +12,10 @@
 # //   span.red
 # //   div
 ###
-Element::after = ->
-  for element in arguments
-    if element.parentElement
-      if @nextSibling?
-        element.parentElement.insertBefore @, element.nextSibling
-      else
-        element.parentElement.append @
+Element::after = (element) ->
+  if element.parent?
+    if element.nextSibling?
+      element.parent.insertBefore @, element.nextSibling
+    else
+      element.parent.append @
   @

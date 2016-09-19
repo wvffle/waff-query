@@ -6,42 +6,32 @@
 [![npm](https://img.shields.io/npm/dt/waff-query.svg?maxAge=3600&style=flat-square)]()
 [![Waffle.io](https://img.shields.io/waffle/label/wvffle/waff-query.js/in%20progress.svg?maxAge=3600&style=flat-square)]()
 -->
+# waff-query.js
+This is a simple Document Object Model library for lazy people to make their things faster.
 
 # Contents
-* [Global functions](#global-functions)
-* [Content manipulation](#content-manipulation)
-* [TextNode value manipulation](#textnode-value-manipulation)
-* [Appending elements](#appending-elements)
-* [Changing css](#changing-css)
-* [Observers](#observers)
-* [Element path](#element-path)
+ * [Browser support](#browser-support)
+ * [Global functions](#global-functions)
+ * [Element prototypes](#element-prototypes)
+ * [Text prototypes](#text-prototypes)
+
+# Browser support
+
+Function | Firefox 4+ | Safari 6+ | Opera 16+ | Google Chrome 18+ | IE 9+ | IE 10
+--- | --- | --- | --- | --- | --- | ---
+Element&nbsp;query | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+Element&nbsp;append | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+Element&nbsp;watch | ✓ | ✓ | ✓ | ✓ | ✓ | ?
+Element&nbsp;create | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+EventEmitter | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+Promise | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+XHR | ✓ | ✓ | ✓ | ✓ | ~ | ?
 
 # Global functions
-{{>all-docs~}}
+{{#namespace name="waff"}}{{>docs}}{{/namespace}}
 
-# Content manipulation
-{{#function typicalname='Element.prototype.clear'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.html'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.text'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.attr'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.classes'}}{{>docs}}{{/function}}
+# Element prototypes
+{{#class name="Element"}}{{>docs}}{{/class}}
 
-# TextNode value manipulation
-{{#function typicalname='Text.prototype.get'}}{{>docs}}{{/function}}
-{{#function typicalname='Text.prototype.set'}}{{>docs}}{{/function}}
-
-# Appending elements
-{{#function typicalname='Element.prototype.append'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.prepend'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.after'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.before'}}{{>docs}}{{/function}}
-
-# Changing css
-{{#function typicalname='Element.prototype.css'}}{{>docs}}{{/function}}
-
-# Observers
-{{#function typicalname='Element.prototype.watch'}}{{>docs}}{{/function}}
-{{#function typicalname='Element.prototype.unwatch'}}{{>docs}}{{/function}}
-
-# Element path
-{{#function typicalname='Element.prototype.path'}}{{>docs}}{{/function}}
+# Text prototypes
+{{#class name="Text"}}{{>docs}}{{/class}}

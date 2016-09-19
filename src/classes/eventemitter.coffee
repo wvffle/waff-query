@@ -1,8 +1,7 @@
 (->
   class EventEmitter
     ###*
-    # @class waff.EventEmitter
-    # @static
+    # @class waff#EventEmitter
     # @classdesc Own implementation of EventEmitter. (untested)
     # @example
     # var ee = new waff.EventEmitter();
@@ -11,12 +10,12 @@
       @_emitter = waff.e()
 
     ###*
-    # @function waff.EventEmitter.on
-    # @instance
+    # @function waff#EventEmitter#on
     # @desc Adds handler for event
-    # @param {String|Array<String>} event - name of event
+    # @param {String|Array<String>} event - Name of event
     # @param {Function} handler - Handler function
     # @param {Boolean} [capture] - Use capture
+    # @returns {waff#EventEmitter} instance
     # @example
     # var ee = new waff.EventEmitter();
     # // Single event binding
@@ -28,12 +27,12 @@
       @_emitter.on.call {emitter: @_emitter, obj: @}, event, handler, capture
 
     ###*
-    # @function waff.EventEmitter.once
-    # @instance
+    # @function waff#EventEmitter#once
     # @desc Adds handler only for one event emit
-    # @param {String|Array<String>} event - name of event
+    # @param {String|Array<String>} event - Name of event
     # @param {Function} handler - Handler function
     # @param {Boolean} [capture] - Use capture
+    # @returns {waff#EventEmitter} instance
     # @example
     # var ee = new waff.EventEmitter();
     # // Single event binding
@@ -45,12 +44,12 @@
       @_emitter.once.call {emitter: @_emitter, obj: @}, event, handler, capture
 
     ###*
-    # @function waff.EventEmitter.off
-    # @instance
+    # @function waff#EventEmitter#off
     # @desc Removes specific event handler
-    # @param {String|Array<String>} event - name of event
+    # @param {String|Array<String>} event - Name of event
     # @param {Function} [handler] - Handler function
     # @param {Boolean} [capture] - Use capture
+    # @returns {waff#EventEmitter} instance
     # @example
     # var ee = new waff.EventEmitter();
     # // Single event unbinding for a specific handler
@@ -64,11 +63,11 @@
       @_emitter.off.call {emitter: @_emitter, obj: @}, event, handler, capture
 
     ###*
-    # @function waff.EventEmitter.emit
+    # @function waff#EventEmitter#emit
     # @desc Emits event
-    # @instance
-    # @param {String} event - name of event
+    # @param {String} event - Name of event
     # @param {Object} [data] - Data to pass
+    # @returns {waff#EventEmitter} instance
     # @example
     # var ee = new waff.EventEmitter();
     # // Emitting event
@@ -84,10 +83,11 @@
 
 
   ###*
-  # @function waff.EventEmitter.extend
+  # @function waff#EventEmitter.extend
   # @static
   # @desc Extends events on object
-  # @param {Object} object - object to extend
+  # @param {Object} object - Object to extend
+  # @returns object
   # @example
   # var obj = {};
   # EventEmitter.extend(obj);

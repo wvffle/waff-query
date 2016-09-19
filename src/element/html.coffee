@@ -1,8 +1,8 @@
 ###*
 # @function
-# @typicalname Element.prototype.html
-# @desc Sets text of Element to the given string
-# @param {String} [html] - html string to set
+# @typicalname Element#html
+# @desc Sets text of Element to the given string or returns html string
+# @param {String} [html] - Html string to set
 # @example
 # var span = waff.element('span')
 # span.html('<div></div>')
@@ -18,8 +18,8 @@ Element::html = (html) ->
     @append html
     return @
 
-  if html instanceof NodeList or html instanceof Array
-    arr = [].slice.call html
+  if html instanceof NodeList or waff.__isarray html
+    arr = waff.__toarray html
     for h in arr
       if h instanceof Element or h instanceof Text
         @append h

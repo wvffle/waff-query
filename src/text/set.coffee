@@ -1,7 +1,7 @@
 ###*
 # @function
-# @typicalname Text.prototype.set
-# @desc set nodeValue easier
+# @typicalname Text#set
+# @desc Sets nodeValue
 # @example
 # var text = waff.text('The number of a waffle')
 # text.set('666')

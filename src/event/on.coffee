@@ -1,7 +1,7 @@
 for Target in waff._EventTargets
   Target::on = (name, next, capture) ->
     listen = ->
-      args = [].slice.call arguments
+      args = waff.__toarray arguments
       el = args.shift()
       ev = args.shift()
       if el.addEventListener?
@@ -10,7 +10,7 @@ for Target in waff._EventTargets
       else
         args.unshift 'on' + ev
         el.attachEvent.apply el, args
-    unless name instanceof Array
+    unless waff.__isarray name
       name = [ name ]
 
     self = if @emitter? then @emitter else @

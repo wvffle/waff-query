@@ -1,10 +1,10 @@
 ###*
 # @function
-# @typicalname Element.prototype.watch
+# @typicalname Element#watch
 # @desc Observes for DOM changes
-# @param {MutationObserverInit} [options] - MutationObserver options
-# @fires attr change
+# @param {MutationObserverInit} [options={ attributes: true, childList: true, characterData: true, attributeOldValue: true, characterDataOldValue: true, subtree: false }] - MutationObserver options
 # @fires attr:*
+# @fires attr change
 # @fires child add
 # @fires child remove
 # @fires text change
@@ -12,17 +12,17 @@
 # var element = waff.query('span.red')
 # element.watch()
 ###
-Element::watch = (options) ->
+Node::watch = (options) ->
   unless @_observer?
     @_observer = new MutationObserver (mutations) =>
       for m in mutations
         if m.type == 'attributes'
           knownattrs = [ 'class', 'id', 'style', 'href', 'src' ]
           event = { target: m.target, attr: m.attributeName, oldValue: m.oldValue, value: m.target.attr m.attributeName }
-          if -1 != knownattrs.indexOf m.attributeName
+          unless -1 == waff.__index knownattrs, m.attributeName
             @emit m.attributeName+' change', event
           ###*
-          # @event Element.prototype.watch.attr change
+          # @event Element#watch.attr change
           # @desc Event emitted on attribute change
           # @example
           # element.on('attr change', function(e){
@@ -35,7 +35,7 @@ Element::watch = (options) ->
           @emit 'attr change', event
           @emit 'attr:*', event
           ###*
-          # @event Element.prototype.watch.attr:*
+          # @event Element#watch.attr:*
           # @desc Event emitted on specific attribute change
           # @example
           # element.on('attr:class', function(e){
@@ -46,10 +46,10 @@ Element::watch = (options) ->
           # })
           ###
           @emit 'attr:'+m.attributeName, event
-        if m.type = 'childList'
+        else if m.type == 'childList'
           if m.addedNodes.length > 0
             ###*
-            # @event Element.prototype.watch.child add
+            # @event Element#watch.child add
             # @desc Event emitted on child addition
             # @example
             # element.on('child add', function(e){
@@ -57,10 +57,10 @@ Element::watch = (options) ->
             #  // e.nodes
             # })
             ###
-            @emit 'child add', { target: m.target, nodes: m.addedNodes }
+            @emit 'child add', { target: m.target, nodes: waff.__toarray m.addedNodes }
           if m.removedNodes.length > 0
             ###*
-            # @event Element.prototype.watch.child remove
+            # @event Element#watch.child remove
             # @desc Event emitted on child remove
             # @example
             # element.on('child remove', function(e){
@@ -68,10 +68,10 @@ Element::watch = (options) ->
             #  // e.nodes
             # })
             ###
-            @emit 'child remove', { target: m.target, nodes: m.removedNodes }
-        if m.type = 'characterData'
+            @emit 'child remove', { target: m.target, nodes: waff.__toarray m.removedNodes }
+        else if m.type == 'characterData'
           ###*
-          # @event Element.prototype.watch.text change
+          # @event Element#watch.text change
           # @desc Event emitted on text change
           # @example
           # element.on('text change', function(e){
@@ -81,7 +81,6 @@ Element::watch = (options) ->
           # })
           ###
           @emit 'text change', { target: m.target, oldValue: m.oldValue, value: m.target.get() }
-
       return @
     config =
       attributes: true

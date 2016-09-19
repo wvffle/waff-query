@@ -1,5 +1,5 @@
 describe 'Element::append', ->
-  
+
   beforeEach ->
     workspace.reset()
 

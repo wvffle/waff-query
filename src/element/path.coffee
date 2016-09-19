@@ -1,12 +1,12 @@
-###*
-# @function
-# @typicalname Element.prototype.path
-# @desc Get unique path of an element
-# @example
-# waff.element('body').path() // html > body:nth-child(2)
-###
-Object.defineProperty Element::, 'path',
+waff.__prop Element::, 'path',
   configurable: true
+  ###*
+  # @function Element#path
+  # @typicalname Element#path
+  # @desc Get unique path of an element
+  # @example
+  # waff.query('body').path() // html > body:nth-child(2)
+  ###
   get: ->
     root = @
     path = []

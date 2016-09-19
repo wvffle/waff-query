@@ -1,17 +1,39 @@
 ###*
 # @function
-# @typicalname Element.prototype.append
+# @typicalname Element#append
 # @desc Adds element at the end
-# @param {Element} element - element to append
+# @param {Element|Element[]} ...element - Element to append
 # @example
 # var span = waff.element('span.red')
-# var body = waff.element('body')
-# body.append(span
+# var body = waff.query('body')
+# body.append(span)
 # // body
 # //   <content>
+# //   span.red
+#
+# var span = waff.element('span.orange')
+# var span2 = waff.element('span.red')
+# var body = waff.query('body')
+# body.append(span, span2)
+# // body
+# //   <content>
+# //   span.orange
+# //   span.red
+#
+# var span = waff.element('span.orange')
+# var span2 = waff.element('span.red')
+# var body = waff.query('body')
+# body.append([span, span2])
+# // body
+# //   <content>
+# //   span.orange
 # //   span.red
 ###
 Element::append = ->
   for element in arguments
-    @appendChild element
+    if waff.__isarray element
+      for el in waff.__toarray element
+        @appendChild element
+    else
+      @appendChild element
   @

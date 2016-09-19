@@ -7,8 +7,8 @@ describe 'e()', ->
     div = e 'div'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect div.classList
-   		.to.have.lengthOf 0
+    expect div.className
+   		.to.equal ''
     expect div.id
     	.to.equal ''
 
@@ -16,8 +16,8 @@ describe 'e()', ->
     div = e()
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect div.classList
-    	.to.have.lengthOf 0
+    expect div.className
+   		.to.equal ''
     expect div.id
     	.to.equal ''
 
@@ -25,10 +25,8 @@ describe 'e()', ->
     div = e 'div.red'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 1
-    expect [].slice.call div.classList
-    	.to.include 'red'
+    expect div.className
+   		.to.equal 'red'
     expect div.id
     	.to.equal ''
 
@@ -36,10 +34,8 @@ describe 'e()', ->
     div = e '.red'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 1
-    expect [].slice.call div.classList
-    	.to.include 'red'
+    expect div.className
+   		.to.equal 'red'
     expect div.id
     	.to.equal ''
 
@@ -47,8 +43,8 @@ describe 'e()', ->
     div = e 'div#text'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 0
+    expect div.className
+   		.to.equal ''
     expect div.id
     	.to.equal 'text'
 
@@ -56,8 +52,8 @@ describe 'e()', ->
     div = e '#text'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-  		.to.have.lengthOf 0
+    expect div.className
+   		.to.equal ''
     expect div.id
     	.to.equal 'text'
 
@@ -65,11 +61,8 @@ describe 'e()', ->
     div = e 'div#text.cl1.cl2'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 2
-    expect [].slice.call div.classList
-    	.to.include 'cl1'
-      .and.to.include 'cl2'
+    expect div.className
+   		.to.equal 'cl1 cl2'
     expect div.id
     	.to.equal 'text'
 
@@ -77,11 +70,8 @@ describe 'e()', ->
     div = e '#text.cl1.cl2'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 2
-    expect [].slice.call div.classList
-    	.to.include 'cl1'
-    	.and.to.include 'cl2'
+    expect div.className
+   		.to.equal 'cl1 cl2'
     expect div.id
     	.to.equal 'text'
 
@@ -89,11 +79,8 @@ describe 'e()', ->
     div = e 'div.cl1.cl2#text'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 2
-    expect [].slice.call div.classList
-    	.to.include 'cl1'
-      .and.to.include 'cl2'
+    expect div.className
+   		.to.equal 'cl1 cl2'
     expect div.id
     	.to.equal 'text'
 
@@ -101,11 +88,8 @@ describe 'e()', ->
     div = e '.cl1.cl2#text'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 2
-    expect [].slice.call div.classList
-    	.to.include 'cl1'
-      .and.to.include 'cl2'
+    expect div.className
+   		.to.equal 'cl1 cl2'
     expect div.id
     	.to.equal 'text'
 
@@ -113,11 +97,8 @@ describe 'e()', ->
     div = e 'div.cl1#text.cl2'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 2
-    expect [].slice.call div.classList
-    	.to.include 'cl1'
-      .and.to.include 'cl2'
+    expect div.className
+   		.to.equal 'cl1 cl2'
     expect div.id
     	.to.equal 'text'
 
@@ -125,11 +106,8 @@ describe 'e()', ->
     div = e '.cl1#text.cl2'
     expect div.tagName.toLowerCase()
     	.to.be.equal 'div'
-    expect [].slice.call div.classList
-    	.to.have.lengthOf 2
-    expect [].slice.call div.classList
-    	.to.include 'cl1'
-      .and.to.include 'cl2'
+    expect div.className
+   		.to.equal 'cl1 cl2'
     expect div.id
     	.to.equal 'text'
 

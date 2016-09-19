@@ -1,8 +1,8 @@
 ###*
 # @function
-# @typicalname Element.prototype.text
-# @desc Sets text of Element to the given string
-# @param {String} [text] - text to set
+# @typicalname Element#text
+# @desc Sets text of Element to the given string or returns text string
+# @param {String} [text] - Text to set
 # @example
 # var span = waff.element('span')
 # span.text('<div></div>')
@@ -15,9 +15,9 @@ Element::text = (text) ->
   content = not (@childNodes.length == 1 and @childNodes[0] instanceof Text)
   @clear() if content
 
-  if text instanceof NodeList or text instanceof Array
+  if waff.__isarray text
     _text = ''
-    for t in [].slice.call text
+    for t in waff.__toarray text
       if t instanceof Text
         _text += t.get()
       else

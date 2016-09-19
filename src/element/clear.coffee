@@ -1,13 +1,13 @@
 ###*
 # @function
-# @typicalname Element.prototype.clear
+# @typicalname Element#clear
 # @desc Clears element content
 # @example
-# waff.element('body').clear()
+# waff.query('body').clear()
 ###
 Element::clear = ->
   while @childNodes.length > 0
-    @firstChild.remove()
+    @removeChild @firstChild
   @
 
 Array::clear = ->

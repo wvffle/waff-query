@@ -19,7 +19,6 @@ describe 'EventTarget::once', ->
     span.dispatchEvent new Event 'ev'
     expect missed_calls
     	.to.be.equal 1
-    span.remove()
 
   it 'should attach many handlers for one call', ->
     span = document.createElement 'span'
@@ -37,4 +36,3 @@ describe 'EventTarget::once', ->
     span.dispatchEvent new Event 'ev'
     expect missed_calls
     	.to.be.equal 1
-    span.remove()

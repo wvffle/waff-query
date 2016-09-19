@@ -1,7 +1,7 @@
 for Target in waff._EventTargets
   Target::emit = (event, data) ->
     dispatch = ->
-      args = [].slice.call arguments
+      args = waff.__toarray arguments
       el = args.shift()
       ev = args.shift()
       if el.dispatchEvent?

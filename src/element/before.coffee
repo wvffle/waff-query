@@ -1,8 +1,8 @@
 ###*
 # @function
-# @typicalname Element.prototype.before
+# @typicalname Element#before
 # @desc Adds element before
-# @param {Element} element - element to add
+# @param {Element} element - Next element
 # @example
 # var span = waff.element('span.red')
 # var div = waff.element('div')
@@ -12,8 +12,7 @@
 # //   div
 # //   span.red
 ###
-Element::before = ->
-  for element in arguments
-    if element.parentElement
-      element.parentElement.insertBefore @, element
+Element::before = (element)->
+  if element.parent?
+    element.parent.insertBefore @, element
   @

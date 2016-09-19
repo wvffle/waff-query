@@ -3,8 +3,8 @@
 
 
     ###*
-    # @class waff.Promise
-    # @extends waff.EventEmitter
+    # @class waff#Promise
+    # @extends waff#EventEmitter
     # @classdesc Own implementation of Promises. Can bind `this` to functions called in `then` and `catch` and also passes all arguments to them.
     # @param {Function} executor - Executor function
     # @fires fulfill
@@ -20,10 +20,11 @@
       executor @_resolve(@), @_reject(@)
 
     ###*
-    # @function waff.Promise.then
+    # @function waff#Promise.then
     # @desc Adds handler when fulfilled or rejected
     # @param {Function} onFulfill - Fulfiull function
     # @param {Function} [onReject] - Reject function
+    # @returns {waff#Promise} instance
     # @example
     # var promise = new waff.Promise(function(){})
     # promise.then(function(){
@@ -37,9 +38,10 @@
       @
 
     ###*
-    # @function waff.Promise.catch
+    # @function waff#Promise#catch
     # @desc Adds handler when rejected
     # @param {Function} onReject - Reject function
+    # @returns {waff#Promise} instance
     # @example
     # var promise = new waff.Promise(function(){})
     # promise.catch(function(){
@@ -53,7 +55,7 @@
     _resolve: (self) ->
       ->
         ###*
-        # @event waff.Promise.fulfill
+        # @event waff#Promise.fulfill
         # @desc Event emitted on fulfill
         # @example
         # var promise = new waff.Promise(function(){})
@@ -64,13 +66,23 @@
         self.emit 'fulfill', arguments
         for handler in self._then
           handler.apply @, arguments
+    ###*
+    # @function waff#Promise#resolve
+    # @desc Resolves promise
+    # @param {*} ..arg - Arguments to pass
+    # @returns {waff#Promise} instance
+    # @example
+    # var promise = new waff.Promise(function(){})
+    # promise.resolve()
+    ###
     resolve: ->
       @_resolve(@).apply @, arguments
+      @
 
     _reject: (self) ->
       ->
         ###*
-        # @event waff.Promise.reject
+        # @event waff#Promise.reject
         # @desc Event emitted on reject
         # @example
         # var promise = new waff.Promise(function(){})
@@ -81,6 +93,15 @@
         self.emit 'reject', arguments
         for handler in self._catch
           handler.apply @, arguments
+    ###*
+    # @function waff#Promise#reject
+    # @desc Rejects promise
+    # @param {*} ..arg - Arguments to pass
+    # @returns {waff#Promise} instance
+    # @example
+    # var promise = new waff.Promise(function(){})
+    # promise.reject()
+    ###
     reject: ->
       @_reject(@).apply @, arguments
 

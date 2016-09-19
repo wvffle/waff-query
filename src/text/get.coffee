@@ -1,7 +1,7 @@
 ###*
 # @function
-# @typicalname Text.prototype.get
-# @desc get nodeValue easier
+# @typicalname Text#get
+# @desc Gets nodeValue
 # @example
 # var text = waff.text('The number of a waffle')
 # text.get() // The number of a waffle

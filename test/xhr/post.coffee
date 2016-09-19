@@ -1,6 +1,6 @@
 describe 'waff.post()', ->
   it 'should perform post request', (done) ->
-    waff.post 'https://httpbin.org/post', {}
+    waff.post 'https://posttestserver.com/post.php', {}
     	.then (res) ->
       	expect @status
         	.to.be.equal 200

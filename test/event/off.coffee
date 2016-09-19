@@ -16,7 +16,6 @@ describe 'EventTarget::off', ->
     span.off 'ev', handler
     expect span._events.ev
     	.to.have.lengthOf 1
-    span.remove()
 
   it 'should detach all same handlers', ->
     span = document.createElement 'span'
@@ -32,7 +31,6 @@ describe 'EventTarget::off', ->
     span.off 'ev', handler
     expect span._events.ev
     	.to.have.lengthOf 1
-    span.remove()
 
   it 'should detach all handlers', ->
     span = document.querySelector 'span.green'
@@ -48,4 +46,3 @@ describe 'EventTarget::off', ->
     span.off 'ev'
     expect span._events.ev
     	.to.have.lengthOf 0
-    span.remove()
