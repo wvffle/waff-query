@@ -21,10 +21,10 @@ This is a simple Document Object Model library for lazy people to make their thi
 
 Function | Firefox 4+ | Safari 6+ | Opera 16+ | Chrome 18+ | IE 9+ | IE 10
 --- | --- | --- | --- | --- | --- | ---
-Element&nbsp;query | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
-Element&nbsp;append | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
-Element&nbsp;watch | ✓ | ✓ | ✓ | ✓ | ✓ | ?
-Element&nbsp;create | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+Element query | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+Element append | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
+Element watch | ✓ | ✓ | ✓ | ✓ | ✓ | ?
+Element create | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
 EventEmitter | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
 Promise | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
 XHR | ✓ | ✓ | ✓ | ✓ | ~ | ?
@@ -46,18 +46,16 @@ XHR | ✓ | ✓ | ✓ | ✓ | ~ | ?
             * [.extend(object)](#waff+EventEmitter.extend) ⇒
     * [.Promise](#waff+Promise) ⇐ <code>[EventEmitter](#waff+EventEmitter)</code>
         * [new Promise(executor)](#new_waff+Promise_new)
-        * _instance_
-            * [.catch(onReject)](#waff+Promise+catch) ⇒ <code>[Promise](#waff+Promise)</code>
-            * [.resolve()](#waff+Promise+resolve) ⇒ <code>[Promise](#waff+Promise)</code>
-            * [.reject()](#waff+Promise+reject) ⇒ <code>[Promise](#waff+Promise)</code>
-            * [.on(event, handler, [capture])](#waff+EventEmitter+on) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-            * [.once(event, handler, [capture])](#waff+EventEmitter+once) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-            * [.off(event, [handler], [capture])](#waff+EventEmitter+off) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-            * [.emit(event, [data])](#waff+EventEmitter+emit) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-        * _static_
-            * [.then(onFulfill, [onReject])](#waff+Promise.then) ⇒ <code>[Promise](#waff+Promise)</code>
-            * ["fulfill"](#waff+Promise.event_fulfill)
-            * ["reject"](#waff+Promise.event_reject)
+        * [.then(onFulfill, [onReject])](#waff+Promise+then) ⇒ <code>[Promise](#waff+Promise)</code>
+        * [.catch(onReject)](#waff+Promise+catch) ⇒ <code>[Promise](#waff+Promise)</code>
+        * [.resolve()](#waff+Promise+resolve) ⇒ <code>[Promise](#waff+Promise)</code>
+        * [.reject()](#waff+Promise+reject) ⇒ <code>[Promise](#waff+Promise)</code>
+        * [.on(event, handler, [capture])](#waff+EventEmitter+on) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+        * [.once(event, handler, [capture])](#waff+EventEmitter+once) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+        * [.off(event, [handler], [capture])](#waff+EventEmitter+off) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+        * [.emit(event, [data])](#waff+EventEmitter+emit) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+        * ["fulfill"](#waff+Promise+event_fulfill)
+        * ["reject"](#waff+Promise+event_reject)
     * [.query(selector, [root])](#waff+query) ⇒ <code>[Element](#Element)</code> &#124; <code>null</code>
         * [.all(selector, [root], [single])](#waff+query.all) ⇒ <code>[Array.&lt;Element&gt;](#Element)</code>
     * [.element(selector)](#waff+element) ⇒ <code>[Element](#Element)</code>
@@ -199,18 +197,16 @@ Own implementation of Promises. Can bind `this` to functions called in `then` an
 
 * [.Promise](#waff+Promise) ⇐ <code>[EventEmitter](#waff+EventEmitter)</code>
     * [new Promise(executor)](#new_waff+Promise_new)
-    * _instance_
-        * [.catch(onReject)](#waff+Promise+catch) ⇒ <code>[Promise](#waff+Promise)</code>
-        * [.resolve()](#waff+Promise+resolve) ⇒ <code>[Promise](#waff+Promise)</code>
-        * [.reject()](#waff+Promise+reject) ⇒ <code>[Promise](#waff+Promise)</code>
-        * [.on(event, handler, [capture])](#waff+EventEmitter+on) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-        * [.once(event, handler, [capture])](#waff+EventEmitter+once) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-        * [.off(event, [handler], [capture])](#waff+EventEmitter+off) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-        * [.emit(event, [data])](#waff+EventEmitter+emit) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
-    * _static_
-        * [.then(onFulfill, [onReject])](#waff+Promise.then) ⇒ <code>[Promise](#waff+Promise)</code>
-        * ["fulfill"](#waff+Promise.event_fulfill)
-        * ["reject"](#waff+Promise.event_reject)
+    * [.then(onFulfill, [onReject])](#waff+Promise+then) ⇒ <code>[Promise](#waff+Promise)</code>
+    * [.catch(onReject)](#waff+Promise+catch) ⇒ <code>[Promise](#waff+Promise)</code>
+    * [.resolve()](#waff+Promise+resolve) ⇒ <code>[Promise](#waff+Promise)</code>
+    * [.reject()](#waff+Promise+reject) ⇒ <code>[Promise](#waff+Promise)</code>
+    * [.on(event, handler, [capture])](#waff+EventEmitter+on) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+    * [.once(event, handler, [capture])](#waff+EventEmitter+once) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+    * [.off(event, [handler], [capture])](#waff+EventEmitter+off) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+    * [.emit(event, [data])](#waff+EventEmitter+emit) ⇒ <code>[EventEmitter](#waff+EventEmitter)</code>
+    * ["fulfill"](#waff+Promise+event_fulfill)
+    * ["reject"](#waff+Promise+event_reject)
 
 <a name="new_waff+Promise_new"></a>
 
@@ -220,6 +216,26 @@ Own implementation of Promises. Can bind `this` to functions called in `then` an
 | --- | --- | --- |
 | executor | <code>function</code> | Executor function |
 
+<a name="waff+Promise+then"></a>
+
+#### promise.then(onFulfill, [onReject]) ⇒ <code>[Promise](#waff+Promise)</code>
+Adds handler when fulfilled or rejected
+
+**Kind**: instance method of <code>[Promise](#waff+Promise)</code>  
+**Returns**: <code>[Promise](#waff+Promise)</code> - instance  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| onFulfill | <code>function</code> | Fulfiull function |
+| [onReject] | <code>function</code> | Reject function |
+
+**Example**  
+```js
+var promise = new waff.Promise(function(){})
+promise.then(function(){
+
+})
+```
 <a name="waff+Promise+catch"></a>
 
 #### promise.catch(onReject) ⇒ <code>[Promise](#waff+Promise)</code>
@@ -362,27 +378,7 @@ ee.emit('event-name')
 // Emitting event with data
 ee.emit('event-name', {my: 'data'})
 ```
-<a name="waff+Promise.then"></a>
-
-#### Promise.then(onFulfill, [onReject]) ⇒ <code>[Promise](#waff+Promise)</code>
-Adds handler when fulfilled or rejected
-
-**Kind**: static method of <code>[Promise](#waff+Promise)</code>  
-**Returns**: <code>[Promise](#waff+Promise)</code> - instance  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| onFulfill | <code>function</code> | Fulfiull function |
-| [onReject] | <code>function</code> | Reject function |
-
-**Example**  
-```js
-var promise = new waff.Promise(function(){})
-promise.then(function(){
-
-})
-```
-<a name="waff+Promise.event_fulfill"></a>
+<a name="waff+Promise+event_fulfill"></a>
 
 #### "fulfill"
 Event emitted on fulfill
@@ -395,7 +391,7 @@ promise.on('fulfill', function(){
  // same as promise.then
 })
 ```
-<a name="waff+Promise.event_reject"></a>
+<a name="waff+Promise+event_reject"></a>
 
 #### "reject"
 Event emitted on reject
@@ -964,6 +960,6 @@ text.get() // The number of a waffle
 
 
 # License
-Licensed under MIT license
+Licensed under MIT license.
 
 Copyright (c) 2016 [Casper Seweryn](https://wvffle.net)
