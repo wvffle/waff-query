@@ -1,6 +1,6 @@
 [![Bower](https://img.shields.io/bower/v/waff-query.svg?maxAge=3600&style=flat-square)]()
 [![npm](https://img.shields.io/npm/v/waff-query.svg?maxAge=3600&style=flat-square)]()
-[![license](https://img.shields.io/github/license/wvffle/waff-query.js.svg?maxAge=3600&style=flat-square)]()
+[![license](https://img.shields.io/github/license/wvffle/waff-query.js.svg?maxAge=3600&style=flat-square)](LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/wvffle/waff-query.js.svg?maxAge=3600&style=flat-square)]()
 <!--
 [![npm](https://img.shields.io/npm/dt/waff-query.svg?maxAge=3600&style=flat-square)]()
@@ -10,10 +10,12 @@
 This is a simple Document Object Model library for lazy people to make their things faster.
 
 # Contents
+ * [Contents](#contents)
  * [Browser support](#browser-support)
  * [Global functions](#global-functions)
  * [Element prototypes](#element-prototypes)
  * [Text prototypes](#text-prototypes)
+ * [License](#license)
 
 # Browser support
 
@@ -960,3 +962,8 @@ var text = waff.text('The number of a waffle')
 text.get() // The number of a waffle
 ```
 
+
+# License
+Licensed under MIT license
+
+Copyright (c) 2016 [Casper Seweryn](https://wvffle.net)
