@@ -1,7 +1,6 @@
 module.exports = function(grunt) {
 
   var package = grunt.file.readJSON('package.json');
-  var spawn = require('child_process').spawn;
 
   grunt.initConfig({
     pkg: package,
@@ -107,13 +106,13 @@ module.exports = function(grunt) {
         src: [ 'bower.json' ]
       }
     },
-    jsdoc2md: {
-      readme: {
+    jsdoc: {
+      dist: {
+        src: [ 'dist/waff-query.dev.js' ],
         options: {
-          template: grunt.file.read('readme.hbs')
-        },
-        src: 'dist/waff-query.dev.js',
-        dest: 'README.md'
+          destination: 'jsdoc',
+          readme: 'README.md'
+        }
       }
     }
   });
@@ -124,8 +123,8 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-modify-json');
-  grunt.loadNpmTasks('grunt-jsdoc-to-markdown');
   grunt.loadNpmTasks('grunt-open');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   grunt.registerTask('tests', function () {
     index = grunt.file.read('test/index.html');
@@ -146,7 +145,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['build', 'test', 'docs', 'publish']);
   grunt.registerTask('build', ['concat', 'coffee:compile', 'usebanner', 'uglify']);
   grunt.registerTask('test', ['coffee:test', 'tests', 'open:tests']);
-  grunt.registerTask('docs', ['jsdoc2md']);
+  grunt.registerTask('docs', ['jsdoc']);
   grunt.registerTask('publish', ['modify_json']);
 
 };

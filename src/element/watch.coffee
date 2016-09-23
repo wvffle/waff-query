@@ -1,5 +1,5 @@
 ###*
-# @function
+# @function Element#watch
 # @typicalname Element#watch
 # @desc Observes for DOM changes
 # @param {MutationObserverInit} [options={ attributes: true, childList: true, characterData: true, attributeOldValue: true, characterDataOldValue: true, subtree: false }] - MutationObserver options

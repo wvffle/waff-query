@@ -1402,7 +1402,7 @@
   waff.__prop Array::, 'class', arropts
   waff.__prop Array::, 'classes', arropts
   ###*
-  # @function
+  # @function Element#watch
   # @typicalname Element#watch
   # @desc Observes for DOM changes
   # @param {MutationObserverInit} [options={ attributes: true, childList: true, characterData: true, attributeOldValue: true, characterDataOldValue: true, subtree: false }] - MutationObserver options
@@ -1500,7 +1500,6 @@
       if element instanceof Element
         element.watch.apply element, arguments
     @
-  
   ###*
   # @function
   # @typicalname Element#unwatch
