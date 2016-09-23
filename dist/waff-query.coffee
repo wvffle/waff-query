@@ -1,6 +1,6 @@
 ###
 # waff-query v2.0.0-beta2
-# https://wvffle.net
+# https://wvffle.net/waff-query/
 #
 # Copyright wvffle.net
 # Released under the MIT license

@@ -22,7 +22,7 @@
     "wvffle <casper@wvffle.net>"
   ],
   "license": "MIT",
-  "homepage": "https://wvffle.net",
+  "homepage": "https://wvffle.net/waff-query/",
   "ignore": [
     "bower_components"
   ]

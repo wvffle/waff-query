@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/wvffle/waff-query.js/issues"
   },
-  "homepage": "https://wvffle.net",
+  "homepage": "https://wvffle.net/waff-query/",
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-banner": "^0.6.0",
