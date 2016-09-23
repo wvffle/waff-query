@@ -1,5 +1,5 @@
 /*
- * waff-query v2.0.0-beta
+ * waff-query v2.0.0-beta2
  * https://wvffle.net
  *
  * Copyright wvffle.net
@@ -449,7 +449,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '2.0.0-beta';
+  waff._version = '2.0.0-beta2';
   waff.__isarray = (function() {
     var isarray;
     isarray = function(arr) {

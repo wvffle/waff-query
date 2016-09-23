@@ -1,5 +1,5 @@
 ###
-# waff-query v2.0.0-beta
+# waff-query v2.0.0-beta2
 # https://wvffle.net
 #
 # Copyright wvffle.net
@@ -320,7 +320,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff._version = '2.0.0-beta'
+  waff._version = '2.0.0-beta2'
 
   waff.__isarray = do ->
     isarray = (arr) ->
