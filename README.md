@@ -556,6 +556,7 @@ waff.post('http://httpbin.org/post', { waffle_id: 666 })
         * [.toggle(class)](#Element+classes+toggle) ⇒ <code>[classes](#Element+classes)</code>
     * [.unwatch()](#Element+unwatch)
     * [.clone([deep])](#Element+clone)
+    * [.selector()](#Element+selector)
 
 <a name="Element+query"></a>
 
@@ -749,7 +750,7 @@ Get unique path of an element
 **Kind**: instance method of <code>[Element](#Element)</code>  
 **Example**  
 ```js
-waff.query('body').path() // html > body:nth-child(2)
+waff.query('body').path // html > body:nth-child(2)
 ```
 <a name="Element+css"></a>
 
@@ -921,6 +922,16 @@ Clones element
 **Example**  
 ```js
 waff.query('body').clone()
+```
+<a name="Element+selector"></a>
+
+### element.selector()
+Get selector of an element
+
+**Kind**: instance method of <code>[Element](#Element)</code>  
+**Example**  
+```js
+waff.query('body').selector // body
 ```
 
 

@@ -20,7 +20,7 @@
       executor @_resolve(@), @_reject(@)
 
     ###*
-    # @function waff#Promise.then
+    # @function waff#Promise#then
     # @desc Adds handler when fulfilled or rejected
     # @param {Function} onFulfill - Fulfiull function
     # @param {Function} [onReject] - Reject function
@@ -55,7 +55,7 @@
     _resolve: (self) ->
       ->
         ###*
-        # @event waff#Promise.fulfill
+        # @event waff#Promise#fulfill
         # @desc Event emitted on fulfill
         # @example
         # var promise = new waff.Promise(function(){})
@@ -82,7 +82,7 @@
     _reject: (self) ->
       ->
         ###*
-        # @event waff#Promise.reject
+        # @event waff#Promise#reject
         # @desc Event emitted on reject
         # @example
         # var promise = new waff.Promise(function(){})

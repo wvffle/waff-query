@@ -100,6 +100,7 @@
   <%= include('element/unwatch', '  ') %>
   <%= include('element/parent', '  ') %>
   <%= include('element/clone', '  ') %>
+  <%= include('element/selector', '  ') %>
 
   <%= include('event/on', '  ') %>
   <%= include('event/off', '  ') %>

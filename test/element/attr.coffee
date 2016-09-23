@@ -32,4 +32,4 @@ describe 'Element::attr', ->
     green.setAttribute 'name', 'passed'
     green.attr 'name', null
     expect green.attr 'name'
-    	.to.be.oneOf [null, '']
+    	.to.be.undefined

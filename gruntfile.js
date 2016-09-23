@@ -37,7 +37,7 @@ module.exports = function(grunt) {
           bare: true
         },
         files: {
-          'dist/waff-query.js': 'dist/waff-query.coffee'
+          'dist/waff-query.dev.js': 'dist/waff-query.coffee'
         }
       },
       test: {
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
       },
       waff: {
         files: {
-          'dist/waff-query.min.js': 'dist/waff-query.js'
+          'dist/waff-query.js': 'dist/waff-query.dev.js'
         }
       }
     },
@@ -71,7 +71,7 @@ module.exports = function(grunt) {
           linebreak: true
         },
         files: {
-          src: [ 'dist/waff-query.js' ]
+          src: [ 'dist/waff-query.dev.js' ]
         }
       },
       coffee: {
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
         options: {
           template: grunt.file.read('readme.hbs')
         },
-        src: 'dist/waff-query.js',
+        src: 'dist/waff-query.dev.js',
         dest: 'README.md'
       }
     }

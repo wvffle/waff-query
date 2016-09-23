@@ -5,7 +5,7 @@ waff.__prop Element::, 'path',
   # @typicalname Element#path
   # @desc Get unique path of an element
   # @example
-  # waff.query('body').path() // html > body:nth-child(2)
+  # waff.query('body').path // html > body:nth-child(2)
   ###
   get: ->
     root = @

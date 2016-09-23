@@ -14,13 +14,19 @@ Element::attr = (attr, value) ->
     for key, val of attr
       @attr key, val
     return @
+  else unless attr?
+    attrs = waff.__toarray @attributes
+    res = {}
+    for attr in attrs
+      res[attr.nodeName] = attr.value
+    return res
   else
     if value?
       @setAttribute attr, value
     else if value == null
       @removeAttribute attr
     else
-      return @getAttribute attr
+      return @attr()[attr]
   @
 
 Array::attr = ->

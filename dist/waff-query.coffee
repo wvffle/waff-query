@@ -5,7 +5,7 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-09-19
+# Date: 2016-09-23
 ###
 
 ((coffeFix, _waff) ->
@@ -634,7 +634,7 @@
         executor @_resolve(@), @_reject(@)
   
       ###*
-      # @function waff#Promise.then
+      # @function waff#Promise#then
       # @desc Adds handler when fulfilled or rejected
       # @param {Function} onFulfill - Fulfiull function
       # @param {Function} [onReject] - Reject function
@@ -669,7 +669,7 @@
       _resolve: (self) ->
         ->
           ###*
-          # @event waff#Promise.fulfill
+          # @event waff#Promise#fulfill
           # @desc Event emitted on fulfill
           # @example
           # var promise = new waff.Promise(function(){})
@@ -696,7 +696,7 @@
       _reject: (self) ->
         ->
           ###*
-          # @event waff#Promise.reject
+          # @event waff#Promise#reject
           # @desc Event emitted on reject
           # @example
           # var promise = new waff.Promise(function(){})
@@ -1085,7 +1085,7 @@
     # @typicalname Element#path
     # @desc Get unique path of an element
     # @example
-    # waff.query('body').path() // html > body:nth-child(2)
+    # waff.query('body').path // html > body:nth-child(2)
     ###
     get: ->
       root = @
@@ -1206,13 +1206,19 @@
       for key, val of attr
         @attr key, val
       return @
+    else unless attr?
+      attrs = waff.__toarray @attributes
+      res = {}
+      for attr in attrs
+        res[attr.nodeName] = attr.value
+      return res
     else
       if value?
         @setAttribute attr, value
       else if value == null
         @removeAttribute attr
       else
-        return @getAttribute attr
+        return @attr()[attr]
     @
   
   Array::attr = ->
@@ -1543,6 +1549,30 @@
     clone = @cloneNode deep
     clone.original = @
     clone
+  waff.__prop Element::, 'selector',
+    configurable: true
+    ###*
+    # @function Element#selector
+    # @typicalname Element#selector
+    # @desc Get selector of an element
+    # @example
+    # waff.query('body').selector // body
+    ###
+    get: ->
+      tn = @tagName.toLowerCase()
+      sel = if tn == 'div' then '' else tn
+      sel += @id if @id?
+      for c in @className.split ' '
+        sel += '.' + c unless c == ''
+      for k, v of @attr()
+        if k != 'id' and k != 'class'
+          if v?
+            sel += "[#{k}=\"#{v}\"]"
+          else
+            sel += "[#{k}]"
+      sel
+    set: ->
+      @
 
   for Target in waff._EventTargets
     Target::on = (name, next, capture) ->
