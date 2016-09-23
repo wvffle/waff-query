@@ -9,7 +9,7 @@
 # waff-query.js
 This is a simple Document Object Model library for lazy people to make their things faster.
 
-# Browser support
+### Browser support
 Function | Firefox 4+ | Safari 6+ | Opera 16+ | Chrome 18+ | IE 9+ | IE 10
 --- | --- | --- | --- | --- | --- | ---
 Element query | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
@@ -20,10 +20,12 @@ EventEmitter | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
 Promise | ✓ | ✓ | ✓ | ✓ | ✓ | ✓
 XHR | ✓ | ✓ | ✓ | ✓ | ~ | ?
 
-# Documentation
+### Documentation
 Documentation available at [https://wvffle.net/waff-query/](https://wvffle.net/waff-query/)
+### Source
+Source available at [https://github.com/wvffle/waff-query.js](https://github.com/wvffle/waff-query.js)
 
-# License
+### License
 Licensed under MIT license.
 
 Copyright (c) 2016 [Casper Seweryn](https://wvffle.net)
