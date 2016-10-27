@@ -14,12 +14,12 @@
   # @returns {Element[]} Returns found elements
   ###
   querySelector = (qs, root, single) ->
-    if single == true
-      [root.querySelector qs]
-    else
-      root.querySelectorAll qs
+    [root.querySelector qs] if single == true
+    root.querySelectorAll qs
   queryElement = (qs, root, single) ->
-    if /^[A-z0-9*-]+$/.test qs
+    if waff.__has qs, '['
+      querySelector qs, root, single
+    else if /^[A-z0-9*-]+$/.test qs
       root.getElementsByTagName qs
     else if /^#[A-z0-9*-]+$/.test qs
       [document.getElementById qs.slice 1]
@@ -39,7 +39,6 @@
         if element instanceof Element
           _arr.push element
       arr = _arr
-      _arr = null
       if s.tag == '*'
         if single == true
           return arr[0]
