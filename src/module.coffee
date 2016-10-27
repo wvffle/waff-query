@@ -61,6 +61,7 @@
 
   waff._version = '<%= version %>'
 
+  waff.__isobject = <%= include('util/isobject', '  ') %>
   waff.__isarray = <%= include('util/isarray', '  ') %>
   waff.__toarray = <%= include('util/toarray', '  ') %>
   waff.__has = <%= include('util/has', '  ') %>
