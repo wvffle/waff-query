@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-09-23
+ * Date: 2016-10-27
  */
 
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -221,13 +221,14 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       var queryAll, queryElement, querySelector;
       querySelector = function(qs, root, single) {
         if (single === true) {
-          return [root.querySelector(qs)];
-        } else {
-          return root.querySelectorAll(qs);
+          [root.querySelector(qs)];
         }
+        return root.querySelectorAll(qs);
       };
       queryElement = function(qs, root, single) {
-        if (/^[A-z0-9*-]+$/.test(qs)) {
+        if (waff.__has(qs, '[')) {
+          return querySelector(qs, root, single);
+        } else if (/^[A-z0-9*-]+$/.test(qs)) {
           return root.getElementsByTagName(qs);
         } else if (/^#[A-z0-9*-]+$/.test(qs)) {
           return [document.getElementById(qs.slice(1))];
@@ -263,7 +264,6 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
             }
           }
           arr = _arr;
-          _arr = null;
           if (s.tag === '*') {
             if (single === true) {
               return arr[0];
@@ -391,13 +391,21 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @alias waff#e
        * @desc Creates element with CSS selector
        * @param {String} selector - CSS Selector
+       * @param {Object} [attrs] - Element attributes
+       * @param {Element[]} [children] - Element children
        * @example
        * waff.element('.white-text')
+       *
+       * waff.element('script', { src: 'https://...' })
+       *
+       * waff.element('.meh', [
+       *   waff.element('span', [ waff.text('meh.') ])
+       * ])
        * @returns {Element} Returns new element
        */
       var create;
-      create = function(cs) {
-        var attr, c, el, j, len, parsed, ref, ref1, s;
+      create = function(cs, attrs, children) {
+        var attr, c, child, el, j, l, len, len1, parsed, ref, ref1, s;
         s = this.ps(cs);
         el = document.createElement(s.tag || 'div');
         if (s.id) {
@@ -414,6 +422,22 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
             parsed = ref1[attr];
             if (parsed.operator === '=') {
               el.attr(attr, parsed.value);
+            }
+          }
+        }
+        if (waff.__isarray(attrs)) {
+          children = attrs;
+        }
+        if (attrs != null) {
+          if (waff.__isobject(attrs)) {
+            el.attr(attrs);
+          }
+        }
+        if (children != null) {
+          for (l = 0, len1 = children.length; l < len1; l++) {
+            child = children[l];
+            if (child instanceof Element || child instanceof Text) {
+              el.append(child);
             }
           }
         }
@@ -450,6 +474,13 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   waff.element = waff.e;
   waff.text = waff.t;
   waff._version = '2.0.0-beta2';
+  waff.__isobject = (function() {
+    var isobject;
+    isobject = function(obj) {
+      return '[object Object]' === Object.prototype.toString.call(obj);
+    };
+    return isobject;
+  })();
   waff.__isarray = (function() {
     var isarray;
     isarray = function(arr) {

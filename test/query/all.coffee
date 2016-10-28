@@ -35,6 +35,10 @@ describe 'qq()', ->
     expect [].slice.call document.querySelectorAll '*'
     	.to.deep.equal qq ''
 
+  it 'should find [class]', ->
+    expect [].slice.call document.querySelectorAll '[class]'
+    	.to.deep.equal qq '[class]'
+
 describe 'query.all()', ->
 
   beforeEach ->

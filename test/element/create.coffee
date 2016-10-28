@@ -111,6 +111,24 @@ describe 'e()', ->
     expect div.id
     	.to.equal 'text'
 
+  it 'should create div[meh="yay"]', ->
+    div = e '[meh="yay"]'
+    expect 'yay'
+      .to.equal div.getAttribute 'meh'
+
+    div = e '', { meh: 'yay' }
+    expect 'yay'
+      .to.equal div.getAttribute 'meh'
+
+  it 'should create div with 2 children', ->
+    div = e '', {}, [(e ''), e '']
+    expect div.children
+      .to.have.lengthOf 2
+
+  div = e '', [(e ''), e '']
+  expect div.children
+    .to.have.lengthOf 2
+
 describe 'element()', ->
   it 'should be same as e()', ->
     expect element

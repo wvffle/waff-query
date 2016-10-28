@@ -5,7 +5,7 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-09-23
+# Date: 2016-10-27
 ###
 
 ((coffeFix, _waff) ->
@@ -162,12 +162,12 @@
       # @returns {Element[]} Returns found elements
       ###
       querySelector = (qs, root, single) ->
-        if single == true
-          [root.querySelector qs]
-        else
-          root.querySelectorAll qs
+        [root.querySelector qs] if single == true
+        root.querySelectorAll qs
       queryElement = (qs, root, single) ->
-        if /^[A-z0-9*-]+$/.test qs
+        if waff.__has qs, '['
+          querySelector qs, root, single
+        else if /^[A-z0-9*-]+$/.test qs
           root.getElementsByTagName qs
         else if /^#[A-z0-9*-]+$/.test qs
           [document.getElementById qs.slice 1]
@@ -187,7 +187,6 @@
             if element instanceof Element
               _arr.push element
           arr = _arr
-          _arr = null
           if s.tag == '*'
             if single == true
               return arr[0]
@@ -275,11 +274,19 @@
       # @alias waff#e
       # @desc Creates element with CSS selector
       # @param {String} selector - CSS Selector
+      # @param {Object} [attrs] - Element attributes
+      # @param {Element[]} [children] - Element children
       # @example
       # waff.element('.white-text')
+      #
+      # waff.element('script', { src: 'https://...' })
+      #
+      # waff.element('.meh', [
+      #   waff.element('span', [ waff.text('meh.') ])
+      # ])
       # @returns {Element} Returns new element
       ###
-      create = (cs) ->
+      create = (cs, attrs, children) ->
         s = @ps cs
         el = document.createElement s.tag or 'div'
         el.id = s.id if s.id
@@ -289,6 +296,16 @@
           for attr, parsed of s.attr
             if parsed.operator == '='
               el.attr attr, parsed.value
+        if waff.__isarray attrs
+          children = attrs
+        if attrs?
+          if waff.__isobject attrs
+            el.attr attrs
+        if children?
+            for child in children
+              if child instanceof Element or child instanceof Text
+                el.append child
+    
         el
       create
     )()
@@ -322,6 +339,10 @@
 
   waff._version = '2.0.0-beta2'
 
+  waff.__isobject = do ->
+    isobject = (obj) ->
+      '[object Object]' == Object.prototype.toString.call obj
+    isobject
   waff.__isarray = do ->
     isarray = (arr) ->
       arr instanceof Array or arr instanceof NodeList
