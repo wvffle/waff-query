@@ -12,7 +12,7 @@
 # //   div
 # //   span.red
 ###
-Element::before = (element)->
+Element::before = (element) ->
   if element.parent?
     element.parent.insertBefore @, element
   @

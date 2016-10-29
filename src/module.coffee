@@ -104,6 +104,8 @@
   <%= include('element/selector', '  ') %>
   <%= include('element/next', '  ') %>
   <%= include('element/prev', '  ') %>
+  <%= include('element/inside', '  ') %>
+  <%= include('element/has', '  ') %>
 
   <%= include('event/on', '  ') %>
   <%= include('event/off', '  ') %>

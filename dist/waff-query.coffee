@@ -993,7 +993,7 @@
   # //   div
   # //   span.red
   ###
-  Element::before = (element)->
+  Element::before = (element) ->
     if element.parent?
       element.parent.insertBefore @, element
     @
@@ -1623,6 +1623,29 @@
     set: (element) ->
       element.before @
       @
+  ###*
+  # @function
+  # @typicalname Element#inside
+  # @desc Checks if element is inside another one
+  # @param {Element} element - Potential parent
+  # @example
+  # q('body').inside(q('html')) // true
+  ###
+  Element::inside = (parent) ->
+    n = @parentNode
+    until n == parent
+      return false if (n = @parentNode) == document
+    true
+  ###*
+  # @function
+  # @typicalname Element#has
+  # @desc Checks if element has another one
+  # @param {Element} element - Potential parent
+  # @example
+  # q('html').has(q('body')) // true
+  ###
+  Element::has = (child) ->
+    child.inside @
 
   for Target in waff._EventTargets
     Target::on = (name, next, capture) ->

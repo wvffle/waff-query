@@ -2326,6 +2326,37 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       return this;
     }
   });
+
+  /**
+   * @function
+   * @typicalname Element#inside
+   * @desc Checks if element is inside another one
+   * @param {Element} element - Potential parent
+   * @example
+   * q('body').inside(q('html')) // true
+   */
+  Element.prototype.inside = function(parent) {
+    var n;
+    n = this.parentNode;
+    while (n !== parent) {
+      if ((n = this.parentNode) === document) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  /**
+   * @function
+   * @typicalname Element#has
+   * @desc Checks if element has another one
+   * @param {Element} element - Potential parent
+   * @example
+   * q('html').has(q('body')) // true
+   */
+  Element.prototype.has = function(child) {
+    return child.inside(this);
+  };
   ref = waff._EventTargets;
   for (j = 0, len = ref.length; j < len; j++) {
     Target = ref[j];
