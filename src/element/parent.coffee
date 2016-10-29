@@ -3,7 +3,7 @@
 # @typicalname Element#parent
 # @desc Get parent element
 # @example
-# waff.query('body').parent() // html
+# waff.query('body').parent // html
 ###
 waff.__prop Element::, 'parent',
   configurable: true

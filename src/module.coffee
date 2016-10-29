@@ -102,6 +102,8 @@
   <%= include('element/parent', '  ') %>
   <%= include('element/clone', '  ') %>
   <%= include('element/selector', '  ') %>
+  <%= include('element/next', '  ') %>
+  <%= include('element/prev', '  ') %>
 
   <%= include('event/on', '  ') %>
   <%= include('event/off', '  ') %>

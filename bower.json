@@ -1,6 +1,6 @@
 {
   "name": "waff-query",
-  "version": "2.0.0-beta2",
+  "version": "2.0.0-beta3",
   "description": "Simple Document Object Model library for lazy people to make their things faster.",
   "main": "dist/waff-query.js",
   "repository": {

@@ -1,11 +1,11 @@
 ###
-# waff-query v2.0.0-beta2
+# waff-query v2.0.0-beta3
 # https://wvffle.net/waff-query/
 #
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-10-27
+# Date: 2016-10-29
 ###
 
 ((coffeFix, _waff) ->
@@ -337,7 +337,7 @@
   waff.element = waff.e
   waff.text = waff.t
 
-  waff._version = '2.0.0-beta2'
+  waff._version = '2.0.0-beta3'
 
   waff.__isobject = do ->
     isobject = (obj) ->
@@ -1546,7 +1546,7 @@
   # @typicalname Element#parent
   # @desc Get parent element
   # @example
-  # waff.query('body').parent() // html
+  # waff.query('body').parent // html
   ###
   waff.__prop Element::, 'parent',
     configurable: true
@@ -1592,6 +1592,36 @@
             sel += "[#{k}]"
       sel
     set: ->
+      @
+  ###*
+  # @function
+  # @typicalname Element#next
+  # @desc Get next element
+  # @example
+  # waff.query('head').next // body
+  ###
+  waff.__prop Element::, 'next',
+    configurable: true
+    get: ->
+      @nextElementSibling
+  
+    set: (element) ->
+      element.after @
+      @
+  ###*
+  # @function
+  # @typicalname Element#prev
+  # @desc Get previous element
+  # @example
+  # waff.query('body').prev // head
+  ###
+  waff.__prop Element::, 'prev',
+    configurable: true
+    get: ->
+      @previousElementSibling
+  
+    set: (element) ->
+      element.before @
       @
 
   for Target in waff._EventTargets

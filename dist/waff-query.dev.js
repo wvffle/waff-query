@@ -1,11 +1,11 @@
 /*
- * waff-query v2.0.0-beta2
+ * waff-query v2.0.0-beta3
  * https://wvffle.net/waff-query/
  *
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-10-27
+ * Date: 2016-10-29
  */
 
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -473,7 +473,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   waff.query.all = waff.qq;
   waff.element = waff.e;
   waff.text = waff.t;
-  waff._version = '2.0.0-beta2';
+  waff._version = '2.0.0-beta3';
   waff.__isobject = (function() {
     var isobject;
     isobject = function(obj) {
@@ -2214,7 +2214,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * @typicalname Element#parent
    * @desc Get parent element
    * @example
-   * waff.query('body').parent() // html
+   * waff.query('body').parent // html
    */
   waff.__prop(Element.prototype, 'parent', {
     configurable: true,
@@ -2287,6 +2287,42 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       return sel;
     },
     set: function() {
+      return this;
+    }
+  });
+
+  /**
+   * @function
+   * @typicalname Element#next
+   * @desc Get next element
+   * @example
+   * waff.query('head').next // body
+   */
+  waff.__prop(Element.prototype, 'next', {
+    configurable: true,
+    get: function() {
+      return this.nextElementSibling;
+    },
+    set: function(element) {
+      element.after(this);
+      return this;
+    }
+  });
+
+  /**
+   * @function
+   * @typicalname Element#prev
+   * @desc Get previous element
+   * @example
+   * waff.query('body').prev // head
+   */
+  waff.__prop(Element.prototype, 'prev', {
+    configurable: true,
+    get: function() {
+      return this.previousElementSibling;
+    },
+    set: function(element) {
+      element.before(this);
       return this;
     }
   });
