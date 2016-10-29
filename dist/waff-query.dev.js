@@ -2337,13 +2337,16 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    */
   Element.prototype.inside = function(parent) {
     var n;
-    n = this.parentNode;
-    while (n !== parent) {
-      if ((n = this.parentNode) === document) {
-        return false;
+    if (this === parent) {
+      return true;
+    }
+    n = this;
+    while ((n = n.parentNode) != null) {
+      if (n === parent) {
+        return true;
       }
     }
-    return true;
+    return false;
   };
 
   /**

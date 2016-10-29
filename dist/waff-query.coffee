@@ -1632,10 +1632,11 @@
   # q('body').inside(q('html')) // true
   ###
   Element::inside = (parent) ->
-    n = @parentNode
-    until n == parent
-      return false if (n = @parentNode) == document
-    true
+    return true if @ == parent
+    n = @
+    while (n = n.parentNode)?
+      return true if n == parent
+    false
   ###*
   # @function
   # @typicalname Element#has
