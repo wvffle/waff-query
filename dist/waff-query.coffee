@@ -5,7 +5,7 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-10-29
+# Date: 2016-11-27
 ###
 
 ((coffeFix, _waff) ->
@@ -793,7 +793,7 @@
           console.error 'IE<11 does not handle xhr well'
     get
   )()
-  waff._post = (->
+  waff._post = do ->
     ###*
     # @func waff#post
     # @desc Performs XHR POST
@@ -817,7 +817,7 @@
       try
         new waff._Promise (f, r) ->
           req = new XMLHttpRequest
-          req.open 'post', url, true
+          req.open options.method or 'post', url, true
           req.timeout = options.timeout or 2000
           req.on 'readystatechange', (e) ->
             if req.readyState == 4
@@ -845,12 +845,129 @@
               if data.hasOwnProperty key
                 form.append key, value
             data = form
+          else data = JSON.stringify data
           req.send data
       catch err
         throw err unless -1 != err.message.indexOf 'Access is denied.'
         console.error 'IE<11 does not handle xhr well'
     post
-  )()
+  waff._put = do ->
+    ###*
+    # @func waff#put
+    # @desc Performs XHR PUT
+    # @param {String} url - URL to put
+    # @param {Object} data={} - PUT data
+    # @param {Object} options - Options object
+    # @param {Boolean} options.json=false - Determines if response is json
+    # @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+    # @param {Boolean} options.timeout=2000 - Determines timeout in ms
+    # @example
+    # waff.put('http://httpbin.org/put', { waffle_id: 666 })
+    #   .then(function(res){
+    #
+    #   })
+    #   .catch(function(err){
+    #
+    #   })
+    # @returns {waff#Promise} Returns promise of request
+    ###
+    put = (url, data = {}, options = {}) ->
+      options.method = 'put'
+      waff._post url, data, options
+    put
+  waff._delete = do ->
+    ###*
+    # @func waff#delete
+    # @desc Performs XHR DELETE
+    # @param {String} url - URL to delete
+    # @param {Object} data={} - DELETE data
+    # @param {Object} options - Options object
+    # @param {Boolean} options.json=false - Determines if response is json
+    # @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+    # @param {Boolean} options.timeout=2000 - Determines timeout in ms
+    # @example
+    # waff.delete('http://httpbin.org/delete', { waffle_id: 666 })
+    #   .then(function(res){
+    #
+    #   })
+    #   .catch(function(err){
+    #
+    #   })
+    # @returns {waff#Promise} Returns promise of request
+    ###
+    del = (url, data = {}, options = {}) ->
+      options.method = 'delete'
+      waff._post url, data, options
+    del
+  waff._patch =  do ->
+    ###*
+    # @func waff#patch
+    # @desc Performs XHR PATCH
+    # @param {String} url - URL to patch
+    # @param {Object} data={} - PATCH data
+    # @param {Object} options - Options object
+    # @param {Boolean} options.json=false - Determines if response is json
+    # @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+    # @param {Boolean} options.timeout=2000 - Determines timeout in ms
+    # @example
+    # waff.patch('http://httpbin.org/patch', { waffle_id: 666 })
+    #   .then(function(res){
+    #
+    #   })
+    #   .catch(function(err){
+    #
+    #   })
+    # @returns {waff#Promise} Returns promise of request
+    ###
+    patch = (url, data = {}, options = {}) ->
+      options.method = 'patch'
+      waff._post url, data, options
+    patch
+  waff._head = do ->
+    ###*
+    # @func waff#head
+    # @desc Performs XHR HEAD
+    # @param {String} url - URL to head
+    # @param {Object} options - Options object
+    # @param {Boolean} options.timeout=2000 - Determines timeout in ms
+    # @example
+    # waff.head('http://httpbin.org/head')
+    #   .then(function(res){
+    #
+    #   })
+    #   .catch(function(err){
+    #
+    #   })
+    # @returns {waff#Promise} Returns promise of request
+    ###
+    head = (url, options = {}) ->
+      try
+        new waff._Promise (f, r) ->
+          req = new XMLHttpRequest
+          req.open 'head', url, true
+          req.timeout = options.timeout or 2000
+          req.setRequestHeader 'Access-Control-Expose-Headers', 'Content-Type, Location'
+          req.on 'readystatechange', (e) ->
+            if req.readyState == 4
+              if req.status >= 200 && req.status < 400
+                req.res = req.getAllResponseHeaders()
+                f.call req, req.getAllResponseHeaders()
+          req.on 'error', (e) ->
+            req.res =
+              status: req.status
+              error: req.statusText
+            r.call req, req.res
+          req.on 'timeout', (e) ->
+            req.res =
+              status: req.status
+              error: req.statusText
+            r.call req, req.res
+  
+          req.send()
+      catch err
+        throw err unless -1 != err.message.indexOf 'Access is denied.'
+        console.error 'IE<11 does not handle xhr well'
+    head
 
   ###*
   # @class Element

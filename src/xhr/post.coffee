@@ -1,4 +1,4 @@
-(->
+do ->
   ###*
   # @func waff#post
   # @desc Performs XHR POST
@@ -22,7 +22,7 @@
     try
       new waff._Promise (f, r) ->
         req = new XMLHttpRequest
-        req.open 'post', url, true
+        req.open options.method or 'post', url, true
         req.timeout = options.timeout or 2000
         req.on 'readystatechange', (e) ->
           if req.readyState == 4
@@ -50,9 +50,9 @@
             if data.hasOwnProperty key
               form.append key, value
           data = form
+        else data = JSON.stringify data
         req.send data
     catch err
       throw err unless -1 != err.message.indexOf 'Access is denied.'
       console.error 'IE<11 does not handle xhr well'
   post
-)()

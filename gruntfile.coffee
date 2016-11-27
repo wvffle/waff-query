@@ -15,7 +15,7 @@ module.exports = (grunt) ->
       dist:
         src: [ 'src/module.coffee' ]
         dest: 'dist/waff-query.coffee'
-        
+
     coffee:
       compile:
         options: bare: true

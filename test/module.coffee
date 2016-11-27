@@ -1,5 +1,5 @@
 global = global or this
-requirejs.config paths: 'waff-query': '../dist/waff-query'
+requirejs.config paths: 'waff-query': '../dist/waff-query.dev'
 describe 'module', ->
   it 'should be in global scope', ->
     expect global.waff

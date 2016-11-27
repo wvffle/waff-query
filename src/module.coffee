@@ -79,6 +79,10 @@
 
   waff._get = <%= include('xhr/get', '  ') %>
   waff._post = <%= include('xhr/post', '  ') %>
+  waff._put = <%= include('xhr/put', '  ') %>
+  waff._delete = <%= include('xhr/delete', '  ') %>
+  waff._patch = <%= include('xhr/patch', '  ') %>
+  waff._head = <%= include('xhr/head', '  ') %>
 
   ###*
   # @class Element

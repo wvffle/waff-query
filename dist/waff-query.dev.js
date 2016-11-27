@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-10-29
+ * Date: 2016-11-27
  */
 
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1192,7 +1192,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         return new waff._Promise(function(f, r) {
           var form, key, req, value;
           req = new XMLHttpRequest;
-          req.open('post', url, true);
+          req.open(options.method || 'post', url, true);
           req.timeout = options.timeout || 2000;
           req.on('readystatechange', function(e) {
             var res;
@@ -1231,6 +1231,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
               }
             }
             data = form;
+          } else {
+            data = JSON.stringify(data);
           }
           return req.send(data);
         });
@@ -1243,6 +1245,173 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
       }
     };
     return post;
+  })();
+  waff._put = (function() {
+
+    /**
+     * @func waff#put
+     * @desc Performs XHR PUT
+     * @param {String} url - URL to put
+     * @param {Object} data={} - PUT data
+     * @param {Object} options - Options object
+     * @param {Boolean} options.json=false - Determines if response is json
+     * @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+     * @param {Boolean} options.timeout=2000 - Determines timeout in ms
+     * @example
+     * waff.put('http://httpbin.org/put', { waffle_id: 666 })
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {waff#Promise} Returns promise of request
+     */
+    var put;
+    put = function(url, data, options) {
+      if (data == null) {
+        data = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      options.method = 'put';
+      return waff._post(url, data, options);
+    };
+    return put;
+  })();
+  waff._delete = (function() {
+
+    /**
+     * @func waff#delete
+     * @desc Performs XHR DELETE
+     * @param {String} url - URL to delete
+     * @param {Object} data={} - DELETE data
+     * @param {Object} options - Options object
+     * @param {Boolean} options.json=false - Determines if response is json
+     * @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+     * @param {Boolean} options.timeout=2000 - Determines timeout in ms
+     * @example
+     * waff.delete('http://httpbin.org/delete', { waffle_id: 666 })
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {waff#Promise} Returns promise of request
+     */
+    var del;
+    del = function(url, data, options) {
+      if (data == null) {
+        data = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      options.method = 'delete';
+      return waff._post(url, data, options);
+    };
+    return del;
+  })();
+  waff._patch = (function() {
+
+    /**
+     * @func waff#patch
+     * @desc Performs XHR PATCH
+     * @param {String} url - URL to patch
+     * @param {Object} data={} - PATCH data
+     * @param {Object} options - Options object
+     * @param {Boolean} options.json=false - Determines if response is json
+     * @param {Boolean} options.form=true - Determines if data should be converted to FormData or just pure json
+     * @param {Boolean} options.timeout=2000 - Determines timeout in ms
+     * @example
+     * waff.patch('http://httpbin.org/patch', { waffle_id: 666 })
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {waff#Promise} Returns promise of request
+     */
+    var patch;
+    patch = function(url, data, options) {
+      if (data == null) {
+        data = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      options.method = 'patch';
+      return waff._post(url, data, options);
+    };
+    return patch;
+  })();
+  waff._head = (function() {
+
+    /**
+     * @func waff#head
+     * @desc Performs XHR HEAD
+     * @param {String} url - URL to head
+     * @param {Object} options - Options object
+     * @param {Boolean} options.timeout=2000 - Determines timeout in ms
+     * @example
+     * waff.head('http://httpbin.org/head')
+     *   .then(function(res){
+     *
+     *   })
+     *   .catch(function(err){
+     *
+     *   })
+     * @returns {waff#Promise} Returns promise of request
+     */
+    var head;
+    head = function(url, options) {
+      var err, error;
+      if (options == null) {
+        options = {};
+      }
+      try {
+        return new waff._Promise(function(f, r) {
+          var req;
+          req = new XMLHttpRequest;
+          req.open('head', url, true);
+          req.timeout = options.timeout || 2000;
+          req.setRequestHeader('Access-Control-Expose-Headers', 'Content-Type, Location');
+          req.on('readystatechange', function(e) {
+            if (req.readyState === 4) {
+              if (req.status >= 200 && req.status < 400) {
+                req.res = req.getAllResponseHeaders();
+                return f.call(req, req.getAllResponseHeaders());
+              }
+            }
+          });
+          req.on('error', function(e) {
+            req.res = {
+              status: req.status,
+              error: req.statusText
+            };
+            return r.call(req, req.res);
+          });
+          req.on('timeout', function(e) {
+            req.res = {
+              status: req.status,
+              error: req.statusText
+            };
+            return r.call(req, req.res);
+          });
+          return req.send();
+        });
+      } catch (error) {
+        err = error;
+        if (-1 === err.message.indexOf('Access is denied.')) {
+          throw err;
+        }
+        return console.error('IE<11 does not handle xhr well');
+      }
+    };
+    return head;
   })();
 
   /**
