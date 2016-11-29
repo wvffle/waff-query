@@ -82,7 +82,7 @@
           ret.push element
 
       return ret
-    return [ qs ] if qs instanceof Element
+    return if single == true then qs else [ qs ] if qs instanceof Element
     if waff.__isarray qs
       arr = waff.__toarray qs
       _arr = []
