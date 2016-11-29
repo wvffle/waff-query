@@ -333,10 +333,10 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           }
           return ret;
         }
-        if (single === true) {
-          return qs;
-        } else {
-          if (qs instanceof Element) {
+        if (qs instanceof Element) {
+          if (single === true) {
+            return qs;
+          } else {
             return [qs];
           }
         }
