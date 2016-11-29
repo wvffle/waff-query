@@ -1,4 +1,4 @@
-(->
+do ->
   ###*
   # @func waff#get
   # @desc Performs XHR GET
@@ -47,4 +47,3 @@
         throw err unless -1 != err.message.indexOf 'Access is denied.'
         console.error 'IE<11 does not handle xhr well'
   get
-)()

@@ -5,7 +5,7 @@
 # Copyright wvffle.net
 # Released under the MIT license
 #
-# Date: 2016-11-27
+# Date: 2016-11-29
 ###
 
 ((coffeFix, _waff) ->
@@ -230,7 +230,7 @@
               ret.push element
     
           return ret
-        return [ qs ] if qs instanceof Element
+        return if single == true then qs else [ qs ] if qs instanceof Element
         if waff.__isarray qs
           arr = waff.__toarray qs
           _arr = []
@@ -743,7 +743,7 @@
     Promise
   )()
 
-  waff._get = (->
+  waff._get = do ->
     ###*
     # @func waff#get
     # @desc Performs XHR GET
@@ -792,7 +792,6 @@
           throw err unless -1 != err.message.indexOf 'Access is denied.'
           console.error 'IE<11 does not handle xhr well'
     get
-  )()
   waff._post = do ->
     ###*
     # @func waff#post

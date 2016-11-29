@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-11-27
+ * Date: 2016-11-29
  */
 
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -333,8 +333,12 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           }
           return ret;
         }
-        if (qs instanceof Element) {
-          return [qs];
+        if (single === true) {
+          return qs;
+        } else {
+          if (qs instanceof Element) {
+            return [qs];
+          }
         }
         if (waff.__isarray(qs)) {
           arr = waff.__toarray(qs);
