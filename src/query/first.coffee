@@ -11,7 +11,7 @@
   # @returns {Element|null} Returns found element or null
   ###
   query = (qs, root) ->
-    @qq(qs, root, true) or null
+    @qq(qs, root, true, true) or null
 
   query
 )()

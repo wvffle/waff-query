@@ -14,12 +14,13 @@ Element::q = (qs) ->
 # @name Element#query.all
 # @desc Query single element
 # @param {String} selector='body' - CSS Selector
+# @param {Boolean} [nodelist=false] - Output should be NodeList
 # @example
 # var divs = document.body.query.all('div')
 # @returns {Element[]} Returns found elements
 ###
-Element::qq = (qs) ->
-  waff.qq qs, @
+Element::qq = (qs, nl) ->
+  waff.qq qs, @, null, nl
 
 Element::query = Element::q
 

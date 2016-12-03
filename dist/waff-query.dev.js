@@ -5,7 +5,7 @@
  * Copyright wvffle.net
  * Released under the MIT license
  *
- * Date: 2016-11-29
+ * Date: 2016-12-03
  */
 
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -212,6 +212,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        * @param {String} selector='body' - CSS Selector
        * @param {Element} [root=document] - Element to perform query on
        * @param {Boolean} [single=false] - Specifies if the query is single
+       * @param {Boolean} [nodelist=false] - Specifies if output is nodelist
        * @example
        * var divs = waff.query.all('div')
        * var divs = waff.qq('div')
@@ -238,8 +239,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           return querySelector(qs, root, single);
         }
       };
-      queryAll = function(qs, root, single) {
-        var _arr, arr, attr, c, element, i, j, l, len, len1, len2, len3, o, parsed, pass, q, ref, ref1, ret, s, u, v;
+      queryAll = function(qs, root, single, nodelist) {
+        var _arr, arr, array, attr, c, element, i, j, l, len, len1, len2, len3, o, parsed, pass, q, ref, ref1, ret, s, u, v;
         if (qs == null) {
           qs = 'body';
         }
@@ -249,12 +250,18 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
         if (single == null) {
           single = false;
         }
+        if (nodelist == null) {
+          nodelist = false;
+        }
         if (qs === '') {
           qs = '*';
         }
+        array = nodelist === true ? function(e) {
+          return e;
+        } : waff.__toarray;
         if (waff.__isarray(root)) {
           s = this.ps(qs);
-          arr = waff.__toarray(root);
+          arr = array(root);
           ret = [];
           _arr = [];
           for (j = 0, len = arr.length; j < len; j++) {
@@ -341,7 +348,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           }
         }
         if (waff.__isarray(qs)) {
-          arr = waff.__toarray(qs);
+          arr = array(qs);
           _arr = [];
           for (i = u = 0, len3 = arr.length; u < len3; i = ++u) {
             qs = arr[i];
@@ -363,7 +370,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
           if (single === true) {
             return queryElement(qs, root, single)[0];
           } else {
-            return waff.__toarray(queryElement(qs, root, single));
+            return array(queryElement(qs, root, single));
           }
         }
       };
@@ -384,7 +391,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
        */
       var query;
       query = function(qs, root) {
-        return this.qq(qs, root, true) || null;
+        return this.qq(qs, root, true, true) || null;
       };
       return query;
     })(),
@@ -1441,12 +1448,13 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
    * @name Element#query.all
    * @desc Query single element
    * @param {String} selector='body' - CSS Selector
+   * @param {Boolean} [nodelist=false] - Output should be NodeList
    * @example
    * var divs = document.body.query.all('div')
    * @returns {Element[]} Returns found elements
    */
-  Element.prototype.qq = function(qs) {
-    return waff.qq(qs, this);
+  Element.prototype.qq = function(qs, nl) {
+    return waff.qq(qs, this, null, nl);
   };
   Element.prototype.query = Element.prototype.q;
   Element.prototype.query.all = Element.prototype.qq;

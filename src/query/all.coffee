@@ -1,4 +1,4 @@
-(->
+do ->
   ###*
   # @func waff#query.all
   # @alias waff#q.all
@@ -7,6 +7,7 @@
   # @param {String} selector='body' - CSS Selector
   # @param {Element} [root=document] - Element to perform query on
   # @param {Boolean} [single=false] - Specifies if the query is single
+  # @param {Boolean} [nodelist=false] - Specifies if output is nodelist
   # @example
   # var divs = waff.query.all('div')
   # var divs = waff.qq('div')
@@ -16,6 +17,7 @@
   querySelector = (qs, root, single) ->
     [root.querySelector qs] if single == true
     root.querySelectorAll qs
+
   queryElement = (qs, root, single) ->
     if waff.__has qs, '['
       querySelector qs, root, single
@@ -27,23 +29,23 @@
       root.getElementsByClassName (qs.replace /\./g, ' ').slice 1
     else
       querySelector qs, root, single
-  queryAll = (qs = 'body', root = document, single = false) ->
+
+  queryAll = (qs = 'body', root = document, single = false, nodelist = false) ->
     qs = '*' if qs == ''
+    array = if nodelist == true then (e) -> e else waff.__toarray
 
     if waff.__isarray root
       s = @ps qs
-      arr = waff.__toarray root
+      arr = array root
       ret = []
       _arr = []
       for element in arr
-        if element instanceof Element
-          _arr.push element
+        _arr.push element if element instanceof Element
+
       arr = _arr
       if s.tag == '*'
-        if single == true
-          return arr[0]
-        else
-          return arr
+        return if single == true then arr[0] else arr
+
       for element in arr
         pass = true
         if pass == true and s.tag != false and element.tagName.toLowerCase() != s.tag.toLowerCase()
@@ -76,16 +78,16 @@
                     pass = 0 == waff.__index v, parsed.value + '-'
                 when '*='
                   pass = -1 != waff.__index element.attr(attr), parsed.value
+
         if pass == true
-          if single == true
-            return element
+          return element if single == true
           ret.push element
 
       return ret
     if qs instanceof Element
       return if single == true then qs else [ qs ] 
     if waff.__isarray qs
-      arr = waff.__toarray qs
+      arr = array qs
       _arr = []
       for qs, i in arr
         if qs instanceof Element
@@ -100,6 +102,5 @@
       if single == true
         queryElement(qs, root, single)[0]
       else
-        waff.__toarray queryElement qs, root, single
+        array queryElement qs, root, single
   queryAll
-)()
