@@ -3,6 +3,7 @@
 	"requireCapitalizedConstructors": false,
 	"requireCamelCaseOrUpperCaseIdentifiers": false,
 	"requireCurlyBraces": false,
+	"disallowSpacesInsideArrayBrackets": false,
 	"jsDoc": {
 		"checkAnnotations": {
 			"extra": {
