@@ -10,6 +10,7 @@
 				"param": true,
 				"example": true,
 				"module": true,
+				"func": true,
 				"alias": true
 			}
 		}
