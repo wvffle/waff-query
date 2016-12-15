@@ -1,0 +1,29 @@
+{
+  "name": "waff-query",
+  "version": "1.0.0",
+  "description": "lightweight dom manager",
+  "main": "lib/waff.js",
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && browserify -s waff lib/waff.js > dist/waff.js && echo \"build successfull\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wvffle/waff-query.git"
+  },
+  "keywords": [
+    "waff-query",
+    "wq",
+    "dom",
+    "query"
+  ],
+  "author": "wvffle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wvffle/waff-query/issues"
+  },
+  "homepage": "https://github.com/wvffle/waff-query#readme",
+  "dependencies": {
+    "autodoc": "^0.6.3"
+  }
+}
