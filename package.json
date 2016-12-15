@@ -23,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/wvffle/waff-query/issues"
   },
-  "homepage": "https://github.com/wvffle/waff-query#readme"
+  "homepage": "https://github.com/wvffle/waff-query#readme",
+  "devDependencies": {
+    "jsdoc": "^3.4.3",
+    "uglify-js": "^2.7.5"
+  }
 }
