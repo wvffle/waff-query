@@ -4,7 +4,8 @@
   "description": "lightweight dom manager",
   "main": "lib/waff.js",
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && browserify -s waff lib/waff.js > dist/waff.js && echo \"build successfull\"",
+    "build": "rm -rf dist && mkdir dist && browserify -s waff lib/waff.js | uglifyjs > dist/waff-query.js",
+    "doc": "rm -rf doc && jsdoc -d doc -r README.md lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

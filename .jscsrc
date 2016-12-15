@@ -1,0 +1,17 @@
+{
+	"preset": "google",
+	"requireCapitalizedConstructors": false,
+	"requireCamelCaseOrUpperCaseIdentifiers": false,
+	"requireCurlyBraces": false,
+	"jsDoc": {
+		"checkAnnotations": {
+			"extra": {
+				"class": true,
+				"param": true,
+				"example": true,
+				"module": true,
+				"alias": true
+			}
+		}
+	}
+}
