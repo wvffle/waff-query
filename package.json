@@ -23,8 +23,5 @@
   "bugs": {
     "url": "https://github.com/wvffle/waff-query/issues"
   },
-  "homepage": "https://github.com/wvffle/waff-query#readme",
-  "dependencies": {
-    "autodoc": "^0.6.3"
-  }
+  "homepage": "https://github.com/wvffle/waff-query#readme"
 }
