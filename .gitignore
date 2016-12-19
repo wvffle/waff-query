@@ -48,3 +48,7 @@ jspm_packages
 
 # Documentation
 doc
+
+# Tern files
+.tern-project
+.tern-port
