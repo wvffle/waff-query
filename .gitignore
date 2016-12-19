@@ -52,3 +52,6 @@ doc
 # Tern files
 .tern-project
 .tern-port
+
+# Vim files
+*~
