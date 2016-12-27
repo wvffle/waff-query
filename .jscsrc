@@ -13,7 +13,11 @@
 				"module": true,
 				"func": true,
 				"alias": true,
-				"namespace": true
+				"namespace": true,
+				"memberof": true,
+				"instance": true,
+				"type": true,
+				"returns": true
 			}
 		}
 	}
