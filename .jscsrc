@@ -12,7 +12,8 @@
 				"example": true,
 				"module": true,
 				"func": true,
-				"alias": true
+				"alias": true,
+				"namespace": true
 			}
 		}
 	}
