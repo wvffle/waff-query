@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rm -rf dist && mkdir dist && browserify -s waff lib/waff.js | uglifyjs > dist/waff-query.js",
     "doc": "rm -rf doc && node_modules/.bin/jsdoc -t node_modules/docdash -d doc -r README.md lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc mocha test/test.js test/**/*.js; mocha --reporter nyan test/test.js test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,12 @@
   },
   "homepage": "https://github.com/wvffle/waff-query#readme",
   "devDependencies": {
+    "expect.js": "^0.3.1",
     "jsdoc": "^3.4.3",
+    "jsdom": "9.9.1",
+    "jsdom-global": "2.1.1",
+    "mocha": "^3.2.0",
+    "nyc": "^10.0.0",
     "uglify-js": "^2.7.5"
   }
 }
