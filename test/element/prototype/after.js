@@ -1,7 +1,23 @@
 describe('Element#after()', function() {
-  it('should check if i1 has i2', function() {
-    expect(i1.has(i2)).to.be.false;
-    i1.appendChild(i2);
-    expect(i1.has(i2)).to.be.true;
+  it('should put i1 after i2', function() {
+    i1.after(i2);
+
+    expect(i2.nextElementSibling).to.be(i1);
+  });
+
+  it('should put i1 after i2 in empty div', function() {
+    empty.appendChild(i1);
+    empty.appendChild(i2);
+    i1.after(i2);
+
+    expect(i2.nextElementSibling).to.be(i1);
+  });
+
+  it('should throw an error', function() {
+    try {
+      i1.after(document.documentElement);
+    } catch (e) {
+      expect(e).to.be('cannot insert after root element');
+    }
   });
 });
