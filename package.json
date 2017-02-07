@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rm -rf dist && mkdir dist && browserify -s waff lib/waff.js | uglifyjs > dist/waff-query.js",
     "doc": "rm -rf doc && node_modules/.bin/jsdoc -t node_modules/docdash -d doc -r README.md lib",
-    "test": "nyc mocha test/test.js test/**/*.js; mocha --reporter nyan test/test.js test/**/*.js"
+    "test": "nyc mocha; mocha --reporter nyan"
   },
   "repository": {
     "type": "git",
