@@ -123,7 +123,7 @@ describe('Element#classes', function() {
     expect(arrays.has(i1.classList, 'nah')).to.be(false);
   });
 
-  it('should set array as classes', function() {
+  it('should not set an empty array as classes', function() {
     i1.classes = [];
 
     expect(i1.attributes.length).to.be(1);
