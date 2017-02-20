@@ -17,9 +17,18 @@ describe('Element#selector', function() {
   it('should throw an error', function() {
     try {
       const el = document.createElement('div');
+      el.selector = new Date();
+    } catch (e) {
+      expect(e).to.be('argument 1 has to be String');
+    }
+  });
+
+  it('should throw an error', function() {
+    try {
+      const el = document.createElement('div');
       el.selector = 'p';
     } catch (e) {
       expect(e).to.be('cannot change tagName of Element from \'div\' to \'p\'');
     }
-  })
+  });
 });
