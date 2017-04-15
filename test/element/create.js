@@ -171,4 +171,21 @@ describe('waff.element()', function() {
     expect(el.childElementCount).to.be(1);
     expect(el.children[0]).to.be(i1);
   });
+
+  it('should create \'div\' with i1 inside of it and empty \'meh\' attribute', function() {
+    const el = e('', [
+      'meh',
+    ], [
+      i1,
+    ]);
+    expect(el).to.be.an(Element);
+    expect(el.tagName).to.be('DIV');
+    expect(el.className).to.be('');
+    expect(el.id).to.be.null;
+    expect(el.attributes.length).to.be(1);
+    expect(el.childElementCount).to.be(1);
+    expect(el.children[0]).to.be(i1);
+    expect(el.attributes.meh.nodeValue).to.be('');
+  });
+
 });
